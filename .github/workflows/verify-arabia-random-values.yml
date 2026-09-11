@@ -1,0 +1,156 @@
+name: Verify Arabia calculator random values
+
+on:
+  push:
+    paths:
+      - '.github/workflows/verify-arabia-random-values.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install jsdom
+        run: npm install --no-save jsdom@24.1.3
+      - name: Run calculator scenarios
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs=require('fs');
+          const {JSDOM}=require('jsdom');
+          const html=fs.readFileSync('index.html','utf8');
+          const dom=new JSDOM(html,{runScripts:'dangerously',url:'https://example.test/',pretendToBeVisual:true,beforeParse(w){w.confirm=()=>true;}});
+          const w=dom.window, d=w.document;
+          const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+          let failures=0, issues=0;
+          function pass(msg){console.log('PASS | '+msg)}
+          function fail(msg,got,exp){failures++;console.log(`FAIL | ${msg} | got=${got} expected=${exp}`)}
+          function issue(msg,detail){issues++;console.log(`ISSUE | ${msg} | ${detail}`)}
+          function assertEq(msg,got,exp){String(got)===String(exp)?pass(msg):fail(msg,got,exp)}
+          function assertNear(msg,got,exp,tol=0.11){Math.abs(Number(got)-Number(exp))<=tol?pass(msg):fail(msg,got,exp)}
+          function ntext(s){const t=String(s).replace(/,/g,'').replace(/\+/g,'').trim();return t==='—'?null:Number(t)}
+          function change(el,val){if(!el)throw new Error('missing element');el.value=String(val);el.dispatchEvent(new w.Event('change',{bubbles:true}));}
+          function click(sel){const el=d.querySelector(sel);if(!el)throw new Error('missing '+sel);el.click();}
+          function rowByData(table,key,val){return [...d.querySelectorAll(`#${table} tbody tr`)].find(r=>r.dataset[key]===val)}
+          function rowByName(table,name){return [...d.querySelectorAll(`#${table} tbody tr`)].find(r=>r.children[0]?.textContent.trim().replace('상세','')===name)}
+          function setRow(table,key,name,k,val){const r=rowByData(table,key,name);const el=r?.querySelector(`[data-k="${k}"]`);change(el,val)}
+          function setProduct(name,k,val){setRow('t2','name',name,k,val)}
+          function setResource(name,k,val){setRow('t1','name',name,k,val)}
+          function setRaw(name,val){const r=rowByData('t3','raw',name);change(r.querySelector('.raw-stock'),val)}
+          function cell(table,name,index,byDataKey=null){const r=byDataKey?rowByData(table,byDataKey,name):rowByName(table,name);return r.children[index].textContent.trim()}
+          function reset(){click('#resetBtn')}
+          function ceilBuy(q,unit,cost){return q>0?Math.ceil(q/unit*cost-1e-12):0}
+          await sleep(120);
+
+          console.log('\n=== Scenario 1: initial state / tabs / styles ===');
+          assertEq('초기 일괄 운영시간',d.querySelector('#baseH').value,'0');
+          assertEq('초기 현재 레벨',d.querySelector('#curLv').value,'1');
+          assertEq('초기 목표 레벨',d.querySelector('#tgtLv').value,'1');
+          assertEq('초기 수면까지 남은 시간',d.querySelector('#sleepPrepH').value,'0');
+          assertEq('초기 생산 계산기 활성',d.querySelector('.tab.active').dataset.tab,'prod');
+          click('.tab[data-tab="wonder"]');
+          assertEq('불가사의 탭 전환',d.querySelector('.tab.active').dataset.tab,'wonder');
+          assertEq('불가사의 상태에서 생산 탭 비활성',d.querySelector('.tab[data-tab="prod"]').classList.contains('active'),false);
+          click('.tab[data-tab="prod"]');
+          assertEq('생산 탭 복귀',d.querySelector('.tab.active').dataset.tab,'prod');
+          const css=[...d.querySelectorAll('style')].map(x=>x.textContent).join('\n');
+          assertEq('양쪽 비활성 탭 공통 강조 CSS',css.includes('.tab:not(.active)'),true);
+          const sleepGold=rowByName('ts','금화');
+          assertEq('수면 대비 잔여/부족 일반 셀',/remain-(ok|bad)/.test(sleepGold.children[6].className),false);
+
+          console.log('\n=== Scenario 2: Lv6 커피 2시간 / 자원 사용량 ===');
+          reset();
+          change(d.querySelector('#baseH'),2);
+          for(const p of ['향','오일 램프','카펫'])setProduct(p,'bldgs',0);
+          setProduct('커피','lv',6);setProduct('커피','mode','2시간');setProduct('커피','bldgs',2);setProduct('커피','irrigation',100);
+          assertEq('커피 예상 생산량',ntext(cell('t2','커피',7,'name')),81600);
+          assertEq('커피콩 사용량',ntext(cell('t2','커피',8,'name')),144000);
+          assertEq('황동 사용량',ntext(cell('t2','커피',12,'name')),58000);
+          assertEq('커피콩 구매 필요량',ntext(cell('t3','커피콩',2,'raw')),144000);
+          assertEq('황동 구매 필요량',ntext(cell('t3','황동',2,'raw')),58000);
+          const expectedGold=ceilBuy(144000,167,21.6)+ceilBuy(58000,124.44,21.56);
+          const expectedCamel=ceilBuy(144000,167,1)+ceilBuy(58000,124.44,1);
+          assertEq('금화 필요량 합계',ntext(cell('t1','금화',10,'name')),expectedGold);
+          assertEq('낙타 필요량 합계',ntext(cell('t1','낙타',10,'name')),expectedCamel);
+
+          console.log('\n=== Scenario 3: 임의 행복도 51% ===');
+          reset();change(d.querySelector('#baseH'),2.5);
+          for(const p of ['커피','오일 램프','카펫'])setProduct(p,'bldgs',0);
+          setProduct('향','lv',5);setProduct('향','mode','1시간');setProduct('향','bldgs',3);setProduct('향','irrigation',51);
+          assertEq('향 51% 생산량',ntext(cell('t2','향',7,'name')),41670);
+          assertEq('향 몰약 사용량',ntext(cell('t2','향',9,'name')),69000);
+          assertEq('향 황동 사용량',ntext(cell('t2','향',12,'name')),33000);
+
+          console.log('\n=== Scenario 4: 불가사의 19→20 / 보유량만으로 판정 ===');
+          reset();
+          for(const p of ['커피','향','오일 램프','카펫'])setProduct(p,'bldgs',0);
+          change(d.querySelector('#curLv'),19);change(d.querySelector('#tgtLv'),20);
+          setProduct('커피','stock',90000);setProduct('향','stock',40000);setProduct('오일 램프','stock',20000);setProduct('카펫','stock',100);
+          assertEq('Lv20 커피 잔여',ntext(cell('tw','커피',1)),5000);
+          assertEq('Lv20 향 부족',ntext(cell('tw','향',1)),-6800);
+          assertEq('Lv20 오일 램프 잔여',ntext(cell('tw','오일 램프',1)),5240);
+          assertEq('Lv20 카펫 부족',ntext(cell('tw','카펫',1)),-400);
+
+          console.log('\n=== Scenario 5: 수면 대비 자원 확보 ===');
+          reset();
+          for(const p of ['커피','향','오일 램프','카펫']){setProduct(p,'lv',6);setProduct(p,'mode','2시간');setProduct(p,'bldgs',1);}
+          setRaw('커피콩',100000);setRaw('몰약',50000);setRaw('석유',10000);setRaw('면화',20000);setRaw('황동',80000);
+          setResource('금화','lv',6);setResource('금화','bldgs',2);setResource('금화','irrigation',100);setResource('금화','stock',50000);
+          setResource('낙타','lv',6);setResource('낙타','mode','2시간');setResource('낙타','bldgs',5);setResource('낙타','irrigation',100);setResource('낙타','stock',1000);
+          change(d.querySelector('#sleepPrepH'),3);
+          assertEq('수면 금화 필요량',ntext(cell('ts','금화',4)),188210);
+          assertEq('수면 낙타 필요량',ntext(cell('ts','낙타',4)),9341);
+          assertEq('수면 금화 예상 보유량',ntext(cell('ts','금화',5)),103700);
+          assertEq('수면 금화 잔여/부족',ntext(cell('ts','금화',6)),-84510);
+          assertEq('수면 낙타 예상 보유량',ntext(cell('ts','낙타',5)),9150);
+          assertEq('수면 낙타 잔여/부족',ntext(cell('ts','낙타',6)),-191);
+          assertNear('수면 금화 현재 생산력',ntext(cell('ts','금화',2)),200);
+          assertNear('수면 낙타 현재 생산력',ntext(cell('ts','낙타',2)),500);
+
+          console.log('\n=== Scenario 6: 최종 상품 상세 설정 혼합 ===');
+          reset();change(d.querySelector('#baseH'),2);
+          for(const p of ['향','오일 램프','카펫'])setProduct(p,'bldgs',0);
+          setProduct('커피','lv',6);setProduct('커피','mode','1시간');setProduct('커피','bldgs',1);setProduct('커피','irrigation',100);
+          click('#productDetailOpen');
+          const enabled=d.querySelector('#productDetailEnabled');enabled.checked=true;enabled.dispatchEvent(new w.Event('change',{bubbles:true}));
+          let rows=[...d.querySelectorAll('#productDetailRows [data-detail-index]')];
+          change(rows[0].querySelector('[data-detail-k="hours"]'),1);
+          click('#productDetailAdd');
+          rows=[...d.querySelectorAll('#productDetailRows [data-detail-index]')];
+          change(rows[1].querySelector('[data-detail-k="lv"]'),4);
+          change(rows[1].querySelector('[data-detail-k="count"]'),2);
+          change(rows[1].querySelector('[data-detail-k="irrigation"]'),50);
+          change(rows[1].querySelector('[data-detail-k="hours"]'),2);
+          assertEq('상세 설정 커피 생산량',ntext(cell('t2','커피',7,'name')),50600);
+          assertEq('상세 설정 커피콩 사용량',ntext(cell('t2','커피',8,'name')),113300);
+          assertEq('상세 설정 황동 사용량',ntext(cell('t2','커피',12,'name')),45400);
+
+          console.log('\n=== Scenario 7: 페트라 생산 보너스 반영 확인 ===');
+          reset();change(d.querySelector('#baseH'),6);
+          setResource('금화','lv',6);setResource('금화','bldgs',1);setResource('금화','irrigation',100);
+          change(d.querySelector('#wLv'),0);
+          const prod0=ntext(cell('t1','금화',9,'name'));
+          change(d.querySelector('#wLv'),50);
+          const prod50=ntext(cell('t1','금화',9,'name'));
+          const bonusText=d.querySelector('#bonusBox').textContent.replace(/\s+/g,' ').trim();
+          if(prod0===prod50 && bonusText.includes('50%')) issue('페트라 생산 보너스가 표시만 되고 생산량에는 반영되지 않음',`Lv0=${prod0}, Lv50=${prod50}`); else pass('페트라 생산 보너스 생산량 반영');
+
+          console.log('\n=== Scenario 8: 초기화 복귀 ===');
+          reset();
+          assertEq('초기화 보너스 레벨',d.querySelector('#wLv').value,'0');
+          assertEq('초기화 운영시간',d.querySelector('#baseH').value,'0');
+          assertEq('초기화 수면시간',d.querySelector('#sleepPrepH').value,'0');
+          assertEq('초기화 현재 레벨',d.querySelector('#curLv').value,'1');
+          assertEq('초기화 목표 레벨',d.querySelector('#tgtLv').value,'1');
+          assertEq('초기화 금화 건물 수',rowByData('t1','name','금화').querySelector('[data-k="bldgs"]').value,'1');
+          assertEq('초기화 커피 건물 수',rowByData('t2','name','커피').querySelector('[data-k="bldgs"]').value,'1');
+
+          console.log(`\nSUMMARY | failures=${failures} issues=${issues}`);
+          if(failures>0)process.exit(1);
+          NODE
