@@ -631,7 +631,7 @@ function sleepResourcePower(name){
   return {name,current,needed,diff,required,projected,remain,status:diff< -1e-10?'up':(diff>1e-10?'down':'ok')};
 }
 function sleepPowerText(v){return v===null||v===undefined||!Number.isFinite(v)?'<span class="badge sleep-adjust-warn-badge">준비 시간 확인</span>':fmtSignedPower(v);}
-function sleepReserveRow(name){const a=sleepResourcePower(name),cls=a.diff===null?'':(a.diff<0?'remain-bad':'remain-ok');return '<tr><td class="name">'+name+'</td><td class="num calc '+cls+'">'+sleepPowerText(a.diff)+'</td><td class="num calc">'+fmtPower(a.current)+'</td><td class="num calc">'+(a.needed===null?'—':fmtPower(a.needed))+'</td><td class="num calc">'+fmtQty(a.required)+'</td><td class="num calc">'+fmtQty(a.projected)+'</td><td class="num calc '+remainClass(a.remain)+'">'+fmtQty(a.remain)+'</td></tr>';}
+function sleepReserveRow(name){const a=sleepResourcePower(name),cls=a.diff===null?'':(a.diff<0?'remain-bad':'remain-ok');return '<tr><td class="name">'+name+'</td><td class="num calc '+cls+'">'+sleepPowerText(a.diff)+'</td><td class="num calc">'+fmtPower(a.current)+'</td><td class="num calc">'+(a.needed===null?'—':fmtPower(a.needed))+'</td><td class="num calc">'+fmtQty(a.required)+'</td><td class="num calc">'+fmtQty(a.projected)+'</td><td class="num calc">'+fmtQty(a.remain)+'</td></tr>';}
 function renderSleepReserve(){const t=document.querySelector('#ts tbody');if(t)t.innerHTML=resourceOrder.map(sleepReserveRow).join('');}
 
 function productionPerBuilding(building,lv,mode,h,continuous=false,raw=null,happiness=0){
