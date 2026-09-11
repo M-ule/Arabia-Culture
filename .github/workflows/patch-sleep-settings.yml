@@ -1,0 +1,139 @@
+name: Apply sleep reserve setting update
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-sleep-settings.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch index.html
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          s = path.read_text(encoding='utf-8')
+
+          def rep(old, new, label):
+              global s
+              count = s.count(old)
+              if count != 1:
+                  raise SystemExit(f'{label}: expected 1 match, got {count}')
+              s = s.replace(old, new, 1)
+
+          rep(
+          '''  <div class="settings sleep-settings">
+            <label for="sleepPrepH">수면까지 남은 시간(h)</label>
+            <div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+          </div>''',
+          '''  <div class="settings sleep-settings">
+            <label for="sleepPrepH">수면까지 남은 시간(h)</label>
+            <div class="step-wrap sleep-time-wrap"><input type="number" id="sleepPrepH" class="step-one" min="0" step="any" placeholder="일괄"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+            <label for="sleepCycle">수면 중 생산 주기</label>
+            <select id="sleepCycle"><option value="30분">30분</option><option value="1시간">1시간</option><option value="2시간">2시간</option></select>
+            <label for="sleepCount">반복 횟수</label>
+            <div class="step-wrap"><input type="number" id="sleepCount" class="step-one" min="0" step="1"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>
+          </div>''',
+          'sleep settings UI')
+
+          rep(
+          "  settings:{wLv:0,baseH:0,sleepPrepH:0},",
+          "  settings:{wLv:0,baseH:0,sleepPrepH:'',sleepCycle:'2시간',sleepCount:3},",
+          'defaults')
+
+          rep(
+          '''function sleepRecipe(name,lv){
+            const modes=modesFor(productBuilding[name],lv);let best=null;
+            for(const mode of modes){const p=info(productBuilding[name],lv,mode);if(p&&(!best||p.min>best.p.min))best={p,mode};}
+            return best?{p:best.p,cycles:3,mode:best.mode}:null;
+          }''',
+          '''function sleepRecipe(name,lv){
+            const modes=modesFor(productBuilding[name],lv),desired=app.settings.sleepCycle;let chosen=modes.includes(desired)?desired:null;
+            if(!chosen){let best=null;for(const mode of modes){const p=info(productBuilding[name],lv,mode);if(p&&(!best||p.min>best.p.min))best={p,mode};}chosen=best?.mode||null;}
+            const p=chosen?info(productBuilding[name],lv,chosen):null;
+            return p?{p,cycles:Math.max(0,Math.floor(num(app.settings.sleepCount,3))),mode:chosen}:null;
+          }''',
+          'sleep recipe')
+
+          rep(
+          '''function sleepRawRequirement(raw){return productOrder.reduce((sum,n)=>sum+sleepRequirementForProduct(n,raw),0);}
+          function sleepTotalRawDemand(){
+            const h=app.settings.sleepPrepH,out={};''',
+          '''function sleepRawRequirement(raw){return productOrder.reduce((sum,n)=>sum+sleepRequirementForProduct(n,raw),0);}
+          function sleepPrepHours(){return app.settings.sleepPrepH===''?app.settings.baseH:Math.max(0,num(app.settings.sleepPrepH,0));}
+          function sleepTotalRawDemand(){
+            const h=sleepPrepHours(),out={};''',
+          'sleep prep effective hours')
+
+          rep(
+          "  const h=app.settings.sleepPrepH,totals=sleepPurchaseTotals(),required=name==='금화'?totals.gold:totals.camel,produced=resourceOutputForHours(name,h),stock=num(app.resources[name].stock,0),projected=stock+produced,remain=projected-required;",
+          "  const h=sleepPrepHours(),totals=sleepPurchaseTotals(),required=name==='금화'?totals.gold:totals.camel,produced=resourceOutputForHours(name,h),stock=num(app.resources[name].stock,0),projected=stock+produced,remain=projected-required;",
+          'sleep resource hours')
+
+          rep(
+          "  d.settings.wLv=clamp(parseInt(d.settings.wLv)||0,0,50);d.settings.baseH=Math.max(0,num(d.settings.baseH,0));d.settings.sleepPrepH=Math.max(0,num(d.settings.sleepPrepH,0));",
+          "  d.settings.wLv=clamp(parseInt(d.settings.wLv)||0,0,50);d.settings.baseH=Math.max(0,num(d.settings.baseH,0));d.settings.sleepPrepH=d.settings.sleepPrepH===''||d.settings.sleepPrepH===null||d.settings.sleepPrepH===undefined?'':Math.max(0,num(d.settings.sleepPrepH,0));const sleepCycles=['30분','1시간','2시간'];if(!sleepCycles.includes(d.settings.sleepCycle))d.settings.sleepCycle='2시간';d.settings.sleepCount=Math.max(0,Math.floor(num(d.settings.sleepCount,3)));",
+          'settings normalization')
+
+          rep(
+          "function syncSettingsInputs(){document.getElementById('wLv').value=app.settings.wLv;document.getElementById('baseH').value=app.settings.baseH;document.getElementById('sleepPrepH').value=app.settings.sleepPrepH;document.getElementById('curLv').value=app.wonder.cur;document.getElementById('tgtLv').value=app.wonder.tgt;}",
+          "function syncSettingsInputs(){document.getElementById('wLv').value=app.settings.wLv;document.getElementById('baseH').value=app.settings.baseH;document.getElementById('sleepPrepH').value=app.settings.sleepPrepH;document.getElementById('sleepCycle').value=app.settings.sleepCycle;document.getElementById('sleepCount').value=app.settings.sleepCount;document.getElementById('curLv').value=app.wonder.cur;document.getElementById('tgtLv').value=app.wonder.tgt;}",
+          'settings input sync')
+
+          rep(
+          '''document.getElementById('baseH').addEventListener('change',e=>{app.settings.baseH=Math.max(0,num(e.target.value,0));e.target.value=app.settings.baseH;renderAll();saveState();});
+          document.getElementById('sleepPrepH').addEventListener('change',e=>{app.settings.sleepPrepH=Math.max(0,num(e.target.value,0));e.target.value=app.settings.sleepPrepH;renderSleepReserve();saveState();postSize();});''',
+          '''document.getElementById('baseH').addEventListener('change',e=>{app.settings.baseH=Math.max(0,num(e.target.value,0));e.target.value=app.settings.baseH;renderAll();saveState();});
+          document.getElementById('sleepPrepH').addEventListener('change',e=>{const v=e.target.value.trim();app.settings.sleepPrepH=v===''?'':Math.max(0,num(v,0));e.target.value=app.settings.sleepPrepH;renderSleepReserve();saveState();postSize();});
+          document.getElementById('sleepCycle').addEventListener('change',e=>{app.settings.sleepCycle=e.target.value;renderSleepReserve();saveState();postSize();});
+          document.getElementById('sleepCount').addEventListener('change',e=>{app.settings.sleepCount=Math.max(0,Math.floor(num(e.target.value,3)));e.target.value=app.settings.sleepCount;renderSleepReserve();saveState();postSize();});''',
+          'sleep settings events')
+
+          rep(
+          "['wLv','baseH','sleepPrepH','curLv','tgtLv'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}}));",
+          "['wLv','baseH','sleepPrepH','sleepCount','curLv','tgtLv'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}}));",
+          'enter key bindings')
+
+          rep(
+          '''    2. <b>수면 대비 자원 확보</b>는 <b>수면까지 남은 시간(h)</b> 동안의 최종 상품 생산에 사용되는 중간 자원, 중간 자원의 현재 보유량, 금화·낙타의 현재 보유량을 함께 반영하여 수면 중 필요한 중간 자원을 구매하기 위한 생산력을 계산합니다. <b>수면 중 필요량</b>은 각 최종 상품 건물의 현재 레벨에서 이용 가능한 가장 긴 생산 방식 × 3회를 기준으로 합니다.<br>''',
+          '''    2. <b>수면 대비 자원 확보</b>는 <b>수면까지 남은 시간(h)</b> 동안의 최종 상품 생산에 사용되는 중간 자원, 중간 자원의 현재 보유량, 금화·낙타의 현재 보유량을 함께 반영하여 수면 중 필요한 중간 자원을 구매하기 위한 생산력을 계산합니다. <b>수면까지 남은 시간(h)</b>이 비어 있으면 <b>일괄 운영 시간</b>을 적용하고, 값을 입력하면 해당 시간을 우선 적용합니다. <b>수면 중 필요량</b>은 선택한 <b>수면 중 생산 주기 × 반복 횟수</b>를 기준으로 하며, 현재 레벨에서 선택한 주기를 사용할 수 없으면 이용 가능한 가장 긴 생산 주기를 적용합니다.<br>''',
+          'sleep note')
+
+          rep(
+          '행복도 공식/상세 설정/생산력 개선 v17 · 2026-09-10 검증본',
+          '행복도 공식/상세 설정/생산력 개선 v17 · 2026-09-11 수면 설정 개선',
+          'version comment')
+
+          path.write_text(s, encoding='utf-8')
+
+          checks = [
+              'placeholder="일괄"',
+              "sleepPrepH:'',sleepCycle:'2시간',sleepCount:3",
+              'function sleepPrepHours()',
+              "document.getElementById('sleepCycle').addEventListener",
+              '수면 중 생산 주기 × 반복 횟수',
+          ]
+          for item in checks:
+              if item not in s:
+                  raise SystemExit(f'missing check: {item}')
+          PY
+      - name: Commit patched file and remove one-time workflow
+        shell: bash
+        run: |
+          rm -f .github/workflows/patch-sleep-settings.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Update sleep reserve production settings"
+          git push
