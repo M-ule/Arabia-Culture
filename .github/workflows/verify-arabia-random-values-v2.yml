@@ -1,0 +1,32 @@
+name: Verify Arabia calculator random values v2
+
+on:
+  push:
+    paths:
+      - '.github/workflows/verify-arabia-random-values-v2.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install jsdom
+        run: npm install --no-save jsdom@24.1.3
+      - name: Extract and wrap verification script
+        shell: python
+        run: |
+          from pathlib import Path
+          src=Path('.github/workflows/verify-arabia-random-values.yml').read_text(encoding='utf-8')
+          start=src.index("          node <<'NODE'\n")+len("          node <<'NODE'\n")
+          end=src.index("\n          NODE",start)
+          lines=src[start:end].splitlines()
+          code='\n'.join(line[10:] if line.startswith('          ') else line for line in lines)
+          Path('/tmp/verify-arabia.js').write_text('(async()=>{\n'+code+'\n})().catch(e=>{console.error(e);process.exit(1);});\n',encoding='utf-8')
+      - name: Run calculator scenarios
+        run: node /tmp/verify-arabia.js
