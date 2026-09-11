@@ -1,0 +1,43 @@
+name: Patch wonder tab highlight
+
+on:
+  push:
+    paths:
+      - '.github/workflows/patch-wonder-tab-highlight.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Emphasize inactive wonder tab with subtle animation
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = ".tab.active{background:var(--panel);border-color:var(--border);border-radius:8px 8px 0 0;color:var(--primary);font-weight:700;margin-bottom:-1px}\n"
+          new = old + '''.tab[data-tab="wonder"]:not(.active){background:#f8edd8;border-color:#d7b77d;border-radius:8px 8px 0 0;color:#65410f;font-weight:700;animation:wonder-tab-attention 1.45s ease-in-out 2}\n@keyframes wonder-tab-attention{0%,100%{box-shadow:0 0 0 0 rgba(187,122,32,0)}50%{box-shadow:0 0 0 3px rgba(187,122,32,.16);background:#f3dfbd}}\n@media (prefers-reduced-motion:reduce){.tab[data-tab="wonder"]:not(.active){animation:none}}\n'''
+          if old not in s:
+              raise SystemExit('tab style target not found')
+          if 'wonder-tab-attention' in s:
+              raise SystemExit('wonder tab highlight already present')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Emphasize inactive wonder calculator tab"
+          git push origin HEAD:main
