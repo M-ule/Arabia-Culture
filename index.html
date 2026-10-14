@@ -892,7 +892,7 @@ function renderCity(){
  const c=app.city;let supply=PETRA[app.settings.wLv].workers,used=0,area=0;
  for(const b of CITY_DATA.buildings){const n=cityCount(b),lv=c.homes[b.id]?.lv||1,l=b.levels[lv];supply+=n*l.supply;used+=n*l.workers;area+=b.w*b.l*n;}
  $('workerStatus').innerHTML='현재 일꾼 <b>'+fmtQty(supply)+'</b> · 사용 일꾼 <b>'+fmtQty(used)+'</b> · <span class="'+(supply-used<0?'remain-bad':'remain-ok')+'">잔여/부족 <b>'+fmtQty(supply-used)+'</b></span>';
- $('homes').innerHTML=makeTable(['주택','레벨','건물 수','일꾼/채'],Object.entries(c.homes).map(([id,h])=>{const b=CITY_DATA.buildings.find(b=>b.id===id);return '<tr>'+cell(b.name)+cell(ci(h.lv,'min="1" max="6" step="1" data-home="'+id+'" data-field="lv"'),'input-cell')+cell(ci(h.count,'min="0" data-home="'+id+'" data-field="count"'),'input-cell')+cell(b.levels[h.lv].supply,'calc')+'</tr>';}));
+ $('homes').innerHTML=makeTable(['주택','건물 수','일꾼/채'],Object.entries(c.homes).map(([id,h])=>{const b=CITY_DATA.buildings.find(b=>b.id===id);return '<tr>'+cell(b.name)+cell(ci(h.count,'min="0" data-home="'+id+'" data-field="count"'),'input-cell')+cell(b.levels[h.lv].supply,'calc')+'</tr>';}));
  $('cityBuildings').innerHTML=makeTable(['건물','건물 수','가로×세로','면적 합계','필요 일꾼'],CITY_DATA.buildings.filter(b=>!c.homes[b.id]).map(b=>'<tr>'+cell(b.name)+cell(b.id==='City_CityHall'?'1':ci(c.manual[b.id]??'','min="0" placeholder="기본 '+cityCount({...b})+'" data-building="'+b.id+'"'),'input-cell')+cell(b.w+'×'+b.l,'calc')+cell(fmtQty(cityCount(b)*b.w*b.l),'calc')+cell(fmtQty(cityCount(b)*b.levels[1].workers),'calc')+'</tr>'));
  $('areaStatus').innerHTML='사용 면적 <b>'+fmtQty(area)+'</b>'+(c.plots===''?' · 현재 영토를 입력하세요.':' · 전체 면적 <b>'+fmtQty(c.plots*9)+'</b> · 잔여/부족 <b>'+fmtQty(c.plots*9-area)+'</b> ('+fmtBldg((c.plots*9-area)/9)+'칸)');
  for(const k of ['plots','dirhamStock','dirhamRate','dirhamHours'])$(k).value=c[k];
@@ -1091,10 +1091,8 @@ function cityStats(){
 function cityResearchCost(){const done=closure(app.city.current),goal=closure(app.city.target),cost={};for(const t of CITY_DATA.research)if(goal.has(t.id)&&!done.has(t.id))for(const[k,v]of Object.entries(t.costs))cost[k]=(cost[k]||0)+v;return cost;}
 function cityBudgetData(){
  const c=app.city,h=c.dirhamHours===''?app.settings.baseH:c.dirhamHours,production=c.dirhamRate*h,spend=camelDirham(),available=c.dirhamStock+production-spend,build=constructionCost(),research=cityResearchCost(),required=num(build.dirham)+num(research.dirham),remaining=available-required,shortfall=Math.max(0,-remaining);
- // The production plan already specifies its total camel spending. Additional
- // waiting uses the entered income rate without inventing continued camel runs.
- const extraHours=shortfall===0?0:c.dirhamRate>0?shortfall/c.dirhamRate:Infinity;
- return {h,production,spend,available,build,research,required,remaining,shortfall,extraHours};
+ const secured=c.dirhamStock+production;
+ return {h,production,spend,available,build,research,required,remaining,shortfall,secured};
 }
 function cityMetric(label,value,bad=false,status=false){return '<div class="metric"><span>'+label+'</span><strong class="'+(bad?'bad':status?'ok':'')+'">'+value+'</strong></div>';}
 function cityStatusRow(label,value,cls=''){return '<div class="inline-status-row"><span class="inline-status-label">'+label+'</span><span class="inline-status-value '+cls+'">'+value+'</span></div>';}
@@ -1105,16 +1103,17 @@ function renderCityPlanning(){
  $('dirhamBreakdown').innerHTML=cityStatusRow('운영 중 예상 생산량','+'+compact(d.production)+' 디르함')+cityStatusRow('낙타 생산 비용','−'+compact(d.spend)+' 디르함')+cityStatusRow('건설 비용','−'+compact(num(d.build.dirham))+' 디르함')+cityStatusRow('목표 연구 비용','−'+compact(num(d.research.dirham))+' 디르함');
  $('dirhamGuidance').textContent='현재 보유량 + 예상 생산량 − 낙타 생산·건설·목표 연구 비용으로 계획 후 잔여/부족을 계산합니다.';
  $('dirhamBreakdown').before($('dirhamGuidance'));
- $('cityBudgetSummary').innerHTML=cityMetric('총 필요 디르함',compact(d.spend+d.required))+cityMetric('계획 후 잔여/부족',compact(Math.abs(d.remaining))+' '+(d.remaining<0?'부족':'잔여'),d.remaining<0,true)+cityMetric('추가 확보 시간',d.extraHours===0?'0시간':Number.isFinite(d.extraHours)?duration(d.extraHours):'생산량 입력 필요',d.extraHours===Infinity);
- $('cityBudgetBreakdown').innerHTML=(num(d.build.premium)>0?cityStatusRow('별도 보석 비용',compact(d.build.premium)+' 보석'):'')+cityStatusRow('시간 계산 기준','설정한 운영 종료 후 · 현재 시간당 생산량 유지 · 추가 낙타 생산 제외');
+ $('cityBudgetSummary').innerHTML=cityMetric('총 확보 디르함',compact(d.secured))+cityMetric('총 필요 디르함',compact(d.spend+d.required))+cityMetric('계획 후 잔여/부족',compact(Math.abs(d.remaining))+' '+(d.remaining<0?'부족':'잔여'),d.remaining<0,true);
+ $('cityBudgetBreakdown').innerHTML=num(d.build.premium)>0?cityStatusRow('별도 보석 비용',compact(d.build.premium)+' 보석'):'';
+ $('cityBudgetBreakdown').hidden=num(d.build.premium)<=0;
  const rows=$('cityBuildings').querySelectorAll('tbody tr');
- for(const row of rows){const input=row.querySelector('[data-building]');if(!input)continue;const id=input.dataset.building,mapped=Boolean(CITY_MAP[id]),manual=c.manual[id]!==undefined&&c.manual[id]!=='';const badge=document.createElement('span');badge.className='sync-label';badge.textContent=mapped?(manual?'직접 입력 적용':'생산 계산기 연동'):'직접 입력';input.closest('td').prepend(badge);if(mapped&&manual){const btn=document.createElement('button');btn.type='button';btn.className='sync-reset';btn.dataset.citySync=id;btn.textContent='생산 계산기 값 사용';input.closest('td').append(btn);}}
+ for(const row of rows){const input=row.querySelector('[data-building]');if(!input)continue;const id=input.dataset.building,mapped=Boolean(CITY_MAP[id]),manual=c.manual[id]!==undefined&&c.manual[id]!=='';const badge=document.createElement('span');badge.className='sync-label';badge.textContent=manual?'직접 입력 · 일꾼·면적에만 적용':mapped?'생산 계산기 연동':'직접 입력';input.closest('td').prepend(badge);if(mapped&&manual){const btn=document.createElement('button');btn.type='button';btn.className='sync-reset';btn.dataset.citySync=id;btn.textContent='생산 계산기 값 사용';input.closest('td').append(btn);}}
 }
 Object.assign(TOOLTIPS,{
  '도시 현황':'현재 건물 기준의 일꾼·면적 잔여/부족과 낙타 생산·건설·연구 계획 후 디르함을 확인합니다.',
  '건물 구성':'생산 건물 수는 생산 계산기에서 가져옵니다. 직접 입력한 값은 도시의 일꾼·면적 계산에만 사용되며, 생산 계산기로 전달되지 않습니다.',
  '디르함 현황':'현재 보유량 + 예상 생산량 − 낙타 생산·건설·목표 연구 비용으로 계획 후 잔여/부족을 계산합니다.',
- '디르함 현황·사용 계획':'디르함 수입과 낙타 생산·건설·목표 연구 지출을 함께 계산합니다. 총 필요 디르함은 세 지출의 합계이며, 보석은 별도로 표시합니다.'
+ '디르함 현황·사용 계획':'총 확보 디르함은 현재 보유량과 운영 중 생산량의 합계입니다. 총 필요 디르함은 낙타 생산·건설·목표 연구 비용의 합계이며, 두 값의 차이가 계획 후 잔여/부족입니다. 보석은 별도로 표시합니다.'
 });
 const previousCityPlanningRender=renderAll;
 renderAll=function(){previousCityPlanningRender();renderCityPlanning();};
@@ -1122,4 +1121,5 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-city-sync]
 
 window.addEventListener('load',initializeNativeUI);
 </script></body></html>
+
 
