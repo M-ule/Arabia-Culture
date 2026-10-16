@@ -1,0 +1,139 @@
+name: Arabia UI UX update
+
+on:
+  push:
+    paths:
+      - '.github/workflows/ui-ux-update.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  update-ui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply UI and UX updates
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          s = path.read_text(encoding='utf-8')
+
+          css = r'''
+/* v27: navigation and usability refinements */
+.tabs{position:sticky;top:0;z-index:40;background:#f3ead9;padding-top:8px;box-shadow:0 10px 14px -14px rgba(73,53,29,.55)}
+.mobile-section-nav{display:none}
+#stage0,#stage1,#stage2,#goalCard,#sleepCard,#powerCard,#conversionCard,#cityOverviewCard,#dirhamCard,#cityCompositionCard,#constructionCard,#cityResearchCard{scroll-margin-top:76px}
+#resetBtn,#cityReset,#researchReset,#factory{color:#9a5058;border-color:#dcc2c5;background:#fffdfd;font-size:14px;padding:7px 10px}
+#resetBtn:hover,#cityReset:hover,#researchReset:hover,#factory:hover{background:#fbf4f5;border-color:#cfa8ad}
+.research-filter{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 14px}
+.research-filter button{padding:7px 12px;font-size:14px;border-radius:999px}
+.research-filter button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.research-filter-hidden{display:none!important}
+.research-tree.ux-filter-active svg{display:none}
+@media(max-width:720px){
+ .tabs{margin:10px -8px 12px;padding:8px 8px 0}
+ .mobile-section-nav{display:flex;gap:6px;overflow-x:auto;margin:0 0 12px;padding:2px 1px 5px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+ .mobile-section-nav::-webkit-scrollbar{display:none}
+ .mobile-section-nav a{flex:0 0 auto;text-decoration:none;color:#6b4612;background:#fff;border:1px solid #d8c6ab;border-radius:999px;padding:8px 11px;font-size:13px;font-weight:700;white-space:nowrap}
+ .mobile-section-nav a:focus-visible{outline:3px solid #dfa24c;outline-offset:2px}
+ #stage0,#stage1,#stage2,#goalCard,#sleepCard,#powerCard,#conversionCard,#cityOverviewCard,#dirhamCard,#cityCompositionCard,#constructionCard,#cityResearchCard{scroll-margin-top:70px}
+ .research-filter{gap:5px}
+ .research-filter button{flex:1;min-width:0;padding:8px 6px;font-size:13px}
+}
+'''
+          marker = '</style></head>'
+          if '/* v27: navigation and usability refinements */' not in s:
+              assert marker in s
+              s = s.replace(marker, css + marker, 1)
+
+          prod_open = '<section id="panel-prod" class="panel active">'
+          prod_nav = prod_open + '<nav class="mobile-section-nav" aria-label="생산 계산기 섹션 바로가기"><a href="#stage0">기초 자원</a><a href="#stage1">중간 자원</a><a href="#stage2">상품</a></nav>'
+          if 'aria-label="생산 계산기 섹션 바로가기"' not in s:
+              assert prod_open in s
+              s = s.replace(prod_open, prod_nav, 1)
+
+          wonder_open = '<section id="panel-wonder" class="panel">'
+          wonder_nav = wonder_open + '<nav class="mobile-section-nav" aria-label="불가사의 목표 섹션 바로가기"><a href="#goalCard">목표 현황</a><a href="#sleepCard">수면</a><a href="#powerCard">생산력</a><a href="#conversionCard">환산표</a></nav>'
+          if 'aria-label="불가사의 목표 섹션 바로가기"' not in s:
+              assert wonder_open in s
+              s = s.replace(wonder_open, wonder_nav, 1)
+
+          city_open = '<section class="panel" id="panel-city">'
+          city_nav = city_open + '<nav class="mobile-section-nav" aria-label="도시 관리 섹션 바로가기"><a href="#cityOverviewCard">도시 현황</a><a href="#dirhamCard">디르함</a><a href="#cityCompositionCard">건물</a><a href="#constructionCard">건설</a><a href="#cityResearchCard">연구</a></nav>'
+          if 'aria-label="도시 관리 섹션 바로가기"' not in s:
+              assert city_open in s
+              s = s.replace(city_open, city_nav, 1)
+
+          research_old = '<div class="bar"><span class="muted" id="researchSummary"></span></div><div class="research-wrap">'
+          research_new = '<div class="bar"><span class="muted" id="researchSummary"></span></div><div class="research-filter" role="group" aria-label="연구 표시 필터"><button type="button" class="active" data-research-filter="all" aria-pressed="true">전체</button><button type="button" data-research-filter="done" aria-pressed="false">완료</button><button type="button" data-research-filter="needed" aria-pressed="false">목표까지 필요</button></div><div class="research-wrap">'
+          if 'data-research-filter="all"' not in s:
+              assert research_old in s
+              s = s.replace(research_old, research_new, 1)
+
+          s = s.replace('제작자 Mule · 제작 일시 2026. 10. 12.', '제작자 Mule · 수정일 2026. 10. 16.', 1)
+
+          js = r'''
+// v27: UI/UX helpers. These only affect presentation and navigation.
+let uxResearchFilter='all';
+function applyUxResearchFilter(){
+ const active=uxResearchFilter;
+ document.querySelectorAll('[data-tech]').forEach(node=>{
+  const show=active==='all'||(active==='done'&&node.classList.contains('done'))||(active==='needed'&&(node.classList.contains('needed')||node.classList.contains('target')));
+  node.classList.toggle('research-filter-hidden',!show);
+ });
+ const tree=document.getElementById('researchTree');
+ if(tree)tree.classList.toggle('ux-filter-active',active!=='all');
+ document.querySelectorAll('[data-research-filter]').forEach(btn=>{
+  const on=btn.dataset.researchFilter===active;
+  btn.classList.toggle('active',on);
+  btn.setAttribute('aria-pressed',String(on));
+ });
+ postSize();
+}
+const previousRenderResearchUx=renderResearch;
+renderResearch=function(){previousRenderResearchUx();applyUxResearchFilter();};
+function uxViewOpen(key,panelId){
+ const panel=document.getElementById(panelId);
+ return Boolean((typeof app!=='undefined'&&app.views&&app.views[key])||panel?.classList.contains('expanded'));
+}
+function syncUxDetailButtons(){
+ [['prodView','prod','panel-prod'],['wonderView','wonder','panel-wonder'],['cityView','city','panel-city']].forEach(([id,key,panelId])=>{
+  const btn=document.getElementById(id);if(!btn)return;
+  const open=uxViewOpen(key,panelId);
+  btn.textContent=open?'상세 닫기 ▲':'상세 보기 ▼';
+  btn.setAttribute('aria-expanded',String(open));
+ });
+}
+document.addEventListener('click',e=>{
+ const filter=e.target.closest('[data-research-filter]');
+ if(filter){uxResearchFilter=filter.dataset.researchFilter;applyUxResearchFilter();return;}
+ if(e.target.closest('#prodView,#wonderView,#cityView'))requestAnimationFrame(syncUxDetailButtons);
+});
+['panel-prod','panel-wonder','panel-city'].forEach(id=>{
+ const el=document.getElementById(id);if(el)new MutationObserver(syncUxDetailButtons).observe(el,{attributes:true,attributeFilter:['class']});
+});
+window.addEventListener('load',()=>{syncUxDetailButtons();applyUxResearchFilter();});
+'''
+          load_marker = "window.addEventListener('load',initializeNativeUI);"
+          if '// v27: UI/UX helpers.' not in s:
+              assert load_marker in s
+              s = s.replace(load_marker, js + '\n' + load_marker, 1)
+
+          path.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit updated simulator
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Refine Arabia simulator UI and UX"
+          git push
