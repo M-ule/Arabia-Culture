@@ -548,7 +548,7 @@ input[aria-invalid]{border-color:var(--red)}
  #panel-prod #productionSections .prodtable tbody td .stock-input,
  #panel-prod #productionSections .prodtable tbody td>.number-step{width:100%}
  #panel-wonder:not(.expanded) #goalTable tbody tr{margin-bottom:8px}
- #panel-wonder:not(.expanded) #goalTable tbody td:not(:first-child){min-height:66px}
+ #panel-wonder:not(.expanded) #goalTable tbody td:not(:first-child){min-height:88px}
 
  .purchase-wrap table{min-width:540px}
  .purchase-wrap :is(th,td){padding:6px;font-size:13px;white-space:nowrap}
@@ -713,6 +713,98 @@ input[aria-invalid]{border-color:var(--red)}
  #citySummary .metric>small{font-size:12px}
  #detailRows label,#detailRows .happiness-field{font-size:13px}
  #detailDialog .detail-footer button{font-size:14px}
+}
+
+/* Keep shared control and row dimensions aligned across viewport sizes. */
+.legend{line-height:20px}
+.tabs .tab{min-height:40px;line-height:1.35}
+.settings{gap:16px 24px;margin-top:0}
+.detail-summary{line-height:1.5}
+#productionSettings .sectionbar{gap:16px;margin-bottom:16px}
+#productionSettings h2{padding:10px 12px;line-height:28px}
+#productionSections .section-actions>button{min-height:44px}
+#bonusSummary .metric,#goalSummary .metric{height:auto;justify-content:flex-start}
+:is(#bonusSummary,#goalSummary,#citySummary,#cityBudgetSummary) .metric>span{margin-bottom:7px;line-height:1.5}
+.metric .term-wrap,.metric .term-text{margin:0}
+#bonusSummary .metric>strong,#goalSummary .metric>strong{line-height:1.55!important}
+#bonusSummary .metric>small,#citySummary .metric>small{margin-top:6px;line-height:1.6}
+#citySummary .metric{min-height:0!important;justify-content:flex-start}
+#citySummary .metric a{display:inline-block}
+#cityResearchCard .research-filter button{min-height:40px}
+#detailDialog .modalhead{margin-bottom:16px}
+#detailTabs{gap:6px;margin:0 0 12px}
+#detailTabs button,#detailDialog .detail-footer button{min-height:40px;line-height:1.35}
+#detailRows .detailrow{gap:10px;padding:12px;border:1px solid var(--line);border-radius:7px;margin:10px 0}
+#detailRows label,#detailRows .happiness-field{line-height:1.5}
+#detailDialog .detail-content>.section-guide:not(#detailResult){margin:10px 0}
+#detailResult{margin:0 0 8px}
+
+@media(min-width:721px){
+ #wonderSettings .control-field .number-step,#wonderSettings .control-field .number-step input{height:40px;min-height:0}
+ #wonderSettings #wonderContext{min-height:46px}
+ #wonderView,#cityView,#addConstruction,#researchReset{min-height:40px;padding-block:7px;line-height:1.35}
+ #cityResearchCard .sectionbar .costbox{min-height:40px;margin:0}
+ #dirhamBreakdown>div{padding:10px 14px;gap:12px;line-height:1.5}
+}
+@media(min-width:721px) and (max-width:1000px){
+ #productionSettings .sectionbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 8px}
+ #productionSettings .settings-actions{display:contents}
+ #productionSettings :is(h2,#manualSave,#resetBtn){grid-column:1}
+ #productionSettings :is(#photoImportBtn,#manualRestore,#prodView){grid-column:2}
+}
+@media(max-width:1100px){
+ #panel-prod #productionSections :is(#t1,#t2) tbody td{min-height:66px;padding:8px;gap:5px}
+ #panel-prod #productionSections :is(#t1,#t2) tbody td:first-child{min-height:42px;padding:9px}
+}
+@media(max-width:720px){
+ .tabs .tab{min-height:48px;padding:7px 4px;line-height:1.4}
+ .settings{gap:10px;margin-bottom:12px}
+ #productionSettings .settings{gap:12px}
+ #productionSettings .sectionbar{gap:8px;margin-bottom:14px}
+ #productionSettings h2{padding:8px;line-height:1.5}
+ #productionSettings .settings-actions{display:contents}
+ #productionSettings :is(h2,#prodView){grid-column:1/-1}
+ #productionSettings .sectionbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #wonderSettings .sectionbar{min-height:0;margin-bottom:12px;gap:8px}
+ #wonderSettings #wonderView{min-height:44px;padding-block:7px}
+ #wonderSettings .control-field .number-step{height:44px;min-height:44px}
+ #wonderSettings .control-field .number-step input{height:100%;min-height:0;box-sizing:border-box}
+ #bonusSummary .metric,#goalSummary .metric{min-height:0;padding:10px 12px}
+ #goalSummary .metric small{margin-top:6px;line-height:1.6}
+ #panel-wonder :is(#tw,#ts,#ta) tbody td:not(:first-child){min-height:88px}
+ #panel-wonder:not(.expanded) :is(#ts,#ta) tbody td:nth-child(-n+2){min-height:68px}
+ #conversionCard .sectionbar{row-gap:6px;margin-bottom:12px}
+ #conversionCard #tc thead th{height:40px}
+ #panel-city>.mobile-section-nav a,#cityResearchCard .research-filter button{min-height:44px}
+ #citySummary .metric{padding:12px 16px}
+ #citySummary .metric a,#dirhamBreakdown a{min-height:32px}
+ #cityBudgetSummary .metric{min-height:0!important;padding:10px}
+ #dirhamBreakdown>div{gap:4px;line-height:1.5}
+ #cityResearchCard .research-mobile-node{min-height:68px;line-height:1.5}
+ #panel-city :is(#cityBuildings,#construction) tbody tr{grid-template-columns:repeat(6,minmax(0,1fr));margin-bottom:8px}
+ #panel-city :is(#cityBuildings,#construction) tbody td{min-height:68px;padding:8px;gap:4px}
+ #cityBuildings tbody td:nth-child(n+3){grid-column:span 2}
+ #cityBuildings tbody td:nth-child(-n+2){grid-column:span 3}
+ #panel-city #construction tbody td:first-child{grid-column:1/-1;min-height:56px;padding:5px 8px}
+ #construction tbody td:nth-child(n+2):nth-child(-n+4),#construction tbody td:last-child{grid-column:span 2}
+ #panel-city #construction tbody td:nth-child(n+2):nth-child(-n+4){padding-block:5px}
+ #panel-city #construction tbody td:nth-child(5){grid-column:span 4;min-height:57px}
+ #panel-city #construction tbody td:last-child{min-height:57px;padding:5px 8px}
+ #detailDialog{padding:14px 12px;border-radius:12px}
+ #detailDialog h2{line-height:1.5}
+ #detailDialog .modalhead p{line-height:1.5}
+ #detailDialog .detail-enable{min-height:54px}
+ #detailDialog .detail-enable label{padding:8px 0}
+ #detailTabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+ #detailTabs button{min-height:44px}
+ #detailRows .detailrow{padding:12px 10px}
+ #detailRows label,#detailRows .happiness-field{line-height:1.75}
+ #detailDialog .detail-footer button{min-height:48px}
+ #construction tbody td:first-child select{margin:0}
+}
+@media(max-width:359px){
+ #wonderSettings .settings{grid-template-columns:minmax(0,1fr)}
+ #wonderSettings .control-field{grid-template-columns:minmax(0,1fr) minmax(92px,40%)}
 }
 </style></head><body>
 <main>
@@ -968,7 +1060,7 @@ input[aria-invalid]{border-color:var(--red)}
 <button type="button" data-close="detailDialog" aria-label="닫기">×</button></div>
 <div id="detailTabs" class="modal-tabs" role="group" aria-label="생산 항목"></div>
 <div class="detail-content"><div class="detail-enable"><input id="detailEnabled" type="checkbox" autofocus><label for="detailEnabled">이 항목에 상세 설정 적용</label></div>
-<p class="section-guide">운영 시간의 빈칸은 해당 항목의 운영 시간을 사용합니다. 0은 생산하지 않습니다. 행복도는 생산량에만 반영하며 원료 소비량에는 반영하지 않습니다.</p>
+<p class="section-guide">빈칸은 해당 항목의 운영 시간을 사용하고, 0은 생산하지 않습니다. 행복도는 생산량에만 반영됩니다.</p>
 <p id="detailResult" class="section-guide" role="status"></p>
 <div id="detailRows"></div></div>
 <div class="detail-footer"><button id="detailAdd" type="button">+ 건물 구성 추가</button><button type="button" class="detail-done" data-close="detailDialog">완료</button></div>
