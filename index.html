@@ -3063,6 +3063,9 @@ async function readCrop(w,canvas,box,threshold,light=true){
  return String(data.text||'').trim();
 }
 function cropStockNumber(text){
+ // Small screenshots can make a thousands comma look like a decimal point.
+ // A decimal point is meaningful only when the game shows a K or M suffix.
+ if(/^\d{1,3}(?:[.,]\d{3})+$/.test(text))return stockNumber(text.replaceAll('.',','));
  if(!/^\d+(?:[.,]\d+)*\s*[KM]?$/i.test(text))return null;
  if(/[,]/.test(text)&&!/^\d{1,3}(?:,\d{3})+(?:\.\d+)?\s*[KM]?$/i.test(text))return null;
  return stockNumber(text);
@@ -3133,18 +3136,30 @@ async function readStockCrops(w,canvas,positions,light,stockOrigin){
  const rows=[];
  for(const [target,box] of positions){
   const values=[];
+  let verified;
   if(light){
-   const digits=[165,185,150,200].map(level=>readHudDigits(photoCrop(canvas,box,level)));
-   const agreed=digits.find(n=>n!==null&&digits.filter(value=>value===n).length>=2);
-   if(agreed!==undefined)values.push(agreed);
+   const digits=[165,185,150,200,140,143].map(level=>readHudDigits(photoCrop(canvas,box,level)));
+   verified=digits.find(n=>n!==null&&digits.filter(value=>value===n).length>=2);
   }
-  for(const threshold of values.length?[]:light?[165,145,195,185]:[110,140,155]){
+  for(const threshold of verified!==undefined?[]:light?[165,145,195,185]:[130,140,155,110]){
    const value=cropStockNumber(await readCrop(w,canvas,box,threshold,light));
    if(value===null)continue;
    values.push(value);
    if(values[0]===values[1])break;
   }
-  const candidates=[...new Set(values)];
+  if(light&&verified===undefined&&(values.length<2||values[0]!==values[1])){
+   // Downscaled HUD text loses contrast. Retry the crop at lower thresholds.
+   const retry=[];
+   for(const threshold of [125,135,140,143]){
+    const value=cropStockNumber(await readCrop(w,canvas,box,threshold));
+    if(value===null)continue;
+    retry.push(value);
+    if(retry.length>=2&&retry.every(n=>n===value))break;
+   }
+   verified=retry.find(n=>retry.filter(value=>value===n).length>=2);
+   values.push(...retry);
+  }
+  const candidates=verified===undefined?[...new Set(values)]:[verified];
   const value=candidates.length===1?candidates[0]:null;
   rows.push(entry('stock_'+target,target+' 보유량',value,{kind:'stock',target,stockOrigin,candidates:candidates.length>1?candidates:[],needsReview:true,preview:photoCrop(canvas,box).toDataURL('image/png')}));
  }
