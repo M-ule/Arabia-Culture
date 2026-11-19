@@ -806,6 +806,87 @@ input[aria-invalid]{border-color:var(--red)}
  #wonderSettings .settings{grid-template-columns:minmax(0,1fr)}
  #wonderSettings .control-field{grid-template-columns:minmax(0,1fr) minmax(92px,40%)}
 }
+
+/* Shared horizontal alignment, keeping Arabia's resource and currency rows. */
+.sectionbar h2 .term-label,.control-field label .term-label{display:inline}
+.sectionbar h2 .info-tip,.control-field label .info-tip{margin-inline-start:5px;vertical-align:middle}
+#productionSettings .settings-actions{gap:8px}
+#productionSettings #resetBtn{padding-inline:12px}
+#citySummary{grid-template-columns:repeat(2,minmax(0,1fr))}
+#citySummary .metric:last-child{grid-column:auto}
+#cityOverviewCard>.sectionbar h2{width:100%}
+#cityResearchCard .sectionbar{justify-content:flex-start}
+#cityResearchCard #researchReset{margin-inline-start:auto;padding-inline:12px}
+#wonderSettings .settings .control-field{display:contents}
+#wonderSettings .settings .number-step{flex:none}
+#wonderContext{gap:16px;padding:10px 14px}
+#detailDialog{width:min(860px,calc(100% - 32px));max-width:none}
+#detailDialog .modalhead{position:relative;display:block}
+#detailDialog .modalhead :is(h2,p){padding-inline-end:48px}
+#detailDialog .modalhead button{position:absolute;inset:0 0 auto auto;width:40px;height:40px;padding:0}
+#detailTabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+#detailDialog[data-detail-kind="resources"] #detailTabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+#detailDialog .detail-done{min-width:80px}
+
+@media(min-width:721px){
+ .control-field{gap:10px}
+ #productionSettings .control-field{gap:8px}
+ #goalSummary{grid-template-columns:minmax(0,1fr) minmax(0,3fr)}
+ #wonderSettings .control-field>.number-step{width:81px;height:40px}
+ #productionSettings .number-step input{height:42px;min-height:42px}
+ #wonderSettings .control-field .number-step input,
+ :is(#sleepCard,#panel-city) .settings .number-step input{height:100%;min-height:0}
+ #panel-city>.mobile-section-nav a{padding-inline:14px}
+ #conversionCard #tc th:nth-child(2),#conversionCard #tc td:nth-child(2){width:185px}
+}
+@media(min-width:721px) and (max-width:1100px){
+ main{padding:18px 14px}
+}
+@media(min-width:721px) and (max-width:1000px){
+ #productionSettings :is(#manualSave,#manualRestore,#resetBtn,#prodView){font-size:13px}
+ #productionSettings #resetBtn{justify-self:start}
+ #productionSettings #prodView{justify-self:end}
+}
+@media(min-width:1101px){
+ #panel-prod #productionSections :is(#t1,#t2){table-layout:fixed}
+ #panel-prod #productionSections :is(#t1,#t2) th{width:auto;overflow-wrap:anywhere}
+ #panel-prod #productionSections :is(#t1,#t2) th:first-child{width:190px}
+ #panel-prod #productionSections :is(#t1,#t2) th:nth-child(3){width:185px}
+ #panel-prod #productionSections :is(#t1,#t2) th:nth-child(5){width:128px}
+ #panel-prod #productionSections #t2 th[data-label="원료 사용량"]{width:14.5%}
+ #panel-prod.expanded #productionSections #t2 th[data-label="운영 시간(h)"]{width:11.5%}
+ #panel-prod.expanded #productionSections .prodtable th .term-text{white-space:normal}
+ #panel-prod #productionSections :is(#t1,#t2) td{padding-inline:10px}
+ #panel-prod.expanded #productionSections :is(#t1,#t2) td{padding-inline:5px}
+}
+@media(max-width:720px){
+ main{padding-block:12px}
+ .sectionbar h2 .info-tip,.control-field label .info-tip{min-width:22px;width:22px;height:22px;min-height:22px;max-height:22px;margin-inline-start:4px;font-size:12px}
+ .production-section-title h2{padding-inline:8px}
+ #productionSections .section-actions>button{min-width:84px}
+ #cityView,#addConstruction,#researchReset{padding-inline:12px}
+ #wonderSettings #wonderView{padding-inline:8px}
+ #wonderSettings .settings{display:flex;flex-wrap:wrap}
+ #wonderSettings .control-field label{font-size:16px}
+ #wonderSettings .control-field .number-step{width:91px;max-width:91px}
+ #productionSettings .number-step input{height:48px;min-height:48px}
+ #wonderSettings .control-field .number-step input{height:44px;min-height:44px}
+ #wonderContext{width:100%;min-height:42px;gap:12px}
+ #cityResearchCard .sectionbar .costbox{width:100%;margin:0}
+ #conversionCard #tc{width:501px;min-width:max(100%,501px)}
+ #conversionCard #tc tr>:first-child{width:108px}
+ #conversionCard #tc tr>:nth-child(2){width:80px}
+ #detailDialog{width:min(560px,calc(100% - 16px));max-height:calc(100dvh - 16px)}
+ #detailDialog .modalhead button{width:44px;height:44px}
+ #detailTabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:359px){
+ .control-field{grid-template-columns:minmax(0,1fr) minmax(92px,40%)}
+ .production-section-title h2{font-size:17px;padding-inline:6px}
+ #productionSections .section-actions>button{min-width:76px}
+ #cityCompositionCard .sectionbar{align-items:flex-start;justify-content:flex-end}
+ #cityCompositionCard h2{margin-inline-end:auto}
+}
 </style></head><body>
 <main>
 <h1>아라비아 문명 시뮬레이터</h1>
@@ -1922,7 +2003,7 @@ function labelInputs(target){
 }
 function table(target,labels,rows){$(target).innerHTML='<table class="result-table">'+head(labels)+'<tbody>'+rows.join('')+'</tbody></table>';labelInputs(target)}
 
-function decorateTipLabels(root=document){root.querySelectorAll('[data-tip-key]').forEach(el=>{if(el.dataset.tipReady)return;const key=el.dataset.tipKey,tip=TOOLTIPS[key];if(!tip)return;const node=[...el.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(!node)return;const span=document.createElement('span');span.className='term-label';span.innerHTML='<span class="term-text">'+node.textContent.trim()+'</span>'+infoIcon(key,tip);node.replaceWith(span,document.createTextNode(' '));el.dataset.tipReady='1'})}
+function decorateTipLabels(root=document){root.querySelectorAll('[data-tip-key]').forEach(el=>{if(el.dataset.tipReady)return;const key=el.dataset.tipKey,tip=TOOLTIPS[key];if(!tip)return;const node=[...el.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(!node)return;const span=document.createElement('span');span.className='term-label';span.innerHTML='<span class="term-text">'+node.textContent.trim()+'</span> '+infoIcon(key,tip);node.replaceWith(span,document.createTextNode(' '));el.dataset.tipReady='1'})}
 function initTermTooltips() {
   const box = document.createElement('div');
   box.id = 'termTooltip';
@@ -2084,6 +2165,7 @@ function updateDetailResult(){
 function showNativeDetail(){
  const name=activeDetailName,group=detailGroup(name),d=detailConfig(name);
  const resource=group==='resources',names=resource?resourceOrder:productOrder;
+ $('detailDialog').dataset.detailKind=group;
  const building=(resource?resourceBuilding:productBuilding)[name];
  const defaultHours=fmtBldg(effectiveHours(group,name))+'시간';
  $('detailTitle').textContent=resource?'기초 자원 상세 설정':'상품 상세 설정';
