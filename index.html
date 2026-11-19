@@ -3121,7 +3121,7 @@ async function readStockCrops(w,canvas,positions,light,stockOrigin){
  for(const [target,box] of positions){
   const values=[];
   if(light){
-   const digits=[165,185,200].map(level=>readHudDigits(photoCrop(canvas,box,level)));
+   const digits=[165,185,150,200].map(level=>readHudDigits(photoCrop(canvas,box,level)));
    const agreed=digits.find(n=>n!==null&&digits.filter(value=>value===n).length>=2);
    if(agreed!==undefined)values.push(agreed);
   }
