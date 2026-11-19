@@ -3053,7 +3053,8 @@ function findResourceIcons(image,offset,market){
  }
  // The bazaar shows owned camels in a separate blue circle, above its offers.
  if(market&&resourceIconMatches(image,'낙타',798+offset,41,8,[.9,1,1.2,1.35])){
-  positions.push(['낙타',[778+offset,65,42,33]]);
+  // Include the entire count beneath the icon, including thousands separators.
+  positions.push(['낙타',[753+offset,65,90,35]]);
  }
  return positions;
 }
