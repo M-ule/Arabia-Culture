@@ -787,7 +787,7 @@ input[aria-invalid]{border-color:var(--red)}
  #cityBuildings tbody td:nth-child(-n+2){grid-column:span 3}
  #panel-city #construction tbody td:first-child{grid-column:1/-1;min-height:56px;padding:5px 8px}
  #construction tbody td:nth-child(n+2):nth-child(-n+4),#construction tbody td:last-child{grid-column:span 2}
- #panel-city #construction tbody td:nth-child(n+2):nth-child(-n+4){padding-block:5px}
+ #panel-city #construction tbody td:nth-child(n+2):nth-child(-n+4){padding-block:6px}
  #panel-city #construction tbody td:nth-child(5){grid-column:span 4;min-height:57px}
  #panel-city #construction tbody td:last-child{min-height:57px;padding:5px 8px}
  #detailDialog{padding:14px 12px;border-radius:12px}
@@ -919,6 +919,77 @@ h1{margin:0 0 12px}
  #researchDialog{max-width:none}
  #researchDialog .bar{display:grid;grid-template-columns:1fr;gap:8px}
  #researchDialog .bar button{width:100%;min-height:48px}
+}
+
+/* Shared table typography, summary spacing, and control states. */
+.summary{margin-block-start:14px}
+#bonusSummary .metric,#goalSummary .metric{justify-content:normal}
+#citySummary .metric{justify-content:normal;overflow-wrap:normal}
+#citySummary .metric>strong{line-height:1.55!important}
+#citySummary .metric>small{margin-block-end:7px}
+.settings-actions button,.number-arrows button{line-height:1.35}
+.number-arrows button{display:block;align-items:normal;justify-content:normal;text-align:center;overflow-wrap:anywhere}
+#productionSettings #resetBtn,#cityResearchCard #researchReset{padding-block:8px}
+button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.45;cursor:default}
+.mobile-section-nav a{display:inline-flex;align-items:center;white-space:normal}
+.panel:not(#panel-city)>.mobile-section-nav a{border-radius:18px}
+.panel table :is(th,td){line-height:1.4;overflow-wrap:anywhere}
+.panel table td.calc{font-variant-numeric:tabular-nums}
+.panel table th .term-wrap,.metric>span>.term-wrap{display:inline}
+.panel table th .info-tip,.metric>span>.term-wrap .info-tip{margin-inline-start:5px;vertical-align:middle}
+#panel-wonder :is(#tw,#ts,#ta) tbody td:first-child{font-weight:700;white-space:normal}
+#panel-wonder #ta tbody td:nth-child(2){font-weight:700}
+#conversionCard #tc :is(th,td){line-height:1.3;white-space:nowrap}
+#conversionCard #tc tbody td:first-child{white-space:normal;word-break:keep-all}
+.conversion-heading .section-guide{line-height:1.6}
+#panel-city :is(#cityBuildings,#construction) tbody td:first-child{font-weight:700;white-space:normal}
+#construction button[data-remove-con]{font-size:14px;line-height:1.35;padding:8px 10px}
+#panel-city #construction tbody td[colspan]{background:#fefaf5;color:inherit;font-weight:400;text-align:center}
+#construction tr:has(td[colspan]) td::before{content:none}
+@media(min-width:721px){
+ #wonderSettings .sectionbar{margin-bottom:16px}
+ #productionSettings h2,#productionSettings input{white-space:nowrap}
+ :is(#productionSettings,#wonderSettings) .sectionbar h2{margin-inline-end:0}
+ :is(#productionSettings,#wonderSettings) .settings-actions{margin-inline-start:auto}
+ #panel-city>.mobile-section-nav a{display:inline-block;align-items:normal}
+ #panel-wonder :is(#tw,#ts,#ta) :is(th,td),
+ #panel-city :is(#cityBuildings,#construction) :is(th,td){padding:9px 10px}
+ #panel-prod #productionSections :is(#t1,#t2) th{padding:9px 10px}
+ #panel-prod:not(.expanded) #productionSections :is(#t1,#t2) tbody td{padding:9px 10px}
+ #panel-prod #productionSections :is(#t1,#t2) tbody td:first-child{font-weight:700}
+}
+@media(min-width:1101px){
+ #panel-prod.expanded #productionSections :is(#t1,#t2) tbody td{padding:9px 10px}
+}
+@media(max-width:1100px){
+ #panel-prod:not(.expanded) #productionSections :is(#t1,#t2) tbody td{padding:8px}
+ #panel-prod:not(.expanded) #productionSections :is(#t1,#t2) tbody td:first-child{padding:9px}
+ #panel-prod #productionSections :is(#t1,#t2) tbody td:first-child{align-items:center;border:0;font-weight:800}
+}
+@media(max-width:720px){
+ .summary{gap:8px}
+ :is(#bonusSummary,#goalSummary) .metric>span{margin-block-end:5px}
+ #productionSettings .settings-actions button,#productionSettings #resetBtn{padding:7px}
+ #productionSettings #photoImportBtn{padding:8px}
+ #productionSections .number-arrows{width:38px}
+ #panel-wonder :is(#tw,#ts,#ta) tbody td{gap:6px}
+ #panel-wonder :is(#tw,#ts,#ta) tbody td:first-child{align-items:center;border:0;padding:8px}
+ #panel-wonder:not(.expanded) :is(#ts,#ta) tbody td:first-child{font-size:15px;padding:10px 8px;border-inline-end:1px solid var(--line)}
+ #panel-wonder:not(.expanded) :is(#ts,#ta) tbody td:nth-child(2){gap:5px}
+ #panel-wonder :is(#tw,#ta) tbody td:nth-child(2){font-weight:400}
+ :is(#goalTable,#sleepTable,#powerTable,#cityBuildings,#construction) tbody td[data-label]:not(:first-child)::before{line-height:1.3}
+ #conversionCard #tc{border-collapse:separate;border-spacing:0;border-block-start:1px solid var(--line);border-inline-start:1px solid var(--line)}
+ #conversionCard #tc :is(th,td){line-height:1.25;padding:7px 4px;border-block-start:0;border-inline-start:0}
+ #conversionCard #tc thead th{white-space:normal}
+ #panel-city #cityBuildings tbody td{padding:6px 8px}
+ #panel-city #cityBuildings tbody td:nth-child(2){border-inline-end:0}
+ #panel-city #cityBuildings tbody td:first-child{align-items:center;border:0}
+ #panel-city #construction tbody td:not([colspan]){padding:6px 8px}
+ #panel-city #construction tbody td:first-child{border:0}
+ #construction tbody td:first-child[data-label]::before{content:attr(data-label);font-size:13px;font-weight:700;line-height:1.4;padding:5px}
+ #panel-city #construction tbody td[colspan]{grid-column:1/-1;padding:12px;font-weight:400;line-height:1.5}
+ #construction button[data-remove-con]{padding:6px}
+ #citySummary .metric>small{line-height:1.7}
 }
 </style></head><body>
 <main>
@@ -1982,7 +2053,10 @@ function renderCity(){
   $('dirhamStockError').hidden = true;
  }
  const choices=CITY_DATA.buildings.filter(b=>b.id!=='City_CityHall').map(b=>[b.id,b.name]);
- $('construction').innerHTML=makeTable([{label:'건물',tip:''},{label:'현재 레벨',tip:'새 건물은 현재 레벨을 0으로 입력하세요.'},{label:'목표 레벨',tip:'건설하거나 업그레이드할 목표 레벨입니다.'},'건설 수','누적 비용',{label:'삭제',tip:''}],c.construction.map((r,j)=>{const b=CITY_DATA.buildings.find(b=>b.id===r.id),cost={};for(let lv=r.cur+1;lv<=r.tgt;lv++)for(const[k,v]of Object.entries(b.levels[lv]?.costs||{}))cost[k]=(cost[k]||0)+v*r.count;return '<tr>'+cell('<select data-con="'+j+'" data-field="id">'+selectedOptions(choices,r.id)+'</select>','input-cell')+cell(ci(r.cur,'data-con="'+j+'" data-field="cur" min="0" max="6"'),'input-cell')+cell(ci(r.tgt,'data-con="'+j+'" data-field="tgt" min="1" max="6"'),'input-cell')+cell(ci(r.count,'data-con="'+j+'" data-field="count" min="0"'),'input-cell')+cell(money(cost),'calc')+cell('<button type="button" data-remove-con="'+j+'" aria-label="건설 항목 '+(j+1)+' 삭제">삭제</button>')+'</tr>';}));
+ const constructionRows=c.construction.map((r,j)=>{const b=CITY_DATA.buildings.find(b=>b.id===r.id),cost={};for(let lv=r.cur+1;lv<=r.tgt;lv++)for(const[k,v]of Object.entries(b.levels[lv]?.costs||{}))cost[k]=(cost[k]||0)+v*r.count;return '<tr>'+cell('<select data-con="'+j+'" data-field="id">'+selectedOptions(choices,r.id)+'</select>','input-cell')+cell(ci(r.cur,'data-con="'+j+'" data-field="cur" min="0" max="6"'),'input-cell')+cell(ci(r.tgt,'data-con="'+j+'" data-field="tgt" min="1" max="6"'),'input-cell')+cell(ci(r.count,'data-con="'+j+'" data-field="count" min="0"'),'input-cell')+cell(money(cost),'calc')+cell('<button type="button" data-remove-con="'+j+'" aria-label="건설 항목 '+(j+1)+' 삭제">삭제</button>')+'</tr>';});
+ $('construction').innerHTML=makeTable([{label:'건물',tip:''},{label:'현재 레벨',tip:'새 건물은 현재 레벨을 0으로 입력하세요.'},{label:'목표 레벨',tip:'건설하거나 업그레이드할 목표 레벨입니다.'},'건설 수','누적 비용',{label:'삭제',tip:''}],constructionRows.length?constructionRows:[
+  '<tr><td colspan="6">‘항목 추가’로 건물과 현재·목표 레벨을 선택하세요.</td></tr>'
+ ]);
  $('buildCost').textContent=money(constructionCost());renderResearch();
 }
 function renderResearch(){const done=closure(app.city.current),goal=closure(app.city.target),needed=new Set([...goal].filter(id=>!done.has(id))),cost={};for(const t of CITY_DATA.research)if(needed.has(t.id))for(const[k,v]of Object.entries(t.costs))cost[k]=(cost[k]||0)+v;$('researchCost').textContent=money(cost);$('researchSummary').textContent='현재 완료 '+done.size+'개 · 목표까지 추가 '+needed.size+'개';const rows={};for(const t of CITY_DATA.research)(rows[t.row]??=[]).push(t);const pos={};for(const[row,list]of Object.entries(rows)){list.sort((a,b)=>a.col-b.col);list.forEach((t,j)=>pos[t.id]=[(j+1)*960/(list.length+1),Number(row)*84-35]);}const height=Math.max(...CITY_DATA.research.map(t=>t.row))*84;let svg='';for(const t of CITY_DATA.research)for(const p of t.parents){const a=pos[p],b=pos[t.id];svg+='<path d="M'+a[0]+','+(a[1]+34)+' L'+b[0]+','+(b[1]-34)+'" stroke="#c4b49e" fill="none"/>';}
@@ -2002,7 +2076,7 @@ const TOOLTIPS={"불가사의":"선택한 불가사의 종류에 따라 적용�
 const escAttr=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const termSpec=x=>typeof x==='string'?{label:x,tip:TOOLTIPS[x]||''}:{label:x.label,tip:x.tip??TOOLTIPS[x.label]??''};
 const infoIcon=(label,tip)=>tip?'<button type="button" class="info-tip" aria-label="'+escAttr(label)+' 설명" data-tip="'+escAttr(tip)+'">i</button>':'';
-const termHtml=x=>{const s=termSpec(x);return'<span class="term-wrap"><span class="term-text">'+s.label+'</span>'+infoIcon(s.label,s.tip)+'</span>'};
+const termHtml=x=>{const s=termSpec(x);return'<span class="term-wrap"><span class="term-text">'+s.label+'</span>'+(s.tip?' '+infoIcon(s.label,s.tip):'')+'</span>'};
 const td=(v,cls='')=>'<td class="'+cls+'">'+v+'</td>',head=labels=>'<thead><tr>'+labels.map(x=>{const s=termSpec(x);return'<th scope="col" data-label="'+escAttr(s.label)+'">'+termHtml(s)+'</th>'}).join('')+'</tr></thead>';
 
 function metricValue(v){if(!Array.isArray(v))return '<strong>'+v+'</strong>';return '<div class="metric-values">'+v.map(x=>Array.isArray(x)?'<span class="metric-part">'+(x[0]?'<span>'+x[0]+'</span>':'')+'<b>'+x[1]+'</b></span>':'<span class="metric-name">'+x+'</span>').join('')+'</div>'}
@@ -2027,7 +2101,7 @@ function labelInputs(target){
    const name=row.dataset.name||nameCell?.textContent.trim()||'항목';
    for(const [index,cell] of [...row.cells].entries()){
     const label=labels[index];
-    if(!label)continue;
+    if(!label||cell.colSpan>1)continue;
     cell.dataset.label=label;
     for(const control of cell.querySelectorAll('input,select'))control.setAttribute('aria-label',name+' '+label);
    }
@@ -2398,7 +2472,6 @@ function renderUserGuidance(){
  $('sleepPrepH').placeholder = defaultHours;
  $('productionSections').querySelectorAll('[data-k="hours"]').forEach(input => input.placeholder = defaultHours);
 
- if(!app.city.construction.length)$('construction').innerHTML='<p class="empty-state">항목 추가를 눌러 건설·업그레이드 비용을 계산하세요.</p>';
  $('tgtLv').closest('.number-step')?.querySelectorAll('[data-number-delta]').forEach(b=>b.disabled=$('tgtLv').disabled);
 }
 renderAll=function(){previousRenderAllQuality();showDetailedConfigValues();renderUserGuidance();};
