@@ -605,6 +605,9 @@ input[aria-invalid]{border-color:var(--red)}
 #photoReview .photo-caution{display:block;font-size:12px}
 #photoReview .photo-candidates button{margin:3px;padding:4px 7px}
 #photoReview button[aria-pressed=true]{background:var(--blue);color:white}
+.photo-apply-footer{position:sticky;bottom:0;z-index:1;background:white;border-top:1px solid var(--line);padding:8px 0}
+#photoApplyStatus{margin:0 0 6px;font-size:14px;line-height:1.5}
+#photoApplyStatus.bad{color:var(--red)}
 @media(max-width:720px){
  #productionSettings #prodView{grid-column:1/-1}
  #productionSettings .settings-actions button{min-height:44px}
@@ -1229,7 +1232,7 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 </div>
 </div>
 </section>
-<footer>제작자 Mule · 수정일 2026. 11. 19.</footer>
+<footer>제작자 Mule · 수정일 2026. 11. 20.</footer>
 </main>
 <dialog id="photoImportDialog" aria-labelledby="photoImportTitle">
 <div class="modalhead"><h2 id="photoImportTitle">게임 사진으로 입력</h2><button id="photoImportClose" type="button">닫기</button></div>
@@ -1238,7 +1241,10 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 <div class="bar"><button id="photoScan" type="button">사진 분석</button><button id="photoReset" type="button" disabled>사진 입력 초기화</button></div>
 <p id="photoStatus" class="status" role="status">건물 목록과 보유량 사진을 함께 선택할 수 있습니다.</p>
 <div id="photoReview"></div>
-<button id="photoApply" type="button" disabled>확인한 값 적용</button>
+<div class="photo-apply-footer">
+<p id="photoApplyStatus" class="status" role="status"></p>
+<button id="photoApply" type="button" aria-describedby="photoApplyStatus" disabled>확인한 값 적용</button>
+</div>
 </dialog>
 <dialog id="detailDialog" aria-labelledby="detailTitle">
 <div class="modalhead"><div><h2 id="detailTitle"></h2><p class="section-guide">서로 다른 레벨·생산 방식의 건물은 나누어 입력하세요.</p></div>
@@ -2776,8 +2782,8 @@ const BUILDINGS=[
  {id:'금화',name:'상인',aliases:['일반상인','상인','merchant'],production:'금화',group:'resources'},
  {id:'낙타',name:'낙타 농장',aliases:['낙타농장','낙타사육장','camelfarm'],production:'낙타',group:'resources'},
  {id:'커피',name:'커피 제조자',aliases:['커피제조자','커피생산자','커피양조장','coffeebrewer'],production:'커피',group:'products'},
- {id:'향',name:'향 제조자',aliases:['향제조자','향생산자','향제작자','incensemaker'],production:'향',group:'products'},
- {id:'오일 램프',name:'오일 램프 제조자',aliases:['오일램프제조자','기름램프제조자','기름램프제작자','oillampcrafter','oillampmaker'],production:'오일 램프',group:'products'},
+ {id:'향',name:'향 제조자',aliases:['향제조자','항제조자','향생산자','향제작자','incensemaker'],production:'향',group:'products'},
+ {id:'오일 램프',name:'등유 램프 제작자',aliases:['등유램프제작자','등유램프제조자','등유램프제작소','등유제작소','오일램프제조자','오일램프제작자','기름램프제조자','기름램프제작자','oillampcrafter','oillampmaker'],production:'오일 램프',group:'products'},
  {id:'카펫',name:'카펫 제조자',aliases:['카펫제조자','카펫제작자','카펫공장','carpetfactory','carpetmaker'],production:'카펫',group:'products'}
 ];
 const STOCKS=[...resourceOrder,...rawOrder,...productOrder,'디르함']
@@ -2786,6 +2792,11 @@ let worker=null,busy=false,findings=[],scannedWonder;
 const STOCK_ALIASES={'기름램프':'오일램프','골드':'금화','금괴':'황동','다르함':'디르함','커피원두':'커피콩','dirham':'디르함','gold':'금화','camels':'낙타','coffeebeans':'커피콩','brass':'황동','myrrh':'몰약','oil':'석유','cotton':'면화','coffee':'커피','incense':'향','oillamp':'오일램프','carpet':'카펫'};
 const clean=s=>String(s).toLowerCase().replace(/\s|[·:：]/g,'');
 function status(s,bad=false){el('photoStatus').textContent=s;el('photoStatus').classList.toggle('bad',bad);}
+function applyStatus(message,bad=false){
+ const node=el('photoApplyStatus');
+ if(node.textContent!==message)node.textContent=message;
+ node.classList.toggle('bad',bad);
+}
 async function engine(){
  if(worker)return worker;
  if(!window.Tesseract)await new Promise((resolve,reject)=>{
@@ -2840,20 +2851,19 @@ function editDistance(a,b){
 function matchBuilding(s){
  const text=clean(s).replace(/[^가-힣a-zA-Z0-9]/g,'');
  if(!text||/호화|luxurious|premium/.test(text))return null;
- const exact=BUILDINGS.filter(b=>b.aliases.some(a=>text.includes(clean(a))));
- exact.sort((a,b)=>Math.max(...b.aliases.map(x=>x.length))-Math.max(...a.aliases.map(x=>x.length)));
- if(exact.length)return exact[0];
+ const exact=BUILDINGS.flatMap(building=>building.aliases
+  .filter(alias=>text.includes(alias)).map(alias=>({building,length:alias.length})));
+ exact.sort((a,b)=>b.length-a.length);
+ if(exact.length)return exact[0].building;
  // Recover a Korean building name even when OCR misses one or two syllables.
  const scores=[];
  for(const building of BUILDINGS)for(const raw of building.aliases){
   const alias=clean(raw);
-  if(alias.length<4)continue;
+  if(alias.length<4||text[0]!==alias[0])continue;
   const tolerance=alias.length>=7?2:1;
   for(let size=Math.max(2,alias.length-tolerance);size<=Math.min(text.length,alias.length+tolerance);size++){
-   for(let p=0;p+size<=text.length;p++){
-    const distance=editDistance(alias,text.slice(p,p+size));
-    if(distance<=tolerance)scores.push({building,distance,aliasLength:alias.length});
-   }
+   const distance=editDistance(alias,text.slice(0,size));
+   if(distance<=tolerance)scores.push({building,distance,aliasLength:alias.length});
   }
  }
  scores.sort((a,b)=>a.distance-b.distance||b.aliasLength-a.aliasLength);
@@ -2969,7 +2979,7 @@ function dedupePhotoPages(){
 // candidate selection and manual edits; never keep the first visual guess.
 function reviewLabel(f){if(f.kind!=='building')return f.label;const b=BUILDINGS.find(b=>b.id===f.building);if(!b)return f.label;const lv=findings.find(g=>g.group===f.group&&g.field==='lv')?.value;return b.name+(Number.isInteger(lv)&&lv>=1&&lv<=6?' (Lv.'+lv+')':'')+(f.field==='lv'?' 레벨':' 수량');}
 function syncReviewLabels(group){for(const [i,f]of findings.entries()){if(!group||f.group!==group)continue;const label=reviewLabel(f),node=document.querySelector('[data-photo-label="'+i+'"]');if(node)node.textContent=label;for(const [selector,suffix]of [['[data-photo-value="'+i+'"]',' 인식값'],['[data-photo-check="'+i+'"]',' 적용']])document.querySelector(selector)?.setAttribute('aria-label',label+suffix);}}
-function render(){el('photoReview').innerHTML=findings.length?'<button type="button" id="photoSelectAll">모두 선택</button> <button type="button" id="photoDeselectAll">모두 해제</button><table class="photo-table"><thead><tr><th>적용</th><th>항목</th><th>인식값 · 수정 가능</th></tr></thead><tbody>'+findings.map((f,i)=>'<tr><td><input type="checkbox" data-photo-check="'+i+'" '+(f.value!==null&&!f.needsReview&&!findings.some(g=>g.group&&g.group===f.group&&(g.value===null||g.needsReview))?'checked ':'')+'aria-label="'+safeText(reviewLabel(f))+' 적용"></td><td><span data-photo-label="'+i+'">'+safeText(reviewLabel(f))+'</span>'+(f.needsReview?'<small class="photo-caution">'+(f.value===null&&!f.candidates?.length?'인식값 없음 · 직접 입력':'추가 확인 필요')+'</small>':'')+'</td><td><input type="text" inputmode="decimal" placeholder="직접 입력" data-photo-value="'+i+'" value="'+(f.value??'')+'" aria-label="'+safeText(reviewLabel(f))+' 인식값">'+(f.candidates?.length&&(f.needsReview||f.candidates.length>1)?'<div class="photo-candidates">'+f.candidates.map(n=>'<button type="button" data-photo-pick="'+i+'" data-photo-number="'+n+'" aria-pressed="'+(f.value===n)+'">'+n+'</button>').join('')+'</div>':'')+(f.preview?'<img class="photo-preview" src="'+f.preview+'" alt="'+safeText(reviewLabel(f))+' 원본 숫자 확대">':'')+'</td></tr>').join('')+'</tbody></table><p class="photo-description">인식값을 수정한 뒤 적용할 항목을 체크하세요. 건물은 레벨과 수량을 함께 선택하세요. 기존 상세 설정의 다른 레벨은 유지됩니다.</p>':'';el('photoApply').disabled=!findings.length;}
+function render(){el('photoReview').innerHTML=findings.length?'<button type="button" id="photoSelectAll">모두 선택</button> <button type="button" id="photoDeselectAll">모두 해제</button><table class="photo-table"><thead><tr><th>적용</th><th>항목</th><th>인식값 · 수정 가능</th></tr></thead><tbody>'+findings.map((f,i)=>'<tr><td><input type="checkbox" data-photo-check="'+i+'" '+(f.value!==null&&!f.needsReview&&!findings.some(g=>g.group&&g.group===f.group&&(g.value===null||g.needsReview))?'checked ':'')+'aria-label="'+safeText(reviewLabel(f))+' 적용"></td><td><span data-photo-label="'+i+'">'+safeText(reviewLabel(f))+'</span>'+(f.needsReview?'<small class="photo-caution">'+(f.value===null&&!f.candidates?.length?'인식값 없음 · 직접 입력':'추가 확인 필요')+'</small>':'')+'</td><td><input type="text" inputmode="decimal" placeholder="직접 입력" data-photo-value="'+i+'" value="'+(f.value??'')+'" aria-label="'+safeText(reviewLabel(f))+' 인식값">'+(f.candidates?.length&&(f.needsReview||f.candidates.length>1)?'<div class="photo-candidates">'+f.candidates.map(n=>'<button type="button" data-photo-pick="'+i+'" data-photo-number="'+n+'" aria-pressed="'+(f.value===n)+'">'+n+'</button>').join('')+'</div>':'')+(f.preview?'<img class="photo-preview" src="'+f.preview+'" alt="'+safeText(reviewLabel(f))+' 원본 숫자 확대">':'')+'</td></tr>').join('')+'</tbody></table><p class="photo-description">인식값을 수정한 뒤 적용할 항목을 체크하세요. 건물은 레벨과 수량을 함께 선택하세요. 기존 상세 설정의 다른 레벨은 유지됩니다.</p>':'';}
 // Opaque color samples from the game resource icons, relative to each icon center.
 const RESOURCE_ICONS=[
  ["디르함",[[9,11,232,208,173],[-15,3,135,197,193],[-7,7,244,236,212],[5,15,223,213,190],[9,15,181,160,124],[-7,-1,204,191,168],[1,11,190,177,154],[1,7,190,179,155],[1,-9,157,136,105],[1,-17,180,169,144],[-11,-5,187,177,158],[-3,3,180,172,151],[1,-5,152,136,110],[1,-1,160,147,124],[13,-1,158,147,122],[-7,3,152,139,114],[13,3,158,147,125],[-7,11,165,157,139],[-11,11,135,163,143],[-3,-5,139,124,104],[-3,-1,162,155,141],[5,-13,146,134,117],[13,-5,153,145,129],[-3,-9,149,139,124],[-11,3,123,113,101],[1,-13,155,155,143],[-15,-5,144,152,140],[-11,-13,143,139,131]]],
@@ -3065,7 +3075,9 @@ const HUD_DIGITS={
  "5":[[50,[254,254,7,7,7,7,255,510,960,896,896,896,896,448,255,127]],[50,[508,510,14,14,14,14,254,508,960,896,768,768,896,960,255,126]]],
  "6":[[48,[224,248,28,6,6,7,231,511,903,903,903,903,902,910,510,120]],[50,[496,124,30,6,6,7,103,511,455,903,903,903,902,454,510,120]]],
  "7":[[50,[1023,1023,896,384,448,448,224,224,96,112,120,56,56,60,28,12]],[43,[0,0,511,1023,960,448,448,224,224,96,112,112,56,56,28,28]]],
- "8":[[55,[0,248,508,908,908,908,476,248,248,476,908,910,910,908,508,248]]],
+ "8":[[55,[0,248,508,908,908,908,476,248,248,476,908,910,910,908,508,248]],
+ [48,[120,508,910,903,902,398,252,252,252,462,903,903,903,903,510,120]],
+ [48,[120,510,511,903,391,462,254,254,254,511,967,903,903,1023,510,120]]],
  "9":[[51,[56,254,462,455,903,899,903,967,1022,958,896,448,448,224,126,30]]],
 };
 // Read the game font directly before falling back to general OCR. Its narrow
@@ -3125,7 +3137,7 @@ async function readStockCrops(w,canvas,positions,light,stockOrigin){
    const agreed=digits.find(n=>n!==null&&digits.filter(value=>value===n).length>=2);
    if(agreed!==undefined)values.push(agreed);
   }
-  for(const threshold of values.length?[]:light?[165,195,185]:[110,140,155]){
+  for(const threshold of values.length?[]:light?[165,145,195,185]:[110,140,155]){
    const value=cropStockNumber(await readCrop(w,canvas,box,threshold,light));
    if(value===null)continue;
    values.push(value);
@@ -3143,23 +3155,34 @@ async function readBuildingCards(w,canvas,image){
   await w.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
   const nameBox=[x,y,127,25];
   const building=matchBuilding(await readCrop(w,canvas,nameBox,155))||
-   matchBuilding(await readCrop(w,canvas,nameBox,185));
+   matchBuilding(await readCrop(w,canvas,nameBox,180))||
+   matchBuilding(await readCrop(w,canvas,nameBox,null));
   if(!building)continue;
   await w.setParameters({tessedit_char_whitelist:'0123456789'});
   const levelBox=[x+34,y+29,19,22];
-  const level=await readCrop(w,canvas,levelBox,150);
+  let level=null;
+  for(const threshold of [150,170,190]){
+   const text=await readCrop(w,canvas,levelBox,threshold);
+   if(/^[1-6]$/.test(text)){level=Number(text);break;}
+  }
+  if(level===null){
+   const text=await readCrop(w,canvas,[x+35,y+29,14,21],150);
+   if(/^[1-6]$/.test(text))level=Number(text);
+  }
   const badgeBox=[x+94,y-39,35,35];
   const orange=colorRatio(image,...badgeBox,(r,g,b)=>r>175&&g>95&&g<220&&r>g+25&&g>b+35);
   let count=null;
   if(orange>.3){
    await w.setParameters({tessedit_char_whitelist:'0123456789xX'});
-   const text=await readCrop(w,canvas,[x+100,y-30,26,22],115,false);
-   const match=text.match(/^[xX]?\s*([1-9]\d{0,3})$/);
-   if(match)count=Number(match[1]);
+   for(const threshold of [115,135,95]){
+    const text=await readCrop(w,canvas,[x+100,y-30,26,22],threshold,false);
+    const match=text.match(/^[xX]?\s*([1-9]\d{0,3})$/);
+    if(match){count=Number(match[1]);break;}
+   }
   }else if(orange<.16)count=1;
   const scale=canvas.height/709;
   const group=building.id+'_'+x+'_'+y;
-  for(const [field,value,box] of [['lv',/^[1-6]$/.test(level)?Number(level):null,levelBox],['count',count,badgeBox]]){
+  for(const [field,value,box] of [['lv',level,levelBox],['count',count,badgeBox]]){
    rows.push(entry(group+'_'+field,building.name+(field==='lv'?' 레벨':' 수량'),value,{
     kind:'building',building:building.id,field,group,anchor:{x0:x*scale,y0:y*scale},
     preview:photoCrop(canvas,box).toDataURL('image/png'),needsReview:true
@@ -3200,8 +3223,6 @@ async function readGameLayout(w,canvas){
    ],false);
   }
  }
- const resources=findResourceIcons(header,offset,false);
- if(resources.length>=2)return readStockCrops(w,canvas,resources,true);
  await w.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
  const sceneTitle=await readCrop(w,canvas,[62,18,63,34],185);
  if(clean(sceneTitle)==='시장')return readStockCrops(w,canvas,marketStocks,true,'market');
@@ -3210,6 +3231,8 @@ async function readGameLayout(w,canvas){
   const buildings=await readBuildingCards(w,canvas,ctx.getImageData(0,0,356,550));
   if(buildings.length)return buildings;
  }
+ const resources=findResourceIcons(header,offset,false);
+ if(resources.length>=2)return readStockCrops(w,canvas,resources,true);
  return null;
 }
 async function recognizePhoto(w,canvas){
@@ -3239,7 +3262,7 @@ async function scan(){
  const files=Array.from(el('photoFiles').files||[]);
  if(!files.length){status('사진을 선택해 주세요.',true);return;}
  const failed=[];
- busy=true;scannedWonder=activeWonder;el('photoScan').disabled=true;findings=[];render();syncClear();
+ busy=true;scannedWonder=activeWonder;el('photoScan').disabled=true;findings=[];render();syncClear();syncApplyStatus();
  try{
   status('문자 인식 엔진을 준비하고 있습니다…');
   const w=await engine();
@@ -3267,7 +3290,7 @@ async function scan(){
   render();
   status([recognized?'인식값 '+recognized+'개 · 사진과 비교한 뒤 적용하세요.':'읽을 수 있는 건물과 보유량이 없습니다.',...failed].join(' / '),!recognized||failed.length>0);
  }catch(e){render();status(e.message,true);}
- finally{busy=false;el('photoScan').disabled=false;syncClear();}
+ finally{busy=false;el('photoScan').disabled=false;syncClear();syncApplyStatus();}
 }
 function validPhotoValue(f,value){
  return value!==null&&(f.kind!=='building'||(value>=0&&(f.field==='lv'?value>=1&&value<=6:value<=100000)));
@@ -3276,53 +3299,58 @@ function selectAllPhotoValues(){
  const boxes=[...el('photoReview').querySelectorAll('[data-photo-check]')];
  const readValue=i=>quantity(el('photoReview').querySelector('[data-photo-value="'+i+'"]').value);
  const eligible=findings.map((f,i)=>validPhotoValue(f,readValue(i))&&(f.confirmed||(f.candidates?.length||0)<=1));
- const incomplete=new Set(findings.filter((f,i)=>f.kind==='building'&&!eligible[i]).map(f=>f.building));
- for(const [i,box] of boxes.entries())box.checked=eligible[i]&&!incomplete.has(findings[i].building);
+ const incomplete=new Set(findings.filter((f,i)=>f.kind==='building'&&!eligible[i]).map(f=>f.group));
+ for(const [i,box] of boxes.entries())box.checked=eligible[i]&&!incomplete.has(findings[i].group);
  const skipped=boxes.filter(box=>!box.checked).length;
  status(skipped?'입력값이 없거나 후보가 다른 항목 '+skipped+'개를 제외하고 선택했습니다.':'읽은 값을 모두 선택했습니다.');
+ syncApplyStatus();
 }
-function apply(){
- if(busy)return;
- if(scannedWonder!==activeWonder){status('불가사의가 바뀌었습니다. 사진을 다시 분석해 주세요.',true);return;}
+function readPhotoSelection(){
+ if(scannedWonder!==activeWonder)return {error:'불가사의가 바뀌었습니다. 사진을 다시 분석해 주세요.'};
  const selected=[];
  for(const box of el('photoReview').querySelectorAll('[data-photo-check]:checked')){
-  const f=findings[Number(box.dataset.photoCheck)];
-  const input=el('photoReview').querySelector('[data-photo-value="'+box.dataset.photoCheck+'"]');
+  const i=box.dataset.photoCheck,f=findings[Number(i)];
+  const input=el('photoReview').querySelector('[data-photo-value="'+i+'"]');
   const n=quantity(input.value);
   if(!validPhotoValue(f,n)){
-   status(reviewLabel(f)+' 값을 확인하세요.',true);return;
+   return {error:reviewLabel(f)+' 값을 확인하거나 해당 항목을 해제하세요.'};
   }
   selected.push({...f,value:n});
  }
- if(!selected.length){status('적용할 항목을 체크해주세요.',true);return;}
- const groups=new Map(),stocks=new Set();
+ if(!selected.length)return {error:'적용할 항목을 하나 이상 체크하세요.'};
+ const groups=new Map();
  for(const f of selected){
-  if(f.kind==='stock'){
-   if(stocks.has(f.target)){status('같은 보유량은 하나만 선택하세요.',true);return;}
-   stocks.add(f.target);continue;
-  }
+  if(f.kind==='stock')continue;
   if(!groups.has(f.group))groups.set(f.group,{building:f.building});
-  const g=groups.get(f.group);
-  if(g[f.field]!==undefined){status('같은 건물 값은 중복 적용할 수 없습니다.',true);return;}
-  g[f.field]=f.value;
- }
- for(const g of groups.values())if(g.lv===undefined||g.count===undefined){
-  status('건물은 레벨과 수량을 함께 선택해주세요.',true);return;
- }
- for(const g of groups.values()){
-  if(findings.some(f=>f.kind==='building'&&f.building===g.building&&!groups.has(f.group))){
-   status('이 건물의 다른 레벨도 함께 선택해야 합니다.',true);return;
-  }
+  groups.get(f.group)[f.field]=f.value;
  }
  const byBuilding=new Map();
- for(const g of groups.values()){
+ for(const [id,g] of groups){
+  if(g.lv===undefined||g.count===undefined){
+   const f=findings.find(f=>f.group===id&&f.field===(g.lv===undefined?'lv':'count'));
+   return {error:reviewLabel(f)+'도 체크하거나 이 건물 선택을 해제하세요.'};
+  }
   if(!byBuilding.has(g.building))byBuilding.set(g.building,[]);
-  byBuilding.get(g.building).push(g);
+  const rows=byBuilding.get(g.building);
+  if(rows.some(row=>row.lv===g.lv)){
+   const name=BUILDINGS.find(b=>b.id===g.building).name;
+   return {error:name+' Lv.'+g.lv+'이(가) 중복 선택되었습니다. 같은 레벨은 한 묶음만 선택하세요.'};
+  }
+  rows.push(g);
  }
- for(const [id,rows] of byBuilding){
-  const levels=new Set(rows.map(r=>r.lv));
-  if(levels.size!==rows.length){status(id+'의 같은 레벨을 중복 인식했습니다. 수량을 확인해주세요.',true);return;}
- }
+ return {selected,byBuilding};
+}
+function syncApplyStatus(){
+ el('photoApply').disabled=busy||!findings.length;
+ if(busy){applyStatus('사진 분석이 끝나면 인식값을 적용할 수 있습니다.');return;}
+ if(!findings.length){applyStatus('사진을 분석하면 적용할 항목이 표시됩니다.');return;}
+ const {error,selected}=readPhotoSelection();
+ applyStatus(error||'체크한 값 '+selected.length+'개를 적용할 수 있습니다.',Boolean(error));
+}
+function apply(){
+ if(busy)return;
+ const {error,selected,byBuilding}=readPhotoSelection();
+ if(error){applyStatus(error,true);return;}
  // Prepare all edits before changing the current event.
  const next=clone(app);
  for(const f of selected.filter(f=>f.kind==='stock')){
@@ -3353,7 +3381,7 @@ function apply(){
     updated.push({lv,count,mode,hours:'',irrigation:base.irrigation});
    }
   }
-  if(updated.length>20){status(b.name+' 상세 구성은 최대 20개까지 적용할 수 있습니다.',true);return;}
+  if(updated.length>20){applyStatus(b.name+' 상세 구성은 최대 20개까지 적용할 수 있습니다.',true);return;}
   const detailed=previous.enabled||updated.length>1;
   details[name]={enabled:detailed,rows:detailed?updated:[]};
   base.lv=updated[0].lv;base.mode=updated[0].mode;
@@ -3364,13 +3392,13 @@ function apply(){
  normalizeResourceDetails();
  renderAll();
  saveState();
- status('선택한 값 '+selected.length+'개를 적용했습니다.');
+ applyStatus('선택한 값 '+selected.length+'개를 적용했습니다.');
  el('resetStatus').textContent='사진 입력 완료 · 선택한 항목만 반영했습니다.';
  el('photoImportDialog').close();
 }
 function reset(){
  if(busy)return;
- el('photoFiles').value='';findings=[];render();syncClear();
+ el('photoFiles').value='';findings=[];render();syncClear();syncApplyStatus();
  status('건물 목록과 보유량 사진을 함께 선택할 수 있습니다.');
 }
 function syncClear(){
@@ -3381,12 +3409,47 @@ el('photoReview').onclick=e=>{
  if(e.target.id==='photoSelectAll'){selectAllPhotoValues();return;}
  if(e.target.id==='photoDeselectAll'){
   for(const box of el('photoReview').querySelectorAll('[data-photo-check]'))box.checked=false;
+  syncApplyStatus();
   return;
  }
- const button=e.target.closest('[data-photo-pick]');if(!button)return;const i=Number(button.dataset.photoPick),n=Number(button.dataset.photoNumber);findings[i].value=n;findings[i].confirmed=true;const input=document.querySelector('[data-photo-value="'+i+'"]');input.value=n;document.querySelector('[data-photo-check="'+i+'"]').checked=true;syncReviewLabels(findings[i].group);for(const b of el('photoReview').querySelectorAll('[data-photo-pick="'+i+'"]'))b.setAttribute('aria-pressed',String(Number(b.dataset.photoNumber)===n));};
-el('photoReview').oninput=e=>{const i=e.target.dataset.photoValue;if(i!==undefined){findings[Number(i)].value=quantity(e.target.value);findings[Number(i)].confirmed=true;document.querySelector('[data-photo-check="'+i+'"]').checked=e.target.value.trim()!=='';syncReviewLabels(findings[Number(i)].group);}};
-el('photoImportBtn').onclick=()=>el('photoImportDialog').showModal();el('photoImportClose').onclick=()=>el('photoImportDialog').close();el('photoScan').onclick=scan;el('photoApply').onclick=apply;el('photoReset').onclick=reset;
-el('photoFiles').onchange=()=>{findings=[];render();syncClear();status('사진 '+el('photoFiles').files.length+'장 선택');};
+ const button=e.target.closest('[data-photo-pick]');
+ if(!button)return;
+ const i=Number(button.dataset.photoPick),value=Number(button.dataset.photoNumber);
+ const input=el('photoReview').querySelector('[data-photo-value="'+i+'"]');
+ input.value=value;
+ confirmPhotoInput(i,input);
+ for(const candidate of el('photoReview').querySelectorAll('[data-photo-pick="'+i+'"]')){
+  candidate.setAttribute('aria-pressed',String(Number(candidate.dataset.photoNumber)===value));
+ }
+ syncApplyStatus();
+};
+function confirmPhotoInput(index,input){
+ const finding=findings[index];
+ finding.value=quantity(input.value);
+ finding.confirmed=true;
+ el('photoReview').querySelector('[data-photo-check="'+index+'"]').checked=input.value.trim()!=='';
+ syncReviewLabels(finding.group);
+}
+el('photoReview').oninput=e=>{
+ const i=e.target.dataset.photoValue;
+ if(i!==undefined)confirmPhotoInput(Number(i),e.target);
+ syncApplyStatus();
+};
+el('photoImportBtn').onclick=()=>{
+ syncApplyStatus();
+ el('photoImportDialog').showModal();
+};
+el('photoImportClose').onclick=()=>el('photoImportDialog').close();
+el('photoScan').onclick=scan;
+el('photoApply').onclick=apply;
+el('photoReset').onclick=reset;
+el('photoFiles').onchange=()=>{
+ findings=[];
+ render();
+ syncClear();
+ syncApplyStatus();
+ status('사진 '+el('photoFiles').files.length+'장 선택');
+};
 })();
 
 </script><script src="update-check.js?v=20261102"></script></body></html>
