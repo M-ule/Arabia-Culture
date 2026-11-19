@@ -232,7 +232,7 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
 @media(max-width:720px){.metric-wide3{grid-column:1/-1}}
 
 /* Arabia-only input: happiness follows the same control dimensions. */
-.detailrow{grid-template-columns:1fr 1.4fr 1fr 1fr 1.2fr 40px}.prodtable input,.prodtable select{min-width:0}.detailrow input[type=checkbox]{width:auto}.happiness-combo{display:flex;min-width:0}.happiness-input{width:100%}.happiness-toggle{width:24px}.research-node small{display:block;font-size:13px;font-weight:400;margin-top:4px}.research-mobile-node small{display:block;font-size:13px;font-weight:400;margin-top:4px}@media(max-width:720px){.detailrow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.detailrow{grid-template-columns:1fr 1.4fr 1fr 1fr 1.2fr 40px}.prodtable input,.prodtable select{min-width:0}.detailrow input[type=checkbox]{width:auto}.research-node small{display:block;font-size:13px;font-weight:400;margin-top:4px}.research-mobile-node small{display:block;font-size:13px;font-weight:400;margin-top:4px}@media(max-width:720px){.detailrow{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Keep expanded production tables inside the existing card width. */
 @media(min-width:721px){
  #panel-prod.expanded #productionSections .prodtable{width:100%;min-width:0;max-width:100%;table-layout:fixed}
@@ -247,8 +247,8 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
  #panel-prod.expanded #t1 th:nth-child(6){width:10%}
  #panel-prod.expanded #t1 th:nth-child(7){width:10%}
  #panel-prod.expanded #t1 th:nth-child(8){width:10%}
- #panel-prod.expanded #t1 th:nth-child(9){width:13%}
- #panel-prod.expanded #t1 th:nth-child(10){width:9.5%}
+ #panel-prod.expanded #t1 th:nth-child(9){width:9.5%}
+ #panel-prod.expanded #t1 th:nth-child(10){width:13%}
  #panel-prod.expanded #t1 th:nth-child(11){width:10%}
  #panel-prod.expanded #t2 th:nth-child(1){width:9%}
  #panel-prod.expanded #t2 th:nth-child(2){width:6%}
@@ -264,7 +264,7 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
  #panel-prod.expanded #t1 th,#panel-prod.expanded #t1 td{font-size:clamp(13px,1.04vw,16px)}
  #panel-prod.expanded #t1 input,#panel-prod.expanded #t1 select{font-size:clamp(13px,1.04vw,16px);padding-left:3px;padding-right:3px}
  #panel-prod.expanded #t1 .number-arrows{width:21px}
- #panel-prod.expanded #t1 td:nth-child(9),#panel-prod.expanded #t2 td:nth-child(9){white-space:nowrap;font-size:14px}
+ #panel-prod.expanded :is(#t1,#t2) td[data-label="소비·필요량"]{white-space:nowrap;font-size:14px}
 }
 /* Narrow windows use the existing labeled-card pattern without widening the page. */
 @media(min-width:721px) and (max-width:1100px){
@@ -298,7 +298,7 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
  #panel-prod:not(.expanded) #t1 th:nth-child(5),#panel-prod:not(.expanded) #t2 th:nth-child(5){width:12%}
  #panel-prod:not(.expanded) #t1 th:nth-child(6),#panel-prod:not(.expanded) #t2 th:nth-child(6){width:13%}
  #panel-prod:not(.expanded) #t1 th:nth-child(7),#panel-prod:not(.expanded) #t2 th:nth-child(7){width:13%}
- #panel-prod:not(.expanded) #t1 th:nth-child(10){width:11%}
+ #panel-prod:not(.expanded) #t1 th:nth-child(8){width:11%}
  #panel-prod:not(.expanded) #t1 th:nth-child(11){width:12%}
  #panel-prod:not(.expanded) .prodtable td{min-width:0;padding:8px 6px}
  #panel-prod .prodtable .number-step{min-width:0}
@@ -425,7 +425,24 @@ h1{color:var(--blue)}
 .stock-error{font-size:12px;color:var(--red);line-height:1.5}
 input[aria-invalid]{border-color:var(--red)}
 .stock-input{min-height:40px}
-.number-step .happiness-presets{width:24px!important;min-width:24px;max-width:24px;flex:none;appearance:none;align-self:stretch;height:auto;padding:0;border:0;border-left:1px solid #c9b76e;border-radius:0;background:#f0e5b5;color:var(--blue);cursor:pointer}
+.happiness-combo{display:grid;grid-template-columns:minmax(0,1fr) 28px;width:100%;min-width:0}
+.happiness-combo>.happiness-input{width:100%;min-width:0;min-height:40px;margin:0;text-align:center;border-radius:5px 0 0 5px}
+.happiness-combo>.happiness-toggle{width:100%;min-width:0;min-height:40px;padding:0;border:1px solid #c9b76e;border-left:0;border-radius:0 5px 5px 0;background:#f0e5b5;font-size:12px}
+.happiness-toggle:hover{background:#decc85}
+.happiness-toggle:disabled{background:#f1ece5;color:#a39684;cursor:default}
+.happiness-field{display:block;min-width:0;font-size:16px}
+.happiness-field>.happiness-combo{margin-top:5px}
+.happiness-menu{position:fixed;z-index:4000;max-height:min(260px,calc(100dvh - 12px));overflow:auto;padding:3px;border:1px solid var(--line);border-radius:6px;background:white;box-shadow:0 8px 22px #0003}
+.happiness-option{display:block;width:100%;min-height:32px;padding:4px 8px;border:0;text-align:center;font-size:16px;font-weight:700}
+.happiness-option:hover,.happiness-option:focus-visible{background:#f9efe1}
+#panel-city>.mobile-section-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
+#panel-city>.mobile-section-nav a{border:1px solid #d8c6ab;background:#fff;border-radius:999px;padding:8px 11px;font-size:13px;font-weight:700;color:var(--blue);text-decoration:none}
+#panel-city>.card{scroll-margin-top:72px}
+@media(max-width:720px){
+ .happiness-combo{grid-template-columns:minmax(0,1fr) 32px}
+ .happiness-combo>.happiness-input,.happiness-combo>.happiness-toggle{height:48px;min-height:48px}
+ .happiness-option{min-height:44px}
+}
 .info-tip{padding:0}
 #termHelpDialog,#researchDialog{width:min(480px,calc(100% - 24px))}
 #termHelpDialog p{font-size:15px;line-height:1.8;overflow-wrap:anywhere}
@@ -590,7 +607,8 @@ input[aria-invalid]{border-color:var(--red)}
 @media(max-width:720px){
  #productionSettings #prodView{grid-column:1/-1}
  #productionSettings .settings-actions button{min-height:44px}
- #bonusSummary{grid-template-columns:minmax(0,1fr)}
+ #bonusSummary,#goalSummary{grid-template-columns:minmax(0,1fr)}
+ .sleep-settings .control-field:has(#sleepCycle){grid-template-columns:minmax(0,1fr);gap:6px}
  #photoImportDialog{width:calc(100% - 16px);padding:12px}
  #photoImportDialog button{min-height:44px}
  #photoReview table,#photoReview tbody{display:block;width:100%}
@@ -605,13 +623,19 @@ input[aria-invalid]{border-color:var(--red)}
 #goalSummary .metric small{display:block;line-height:1.5;overflow-wrap:anywhere}
 #ta .adjust-product-start>td{border-top:2px solid var(--line)}
 @media(min-width:721px){
- #productionSettings .control-field>.number-step,#wonderSettings .control-field>.number-step{width:120px}
- #productionSettings #wonder{width:210px}
+ #productionSettings .control-field>.number-step,#sleepCard .control-field>.number-step,
+ #panel-city .city-settings .control-field>.number-step{width:120px}
+ #productionSettings :is(.number-step,#wonder){min-height:44px}
+ #wonderSettings .control-field>.number-step{width:82px}
+ #productionSettings #wonder,#sleepCycle,#cityResearchStage{width:210px}
+ #dirhamStock,#cityResearchSearch{width:140px;min-height:40px}
 }
 @media(max-width:720px){
- #panel-city .city-settings .control-field:has(#dirhamStock),
- #panel-city .city-settings .control-field:has(#dirhamRate),
- #panel-city .city-settings .control-field:has(#dirhamHours){grid-template-columns:1fr}
+ .settings .number-arrows{width:38px}
+ #wonderSettings .settings{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #wonderSettings .control-field{grid-template-columns:minmax(0,1fr) minmax(0,54%)}
+ #wonderSettings .control-field .number-step{height:44px;min-height:44px}
+ #wonderContext{grid-column:1/-1}
  #conversionCard #tc{width:520px;min-width:520px}
  #conversionCard #tc tr>*{height:42px}
  #ta .adjust-product-start{margin-top:14px}
@@ -802,7 +826,7 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="card" id="conversionCard">
 <div class="sectionbar conversion-heading">
 <h2 data-tip-key="생산력 환산표">생산력 환산표</h2>
-<p class="section-guide">현재 설정한 생산 방식만 표시합니다.</p>
+<p class="section-guide">현재 설정한 생산 방식만 표시합니다. 다른 방식은 생산 계산기에서 바꿔 확인하세요.</p>
 </div>
 <div id="convert" class="wrap" role="region" aria-label="레벨별 생산력 환산표" tabindex="0">
 <table class="result-table" id="tc"><thead></thead><tbody></tbody></table>
@@ -877,9 +901,8 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="card" id="cityResearchCard">
 <div class="sectionbar">
 <h2 data-tip-key="연구">연구</h2>
-<div class="costbox">필요 디르함 <b id="researchCost"></b>
-</div>
-<button class="danger" id="researchReset">연구 초기화</button>
+<button class="danger" id="researchReset" type="button">연구 초기화</button>
+<div class="costbox">필요 디르함 <b id="researchCost"></b></div>
 </div>
 <p class="section-guide">완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다.</p><div class="bar"><span class="muted" id="researchSummary"></span>
 </div>
@@ -1165,7 +1188,12 @@ function stepper(k,value,placeholder=''){const val=value===''?'':value;return '<
 function levelStepper(value){return '<div class="step-wrap"><input type="number" class="step-one" data-k="lv" value="'+value+'" step="1" min="1" max="6"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>';}
 function percentStepper(k,value){return '<div class="step-wrap"><input type="number" class="step-one" data-k="'+k+'" value="'+value+'" step="1" min="0" max="100"><div class="step-controls"><button type="button" class="step-btn" data-delta="1">▲</button><button type="button" class="step-btn" data-delta="-1">▼</button></div></div>';}
 function normalizedHappiness(v,fallback=100){const n=Number(v);return Number.isFinite(n)?clamp(n,0,100):fallback;}
-function happinessInput(k,value,attr='data-k'){const v=normalizedHappiness(value,100);return '<div class="happiness-combo"><input type="text" class="happiness-input" inputmode="decimal" autocomplete="off" '+attr+'="'+k+'" value="'+v+'" aria-label="행복도 퍼센트"><button type="button" class="happiness-toggle" aria-label="행복도 추천값 보기" aria-haspopup="listbox" aria-expanded="false">▼</button></div>';}
+function happinessInput(k, value, attr='data-k', disabled=false) {
+  const state = disabled ? ' disabled' : '';
+  return '<div class="happiness-combo"><input type="text" class="happiness-input" inputmode="decimal" autocomplete="off" '
+    +attr+'="'+k+'" value="'+normalizedHappiness(value,100)+'" aria-label="행복도 퍼센트"'+state+'>'
+    +'<button type="button" class="happiness-toggle" aria-label="행복도 추천값 보기" aria-haspopup="menu" aria-expanded="false"'+state+'>▼</button></div>';
+}
 function detailCountStepper(attr,value){return '<div class="step-wrap detail-count-step"><input type="number" class="step-one" min="0" step="1" inputmode="decimal" '+attr+'="count" value="'+value+'"><div class="step-controls"><button type="button" class="step-btn" data-delta="1" aria-label="건물 수 늘리기">▲</button><button type="button" class="step-btn" data-delta="-1" aria-label="건물 수 줄이기">▼</button></div></div>';}
 function normalizedDetailHours(v){return v===''||v===null||v===undefined||!Number.isFinite(parseFloat(v))?'':Math.max(0,num(v,0));}
 function detailHours(row){const h=normalizedDetailHours(row?.hours);return h===''?Math.max(0,num(app.settings.baseH,0)):h;}
@@ -1224,7 +1252,7 @@ document.addEventListener('input', event => {
   if (event.target.matches('.stock-input,#dirhamStock')) event.target.dataset.edited = 'true';
 });
 document.addEventListener('keydown', event => {
-  if (event.key === 'Enter' && !event.isComposing && event.target.matches('main input[type=number],.stock-input,#dirhamStock,#detailRows input[type=number]')) {
+  if (event.key === 'Enter' && !event.isComposing && event.target.matches('main input[type=number],.stock-input,.happiness-input,#dirhamStock,#detailRows input[type=number]')) {
     event.preventDefault();
     event.target.blur();
   }
@@ -1552,65 +1580,117 @@ const convertToggle=document.getElementById('convertToggle'),convertPanel=docume
 if(convertToggle&&convertPanel)convertToggle.addEventListener('click',()=>{const open=convertPanel.hasAttribute('hidden');if(open){convertPanel.removeAttribute('hidden');convertToggle.textContent='생산력 환산표 접기';convertToggle.setAttribute('aria-expanded','true');}else{convertPanel.setAttribute('hidden','');convertToggle.textContent='생산력 환산표 보기';convertToggle.setAttribute('aria-expanded','false');}postSize();});
 
 /* 행복도 자유 입력 + 추천값 드롭다운 */
-let happinessActiveInput=null;
-function ensureHappinessMenu(){
+let happinessToggle=null;
+function ensureHappinessMenu() {
   let menu=document.getElementById('happinessFloatingMenu');
-  if(menu) return menu;
+  if(menu)return menu;
   menu=document.createElement('div');
   menu.id='happinessFloatingMenu';
   menu.className='happiness-menu';
-  menu.setAttribute('role','listbox');
-  menu.innerHTML=[0,25,50,75,100].map(v=>'<button type="button" class="happiness-option" role="option" data-happiness-value="'+v+'">'+v+'</button>').join('');
-  document.body.appendChild(menu);
+  menu.setAttribute('role','menu');
+  menu.setAttribute('aria-label','행복도 추천값');
+  menu.hidden=true;
+  menu.innerHTML=[0,25,50,75,100].map(value=>
+    '<button type="button" class="happiness-option" role="menuitem" tabindex="-1" data-happiness-value="'+value+'">'+value+'%</button>'
+  ).join('');
   return menu;
 }
-function closeHappinessMenu(){
-  const menu=document.getElementById('happinessFloatingMenu');
-  if(menu) menu.classList.remove('open');
-  document.querySelectorAll('.happiness-toggle[aria-expanded="true"]').forEach(b=>b.setAttribute('aria-expanded','false'));
-  happinessActiveInput=null;
+function closeHappinessMenu(restoreFocus=false) {
+  if(!happinessToggle)return;
+  const toggle=happinessToggle;
+  happinessToggle=null;
+  document.getElementById('happinessFloatingMenu').hidden=true;
+  toggle.setAttribute('aria-expanded','false');
+  if(restoreFocus)toggle.focus({preventScroll:true});
 }
-function openHappinessMenu(toggle){
-  const combo=toggle.closest('.happiness-combo');
-  const input=combo?.querySelector('.happiness-input');
-  if(!input) return;
-  const same=happinessActiveInput===input&&document.getElementById('happinessFloatingMenu')?.classList.contains('open');
-  if(same){closeHappinessMenu();return;}
+function openHappinessMenu(toggle, last=false) {
   closeHappinessMenu();
+  const input=toggle.previousElementSibling;
+  if(document.activeElement===input){
+    const row=input.closest('tr[data-name]');
+    input.blur();
+    if(!toggle.isConnected)toggle=productionHappinessToggle(row);
+  }
+  if(!toggle||toggle.disabled)return;
   const menu=ensureHappinessMenu();
-  happinessActiveInput=input;
+  (toggle.closest('dialog[open]')||document.body).append(menu);
+  happinessToggle=toggle;
   toggle.setAttribute('aria-expanded','true');
-  menu.classList.add('open');
-  const rect=combo.getBoundingClientRect();
-  const menuHeight=menu.offsetHeight||170;
-  const below=window.innerHeight-rect.bottom;
-  const top=below>=menuHeight+6?rect.bottom+2:Math.max(4,rect.top-menuHeight-2);
-  const width=Math.max(rect.width,64);
-  const left=Math.min(Math.max(4,rect.left),Math.max(4,window.innerWidth-width-4));
-  menu.style.left=left+'px';
-  menu.style.top=top+'px';
-  menu.style.width=width+'px';
+  menu.hidden=false;
+  positionHappinessMenu();
+  (last?menu.lastElementChild:menu.firstElementChild).focus({preventScroll:true});
 }
-document.addEventListener('click',e=>{
-  const option=e.target.closest('.happiness-option');
-  if(option&&happinessActiveInput){
-    const input=happinessActiveInput;
-    input.value=option.dataset.happinessValue;
+function positionHappinessMenu() {
+  if(!happinessToggle)return;
+  const menu=document.getElementById('happinessFloatingMenu');
+  const rect=happinessToggle.parentElement.getBoundingClientRect();
+  if(!rect.width||rect.bottom<=0||rect.top>=innerHeight){
     closeHappinessMenu();
-    input.dispatchEvent(new Event('change',{bubbles:true}));
-    input.focus();
     return;
   }
-  const toggle=e.target.closest('.happiness-toggle');
-  if(toggle){openHappinessMenu(toggle);return;}
-  if(!e.target.closest('.happiness-combo')&&!e.target.closest('#happinessFloatingMenu')) closeHappinessMenu();
+  const width=Math.max(rect.width,64);
+  menu.style.width=width+'px';
+  const height=menu.offsetHeight;
+  const preferredTop=rect.bottom+height+2<=innerHeight?rect.bottom+2:rect.top-height-2;
+  menu.style.left=Math.max(4,Math.min(rect.left,innerWidth-width-4))+'px';
+  menu.style.top=Math.max(4,Math.min(preferredTop,innerHeight-height-4))+'px';
+}
+function productionHappinessToggle(row) {
+  return row&&document.querySelector('#productionSections tr[data-name="'+row.dataset.name+'"] .happiness-toggle');
+}
+document.addEventListener('mousedown',event=>{
+  // Keep a typed value from rerendering its own row before the preset button opens.
+  const toggle=event.target.closest('.happiness-toggle');
+  if(toggle?.previousElementSibling===document.activeElement)event.preventDefault();
 });
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'&&document.getElementById('happinessFloatingMenu')?.classList.contains('open')){closeHappinessMenu();return;}
-  if((e.key==='ArrowDown'||e.key==='Enter')&&e.target.classList?.contains('happiness-toggle')){e.preventDefault();openHappinessMenu(e.target);}
+document.addEventListener('click',event=>{
+  const option=event.target.closest('[data-happiness-value]');
+  if(option&&happinessToggle){
+    const toggle=happinessToggle;
+    const input=toggle.previousElementSibling;
+    const productionRow=input.closest('tr[data-name]');
+    closeHappinessMenu();
+    input.value=option.dataset.happinessValue;
+    input.dispatchEvent(new Event('change',{bubbles:true}));
+    const nextToggle=toggle.isConnected?toggle:productionHappinessToggle(productionRow);
+    nextToggle?.focus({preventScroll:true});
+    return;
+  }
+  const toggle=event.target.closest('.happiness-toggle');
+  if(toggle){
+    if(toggle===happinessToggle)closeHappinessMenu(true);
+    else openHappinessMenu(toggle);
+  }else if(!event.target.closest('#happinessFloatingMenu')){
+    closeHappinessMenu();
+  }
 });
-document.addEventListener('scroll',()=>closeHappinessMenu(),true);
-window.addEventListener('resize',closeHappinessMenu);
+document.addEventListener('keydown',event=>{
+  const toggle=event.target.closest('.happiness-toggle');
+  if(toggle&&['ArrowDown','ArrowUp'].includes(event.key)){
+    event.preventDefault();
+    openHappinessMenu(toggle,event.key==='ArrowUp');
+    return;
+  }
+  if(!happinessToggle)return;
+  if(event.key==='Escape'||event.key==='Tab'){
+    if(event.key==='Escape')event.preventDefault();
+    closeHappinessMenu(true);
+    return;
+  }
+  const menu=event.target.closest('#happinessFloatingMenu');
+  if(!menu)return;
+  const options=[...menu.children];
+  const index=options.indexOf(event.target);
+  const next={ArrowDown:(index+1)%options.length,ArrowUp:(index+options.length-1)%options.length,Home:0,End:options.length-1}[event.key];
+  if(next===undefined)return;
+  event.preventDefault();
+  options[next].focus();
+});
+document.addEventListener('scroll',event=>{
+  if(event.target.id!=='happinessFloatingMenu')positionHappinessMenu();
+},true);
+window.addEventListener('resize',positionHappinessMenu);
+document.getElementById('detailDialog').addEventListener('close',()=>closeHappinessMenu());
 
 function postSize(){try{parent.postMessage({type:'wrks:viz:resize',height:document.documentElement.scrollHeight},'*');}catch(e){}}
 if('ResizeObserver' in window)new ResizeObserver(postSize).observe(document.body);
@@ -1705,22 +1785,7 @@ function metricBox(k,v,cls=''){return '<div class="metric '+cls+'"><span>'+termH
 function metrics(target,arr){$(target).innerHTML=arr.map(([k,v,cls])=>metricBox(k,v,cls||'')).join('')}
 function fitMetricSummaries(){document.querySelectorAll('.summary .metric').forEach(box=>box.classList.remove('metric-compact','metric-tight'))}
 
-function decorateNumbers(root=document){root.querySelectorAll('input[type="number"]').forEach(input=>{if(input.matches('[data-k="stock"],.raw-stock,#dirhamStock,#dirhamRate'))return;if(input.parentElement?.classList.contains('number-step'))return;const wrapper=document.createElement('span');wrapper.className='number-step';const arrows=document.createElement('span');arrows.className='number-arrows';const name=input.getAttribute('aria-label')||input.labels?.[0]?.querySelector('.term-text')?.textContent||input.labels?.[0]?.textContent.trim()||'숫자';for(const delta of [1,-1]){const button=document.createElement('button');button.type='button';button.dataset.numberDelta=String(delta);button.textContent=delta>0?'▲':'▼';button.setAttribute('aria-label',name+(delta>0?' 증가':' 감소'));button.disabled=input.disabled;arrows.appendChild(button)}input.replaceWith(wrapper);wrapper.appendChild(input);wrapper.appendChild(arrows);
- if (input.matches('[data-k="irrigation"],[data-native-field="irrigation"]')) {
-  const picker = document.createElement('select');
-  picker.className = 'happiness-presets';
-  picker.setAttribute('aria-label', name+' 추천값');
-  picker.disabled = input.disabled;
-  picker.innerHTML = '<option value="">▾</option>'+[0,25,50,75,100].map(value => '<option value="'+value+'">'+value+'%</option>').join('');
-  picker.addEventListener('change', () => {
-   if (picker.value === '') return;
-   input.value = picker.value;
-   picker.value = '';
-   input.dispatchEvent(new Event('change',{bubbles:true}));
-  });
-  wrapper.append(picker);
- }
-})}
+function decorateNumbers(root=document){root.querySelectorAll('input[type="number"]').forEach(input=>{if(input.matches('[data-k="stock"],.raw-stock,#dirhamStock,#dirhamRate'))return;if(input.parentElement?.classList.contains('number-step'))return;const wrapper=document.createElement('span');wrapper.className='number-step';const arrows=document.createElement('span');arrows.className='number-arrows';const name=input.getAttribute('aria-label')||input.labels?.[0]?.querySelector('.term-text')?.textContent||input.labels?.[0]?.textContent.trim()||'숫자';for(const delta of [1,-1]){const button=document.createElement('button');button.type='button';button.dataset.numberDelta=String(delta);button.textContent=delta>0?'▲':'▼';button.setAttribute('aria-label',name+(delta>0?' 증가':' 감소'));button.disabled=input.disabled;arrows.appendChild(button)}input.replaceWith(wrapper);wrapper.appendChild(input);wrapper.appendChild(arrows);})}
 function labelInputs(target){
  const root=$(target);
  for(const table of root.querySelectorAll('table')){
@@ -1818,9 +1883,9 @@ function rowMode(name,disabled){const group=detailGroup(name),s=app[group][name]
 function nativeRow(name){const group=detailGroup(name),s=app[group][name],enabled=group==='resources'?resourceDetailEnabled(name):detailEnabled(name),dis=enabled?'disabled':'',out=group==='resources'?resourceOutput(name):productOutput(name),use=group==='resources'?name+' 필요 '+fmtQty(resourceConsumption(name)):rawOrder.filter(r=>productUse(name,r)>0).map(r=>r+' '+fmtQty(productUse(name,r))).join('<br>')||'0',remain=s.stock+out-(group==='resources'?resourceConsumption(name):0),count=nativeRows(name).reduce((sum,r)=>sum+r.count,0);
  const reward=group==='products'?selectedQuestBonus(name):0;
  const badge=reward?'<span class="badge quest-bonus-badge" aria-label="퀘스트 보상 '+fmtQty(reward)+'">+'+fmtQty(reward)+'</span>':'';
- return '<tr data-group="'+group+'" data-name="'+name+'">'+td(name+(enabled?'<span class="badge">상세</span>':'')+badge)+td(rowInput('lv',s.lv,'min="1" max="6" '+dis))+td(rowMode(name,dis))+td(rowInput('bldgs',enabled?count:s.bldgs,'min="0" '+dis))+td(rowInput('irrigation',s.irrigation,'min="0" max="100" '+dis))+td(rowInput('hours',s.hours,'min="0" placeholder="기본" '+dis))+td(stockInput(s.stock,'data-k="stock"'))+td(compact(out),'calc detailcol')+td(use,'calc detailcol')+(group==='resources'?td(compact(remain),'calc '+(remain<0?'bad':'ok'))+td(duration(resourceRequiredHours(name,resourceConsumption(name))),'calc'):'')+'</tr>';
+ return '<tr data-group="'+group+'" data-name="'+name+'">'+td(name+(enabled?'<span class="badge">상세</span>':'')+badge)+td(rowInput('lv',s.lv,'min="1" max="6" '+dis))+td(rowMode(name,dis))+td(rowInput('bldgs',enabled?count:s.bldgs,'min="0" '+dis))+td(happinessInput('irrigation',s.irrigation,'data-k',enabled))+td(rowInput('hours',s.hours,'min="0" placeholder="기본" '+dis))+td(stockInput(s.stock,'data-k="stock"'))+(group==='resources'?td(compact(remain),'calc '+(remain<0?'bad':'ok')):'')+td(compact(out),'calc detailcol')+td(use,'calc detailcol')+(group==='resources'?td(duration(resourceRequiredHours(name,resourceConsumption(name))),'calc'):'')+'</tr>';
 }
-renderTables=function(){for(const [id,names]of [['t1',resourceOrder],['t2',productOrder]]){const labels=['생산 항목','레벨','생산 방식','건물 수','행복도(%)','운영 시간(h)','현재 보유량','예상 생산량','소비·필요량'];if(id==='t1')labels.push('잔여/부족','소요 시간');$(id).innerHTML=head(labels)+'<tbody>'+names.map(nativeRow).join('')+'</tbody>';$(id).querySelectorAll('thead th').forEach((th,j)=>th.classList.toggle('detailcol',j===7||j===8));}
+renderTables=function(){for(const [id,names]of [['t1',resourceOrder],['t2',productOrder]]){const labels=['생산 항목','레벨','생산 방식','건물 수','행복도(%)','운영 시간(h)','현재 보유량'];if(id==='t1')labels.push('잔여/부족');labels.push('예상 생산량','소비·필요량');if(id==='t1')labels.push('소요 시간');$(id).innerHTML=head(labels)+'<tbody>'+names.map(nativeRow).join('')+'</tbody>';$(id).querySelectorAll('thead th').forEach(th=>th.classList.toggle('detailcol',['예상 생산량','소비·필요량'].includes(th.dataset.label)));}
  $('t3').innerHTML=head(['중간 자원','현재 보유량','구매 필요량','금화 필요량','낙타 필요량'])+'<tbody>'+rawOrder.map(n=>{const r=purchaseRowData(n);return '<tr data-raw="'+n+'">'+td(n)+td(stockInput(r.stock,'data-raw-stock'))+td(fmtQty(r.need),'calc detailcol')+td(fmtQty(r.gold),'calc detailcol')+td(fmtQty(r.camel),'calc detailcol')+'</tr>';}).join('')+'</tbody>';$('t3').querySelectorAll('thead th').forEach((th,j)=>th.classList.toggle('detailcol',j>=2));bindProductionRows();$('t3').querySelectorAll('[data-raw-stock]').forEach(el=>el.addEventListener('change',()=>{const stock=readStock(el);if(stock===null)return;app.rawStocks[el.closest('tr').dataset.raw]=stock;renderAll();saveState();}));labelInputs('productionSections');};
 renderBonus=function(){
  const level=app.settings.wLv, bonus=wonderBenefits();
@@ -1923,7 +1988,8 @@ function showNativeDetail(){
   +'<label>레벨'+ci(row.lv,'data-native-field="lv" min="1" max="6"','1')+'</label>'
   +'<label>생산 방식<select data-native-field="mode">'+modeOptions(building,row.lv,row.mode)+'</select></label>'
   +'<label>건물 수'+ci(row.count,'data-native-field="count" min="0"')+'</label>'
-  +'<label>행복도(%)'+ci(row.irrigation,'data-native-field="irrigation" min="0" max="100"')+'</label>'
+  +'<div class="happiness-field"><span>행복도(%)</span>'
+  +happinessInput('irrigation',row.irrigation,'data-native-field',!d.enabled)+'</div>'
   +'<label>운영 시간(h)'+ci(row.hours,'data-native-field="hours" min="0" placeholder="기본 '+defaultHours+'"')+'</label>'
   +'<button type="button" data-native-remove="'+index+'" aria-label="구성 '+(index+1)+' 삭제">×</button></div>').join('');
  container.querySelectorAll('[data-native-field],[data-native-remove]').forEach(control=>{
@@ -1931,7 +1997,7 @@ function showNativeDetail(){
  });
  container.querySelectorAll('[data-native-field]').forEach(control=>{
   const index=Number(control.closest('[data-native-row]').dataset.nativeRow)+1;
-  const label=control.closest('label').firstChild.textContent;
+  const label=control.classList.contains('happiness-input')?'행복도(%)':control.closest('label').firstChild.textContent;
   control.setAttribute('aria-label',name+' 구성 '+index+' '+label);
  });
  decorateNumbers(container);
@@ -2048,7 +2114,9 @@ function initializeNativeUI(){
   if(!field)return;
   const rowElement=input.closest('[data-native-row]'),index=Number(rowElement.dataset.nativeRow);
   const detail=detailConfig(activeDetailName);
-  detail.rows[index][field]=field==='mode'||(field==='hours'&&input.value==='')?input.value:num(input.value);
+  const value=input.value;
+  detail.rows[index][field]=field==='mode'||(field==='hours'&&value==='')?value
+   :field==='irrigation'?normalizedHappiness(value,100):num(value);
   normalizeNative(activeDetailName);
   const row=detail.rows[index];
   input.value=row[field];
