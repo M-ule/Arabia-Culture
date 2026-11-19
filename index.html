@@ -1,5 +1,5 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>아라비아 문명 시뮬레이터</title><link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2232%22%20height%3D%2232%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20x%3D%22.5%22%20y%3D%22.5%22%20width%3D%2231%22%20height%3D%2231%22%20rx%3D%225%22%20fill%3D%22%23f6eddb%22%20stroke%3D%22%237a4b12%22%20stroke-opacity%3D%22.16%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2224%22%20text-anchor%3D%22middle%22%20fill%3D%22%237a4b12%22%20font-size%3D%2225%22%20font-family%3D%22Georgia%2Cserif%22%3EA%3C%2Ftext%3E%3C%2Fsvg%3E" type="image/svg+xml"><meta name="description" content="아라비아 문명의 생산, 자원 구매, 불가사의 목표와 도시 관리를 계산합니다."><style>
-:root{font-family:Arial,'Malgun Gothic',sans-serif;color:#49351d;background:#f3ead9;font-size:16px;--blue:#7a4b12;--line:#c9a56b;--input:#fff4bf;--red:#bd2537}*{box-sizing:border-box}body{margin:0}main{max-width:1440px;margin:auto;padding:24px}h1{font-size:25px;margin:0 0 8px}h2{font-size:19px;margin:0}h3{font-size:16px}button,input,select{font:inherit;font-size:14px}button{border:1px solid #d6c8b4;background:#fff;color:var(--blue);border-radius:6px;padding:8px 12px;cursor:pointer}button:hover{background:#fcf6ed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #dfa24c;outline-offset:2px}input,select{border:1px solid #d8c36b;border-radius:4px;background:var(--input);padding:6px;min-width:0;width:100%;color:#111}input[type=checkbox]{width:auto;min-height:20px}input[type=number]{min-height:34px}input:disabled,select:disabled{background:#f5f0ea;border-color:#c9a56b;color:#796953}small,.muted{font-size:14px;color:#7c6b54;line-height:1.65}.legend{margin-bottom:16px}.chip{display:inline-block;width:12px;height:12px;background:var(--input);border:1px solid #cdb95e;margin-right:5px}.tabs{display:flex;gap:6px;margin:16px 0}.tabs button{font-weight:bold;border-radius:6px 6px 0 0;padding:12px 22px}.tabs button.active{color:white;background:var(--blue);border-color:var(--blue)}.panel{display:none}.panel.active{display:block}.card{background:white;border:1px solid var(--line);border-radius:8px;margin:14px 0;padding:18px;box-shadow:0 2px 8px #583d1806}.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.bar label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}.bar input{width:90px}.bar select{width:140px}.push{margin-left:auto}.danger{color:#b22432;border-color:#e3a6ae}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{padding:14px 16px;border:1px solid #ebdfcf;background:#fefaf5;border-radius:6px}.metric span{font-size:14px;color:#766246;display:block;margin-bottom:8px}.metric strong{font-size:20px;color:var(--blue)}.sectionbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px;table-layout:fixed}th,td{border:1px solid var(--line);padding:7px 8px;text-align:center;min-width:92px}th{background:#f7f1e8;color:#634418;font-weight:600;height:42px;white-space:normal}td:first-child,th:first-child{text-align:left;width:160px;font-weight:600}td:first-child{background:#fdfbf7}.prodtable{min-width:880px}.prodtable td:first-child{width:170px}.prodtable th{width:100px}.prodtable th:first-child{width:170px}.calc{background:#fffcf7;font-variant-numeric:tabular-nums}.bad{color:var(--red)}.ok{color:#146747}.detailcol{display:none}.expanded .detailcol{display:table-cell}.expanded .prodtable{min-width:1200px}.note{margin:14px 0 0;font-size:14px;line-height:1.8;color:#64543e}.status{font-size:14px;color:#17694b}.power{color:var(--red)}.notice{background:#fcf4ea;border-left:3px solid #af7d36;padding:10px 14px;font-size:14px;line-height:1.7;margin:12px 0}.result-table{min-width:560px}.research-wrap{overflow:auto;background:#fefcf8;border:1px solid var(--line);border-radius:6px}.research-tree{position:relative;width:960px;height:1590px}.research-tree svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.research-node{position:absolute;width:190px;height:66px;transform:translate(-50%,-50%);background:white;border:1px solid #dccdb7;box-shadow:0 2px 6px #69471710;font-weight:600;line-height:1.4;padding:7px}.research-node span{display:block;font-size:13px;font-weight:400;margin-top:4px}.research-node.done{background:#e1f0e9;border-color:#50a07b;color:#18563a}.research-node.target{background:#fff2cc;border:2px solid #ba8d1c;color:#66480a}.research-node.needed{background:#fff9e9;border-color:#d8b35e}.costbox{background:#fcf4ea;border:1px solid #e8d7c0;padding:10px 14px;border-radius:6px;font-size:14px}.homes{min-width:650px}dialog{border:1px solid #d1c2ae;border-radius:10px;padding:22px;width:min(850px,94vw);max-height:90vh;overflow:auto;color:#433117}dialog::backdrop{background:#463010a3}.modalhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.modalhead h2{margin:0}.detailrow{display:grid;grid-template-columns:1fr 1.4fr 1fr 1.2fr 40px;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}.detailrow label{font-size:14px}.detailrow input,.detailrow select{margin-top:5px}.modal-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.modal-tabs .active{background:var(--blue);color:white}.badge{font-size:12px;background:#f9eede;color:#916425;border-radius:3px;padding:2px 5px;margin-left:5px}footer{font-size:13px;color:#867761;margin-top:22px}.mobilelabel{display:none}.stocknote{font-size:13px;color:#7c6a50}
+:root{font-family:Arial,'Malgun Gothic',sans-serif;color:#49351d;background:#f3ead9;font-size:16px;--blue:#7a4b12;--line:#c9a56b;--input:#fff4bf;--red:#bd2537}*{box-sizing:border-box}body{margin:0}main{max-width:1440px;margin:auto;padding:24px}h1{font-size:25px;margin:0 0 8px}h2{font-size:19px;margin:0}h3{font-size:16px}button,input,select{font:inherit;font-size:14px}button{border:1px solid #d6c8b4;background:#fff;color:var(--blue);border-radius:6px;padding:8px 12px;cursor:pointer}button:hover{background:#fcf6ed}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #dfa24c;outline-offset:2px}input,select{border:1px solid #d8c36b;border-radius:4px;background:var(--input);padding:6px;min-width:0;width:100%;color:#111}input[type=checkbox]{width:auto;min-height:20px}input[type=number]{min-height:34px}input:disabled,select:disabled{background:#f5f0ea;border-color:#c9a56b;color:#796953}small,.muted{font-size:14px;color:#7c6b54;line-height:1.65}.legend{margin-bottom:16px}.chip{display:inline-block;width:12px;height:12px;background:var(--input);border:1px solid #cdb95e;margin-right:5px}.tabs{display:flex;gap:6px;margin:16px 0}.tabs button{font-weight:bold;border-radius:6px 6px 0 0;padding:12px 22px}.tabs button.active{color:white;background:var(--blue);border-color:var(--blue)}.panel{display:none}.panel.active{display:block}.card{background:white;border:1px solid var(--line);border-radius:8px;margin:14px 0;padding:18px;box-shadow:0 2px 8px #583d1806}.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}.bar label{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}.bar input{width:90px}.bar select{width:140px}.push{margin-left:auto}.danger{color:#b22432;border-color:#e3a6ae}.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.metric{padding:14px 16px;border:1px solid #ebdfcf;background:#fefaf5;border-radius:6px}.metric span{font-size:14px;color:#766246;display:block;margin-bottom:8px}.metric strong{font-size:20px;color:var(--blue)}.sectionbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:14px;table-layout:fixed}th,td{border:1px solid var(--line);padding:7px 8px;text-align:center;min-width:92px}th{background:#f7f1e8;color:#634418;font-weight:600;height:42px;white-space:normal}td:first-child,th:first-child{text-align:left;width:160px;font-weight:600}td:first-child{background:#fdfbf7}.prodtable{min-width:880px}.prodtable td:first-child{width:170px}.prodtable th{width:100px}.prodtable th:first-child{width:170px}.calc{background:#fffcf7;font-variant-numeric:tabular-nums}.bad{color:var(--red)}.ok{color:#146747}.detailcol{display:none}.expanded .detailcol{display:table-cell}.expanded .prodtable{min-width:1200px}.note{margin:14px 0 0;font-size:14px;line-height:1.8;color:#64543e}.status{font-size:14px;color:#17694b}.power{color:var(--red)}.notice{background:#fcf4ea;border-left:3px solid #af7d36;padding:10px 14px;font-size:14px;line-height:1.7;margin:12px 0}.result-table{min-width:560px}.research-wrap{overflow:auto;background:#fefcf8;border:1px solid var(--line);border-radius:6px}.research-tree{position:relative;width:960px;height:1590px}.research-tree svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}.research-node{position:absolute;width:190px;height:66px;transform:translate(-50%,-50%);background:white;border:1px solid #dccdb7;box-shadow:0 2px 6px #69471710;font-weight:600;line-height:1.4;padding:7px}.research-node span{display:block;font-size:13px;font-weight:400;margin-top:4px}.research-node.done{background:#e1f0e9;border-color:#50a07b;color:#18563a}.research-node.target{background:#fff2cc;border:2px solid #ba8d1c;color:#66480a}.research-node.needed{background:#fff9e9;border-color:#d8b35e}.costbox{background:#fcf4ea;border:1px solid #e8d7c0;padding:10px 14px;border-radius:6px;font-size:14px}.homes{min-width:650px}dialog{border:1px solid #d1c2ae;border-radius:10px;padding:22px;width:min(850px,94vw);max-height:90vh;overflow:auto;color:#433117}dialog::backdrop{background:#463010a3}.modalhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.modalhead h2{margin:0}.detailrow{display:grid;grid-template-columns:1fr 1.4fr 1fr 1.2fr 40px;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}.detailrow label{font-size:14px}.detailrow input,.detailrow select{margin-top:5px}.modal-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.modal-tabs .active{background:var(--blue);color:white}.badge{font-size:12px;background:#f9eede;color:#916425;border-radius:3px;padding:2px 5px;margin-left:5px}footer{font-size:13px;color:#867761;margin-top:22px}.stocknote{font-size:13px;color:#7c6a50}
 @media(max-width:700px){main{padding:14px 10px}h1{font-size:21px}.card{padding:12px}.tabs button{padding:10px 12px;flex:1}.tabs{gap:4px}.summary{grid-template-columns:repeat(2,1fr);gap:7px}.metric{padding:10px}.metric strong{font-size:17px}.bar{gap:10px}.bar label{width:calc(50% - 5px);justify-content:space-between}.bar label.wide{width:100%}.push{margin-left:0}.sectionbar{flex-wrap:wrap}td:first-child,th:first-child{position:sticky;left:0;z-index:1}th:first-child{background:#f7f1e8;z-index:2}.detailrow{grid-template-columns:1fr 1fr}.detailrow button{grid-column:2;justify-self:end}.result-table{min-width:650px}.note{font-size:14px}}
 /* v2: centered inputs and result cell backgrounds */
 input,select{text-align:center}
@@ -62,7 +62,7 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
 #productionSections .prodtable tbody tr,#goalTable tbody tr,#sleepTable tbody tr,#powerTable tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;margin-bottom:12px;border:1px solid #b09978;border-radius:8px;overflow:hidden;background:#fff}
 #productionSections .prodtable tbody td,#goalTable tbody td,#sleepTable tbody td,#powerTable tbody td{position:static;display:flex;flex-direction:column;align-items:stretch;justify-content:center;width:auto;min-width:0;max-width:none;min-height:82px;height:auto;padding:8px;gap:5px;border:0;border-right:1px solid #c9a56b;border-bottom:1px solid #c9a56b;box-shadow:none;font-size:16px;white-space:normal;text-align:center;overflow-wrap:anywhere}
 #productionSections .prodtable tbody td:first-child,#goalTable tbody td:first-child,#sleepTable tbody td:first-child,#powerTable tbody td:first-child{grid-column:1/-1;min-height:44px;background:#7a4b12;color:#fff;font-weight:800;padding:10px;border-right:0}
-#productionSections .prodtable tbody td:not(:first-child)::before,#goalTable tbody td:not(:first-child)::before,#sleepTable tbody td:not(:first-child)::before,#powerTable tbody td:not(:first-child)::before{content:attr(data-label);display:block;padding:4px 5px;border:1px solid #d2bc9d;border-radius:4px;background:#f9efe1;color:#6b4612;font-size:12px;font-weight:800;line-height:1.3;text-align:center}
+
 #productionSections .prodtable td.detailcol,#goalTable td.detailcol,#sleepTable td.detailcol,#powerTable td.detailcol{display:none}
 .expanded #productionSections .prodtable td.detailcol,#panel-wonder.expanded #goalTable td.detailcol,#panel-wonder.expanded #sleepTable td.detailcol,#panel-wonder.expanded #powerTable td.detailcol{display:flex}
 #sleepTable td:nth-child(2),#powerTable td:nth-child(2){grid-column:1/-1}
@@ -80,7 +80,7 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
   #homes tbody tr,#cityHallBuildings tbody tr,#cityBuildings tbody tr,#construction tbody tr,#territoryTable tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;margin-bottom:12px;border:1px solid #b09978;border-radius:8px;overflow:hidden;background:#fff}
   #homes tbody td,#cityHallBuildings tbody td,#cityBuildings tbody td,#construction tbody td,#territoryTable tbody td{position:static;display:flex;flex-direction:column;align-items:stretch;justify-content:center;width:auto;min-width:0;max-width:none;min-height:82px;height:auto;padding:8px;gap:5px;border:0;border-right:1px solid #c9a56b;border-bottom:1px solid #c9a56b;box-shadow:none;font-size:16px;white-space:normal;text-align:center;overflow-wrap:anywhere}
   #homes tbody td:first-child,#cityHallBuildings tbody td:first-child,#cityBuildings tbody td:first-child,#construction tbody td:first-child,#territoryTable tbody td:first-child{grid-column:1/-1;min-height:44px;background:#7a4b12;color:#fff;font-weight:800;padding:10px;border-right:0}
-  #homes tbody td:not(:first-child)::before,#cityHallBuildings tbody td:not(:first-child)::before,#cityBuildings tbody td:not(:first-child)::before,#construction tbody td:not(:first-child)::before,#territoryTable tbody td:not(:first-child)::before{content:attr(data-label);display:block;padding:4px 5px;border:1px solid #d2bc9d;border-radius:4px;background:#f9efe1;color:#6b4612;font-size:12px;font-weight:800;line-height:1.3;text-align:center}
+
   #panel-city input,#panel-city select,#panel-city .number-step{height:44px;min-height:44px;font-size:16px;width:100%}
   #construction td:last-child button{min-height:44px;width:100%}
   #territoryCard .bar label{width:100%}
@@ -108,9 +108,9 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
 .metric .term-wrap,.metric .info-tip{display:inline-flex}
 .section-actions{margin-left:auto}.section-actions button{margin-left:0}.sectionbar h2 .term-wrap,.bar>h2 .term-wrap,h3 .term-wrap,.modalhead h2 .term-wrap{color:inherit}.sectionbar h2 .info-tip,.bar>h2 .info-tip,h3 .info-tip,.modalhead h2 .info-tip{background:#fff;border-color:#a3875f;color:#7a4b12}.sectionbar h2 .info-tip:hover,.sectionbar h2 .info-tip:focus,.bar>h2 .info-tip:hover,.bar>h2 .info-tip:focus,h3 .info-tip:hover,h3 .info-tip:focus,.modalhead h2 .info-tip:hover,.modalhead h2 .info-tip:focus{background:#7a4b12;color:#fff}
 @media(max-width:720px){
-  #productionSections .prodtable tbody td:not(:first-child)::before,#goalTable tbody td:not(:first-child)::before,#sleepTable tbody td:not(:first-child)::before,#powerTable tbody td:not(:first-child)::before,#homes tbody td:not(:first-child)::before,#cityHallBuildings tbody td:not(:first-child)::before,#cityBuildings tbody td:not(:first-child)::before,#construction tbody td:not(:first-child)::before,#territoryTable tbody td:not(:first-child)::before{display:none!important;content:none!important}
-  .mobilelabel{display:flex;align-items:center;justify-content:center;gap:5px;padding:4px 5px;border:1px solid #d2bc9d;border-radius:4px;background:#f9efe1;color:#6b4612;font-size:12px;font-weight:800;line-height:1.3;text-align:center}
-  #productionSections td:first-child>.mobilelabel,#goalTable td:first-child>.mobilelabel,#sleepTable td:first-child>.mobilelabel,#powerTable td:first-child>.mobilelabel,#homes td:first-child>.mobilelabel,#cityHallBuildings td:first-child>.mobilelabel,#cityBuildings td:first-child>.mobilelabel,#construction td:first-child>.mobilelabel,#territoryTable td:first-child>.mobilelabel{display:none}
+
+
+
   .info-tip{width:19px;height:19px;min-width:19px;font-size:12px;cursor:pointer}
   .section-actions{margin-left:0}
 }
@@ -276,8 +276,8 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
  #panel-prod.expanded #productionSections .prodtable td,
  #panel-prod.expanded #productionSections .prodtable td.detailcol{display:flex;flex-direction:column;align-items:stretch;justify-content:center;width:auto;min-width:0;height:auto;min-height:82px;padding:8px;gap:5px;border:0;border-right:1px solid #c9a56b;border-bottom:1px solid #c9a56b;font-size:16px;white-space:normal}
  #panel-prod.expanded #productionSections .prodtable td:first-child{grid-column:1/-1;min-height:44px;background:#7a4b12;color:white;font-weight:800}
- #panel-prod.expanded #productionSections .mobilelabel{display:flex;align-items:center;justify-content:center;padding:4px 5px;border:1px solid #d2bc9d;border-radius:4px;background:#f9efe1;color:#6b4612;font-size:12px;font-weight:800}
- #panel-prod.expanded #productionSections td:first-child>.mobilelabel{display:none}
+
+
 }
 
 
@@ -315,8 +315,8 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
  #panel-prod #productionSections .prodtable td.detailcol{display:none}
  #panel-prod.expanded #productionSections .prodtable td.detailcol{display:flex}
  #panel-prod #productionSections .prodtable td:first-child{grid-column:1/-1;min-height:44px;background:#7a4b12;color:white;font-weight:800}
- #panel-prod #productionSections .mobilelabel{display:flex;justify-content:center;padding:4px 5px;border:1px solid #d2bc9d;border-radius:4px;background:#f9efe1;color:#6b4612;font-size:12px;font-weight:800}
- #panel-prod #productionSections td:first-child>.mobilelabel{display:none}
+
+
 }
 
 .conversion-reference{color:var(--blue);text-underline-offset:3px}
@@ -375,7 +375,7 @@ h1{color:var(--blue)}
 .detail-summary.applied{color:var(--blue);font-weight:700}
 .purchase-details{margin-top:14px}
 .purchase-details summary{padding:8px 0;cursor:pointer;font-weight:700;color:var(--blue)}
-.purchase-wrap{overflow:auto;margin:6px 0 0}
+.purchase-wrap{overflow:auto;overscroll-behavior-inline:contain;margin:6px 0 0}
 .purchase-wrap table{min-width:650px}
 .purchase-wrap th:first-child,.purchase-wrap td:first-child{position:sticky;left:0;z-index:1;width:110px}
 .purchase-wrap td,.purchase-wrap th{height:48px;min-width:0;font-size:14px}
@@ -404,7 +404,7 @@ h1{color:var(--blue)}
 #bonusSummary,#goalSummary,#cityBudgetSummary{grid-template-columns:repeat(2,minmax(0,1fr))}
 #bonusSummary .metric,#goalSummary .metric{min-height:90px;display:flex;flex-direction:column;justify-content:center}
 #bonusSummary .metric>strong,#goalSummary .metric>strong{font-size:17px;line-height:1.55;white-space:normal}
-#bonusSummary .warning-metric strong{color:var(--red)}
+#bonusSummary .warning-metric strong,#goalSummary .warning-metric strong{color:var(--red)}
 #cityBudgetSummary .metric:last-child{grid-column:1/-1}
 #citySummary a,.budget-breakdown a{color:var(--blue);text-underline-offset:3px}
 #citySummary .metric small{margin-top:4px}
@@ -426,8 +426,7 @@ h1{color:var(--blue)}
 input[aria-invalid]{border-color:var(--red)}
 .stock-input{min-height:40px}
 .number-step .happiness-presets{width:24px!important;min-width:24px;max-width:24px;flex:none;appearance:none;align-self:stretch;height:auto;padding:0;border:0;border-left:1px solid #c9b76e;border-radius:0;background:#f0e5b5;color:var(--blue);cursor:pointer}
-.info-tip:not(.unavailable-value){padding:0}
-.info-tip.unavailable-value{width:30px;height:30px;padding:0;border-color:transparent;background:transparent;font-size:16px}
+.info-tip{padding:0}
 #termHelpDialog,#researchDialog{width:min(480px,calc(100% - 24px))}
 #termHelpDialog p{font-size:15px;line-height:1.8;overflow-wrap:anywhere}
 #detailDialog h2{color:var(--blue)}
@@ -439,7 +438,7 @@ input[aria-invalid]{border-color:var(--red)}
 .detailrow label{min-width:0}
 .detailrow label .term-label{min-height:24px}
 .detailrow button[data-native-remove]{width:40px;height:40px;padding:0}
-.detail-footer{display:flex;justify-content:space-between;gap:8px;position:sticky;bottom:0;background:white;z-index:2;border-top:1px solid var(--line);padding:10px 0;margin-top:12px}
+.detail-footer{display:flex;justify-content:space-between;gap:8px;background:white;border-top:1px solid var(--line);padding:10px 0;margin-top:12px}
 .detail-footer button{min-height:44px}
 .detail-footer .detail-done{background:var(--blue);color:white}
 .research-legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:12px 0;font-size:13px}
@@ -468,7 +467,6 @@ input[aria-invalid]{border-color:var(--red)}
  .control-field label{word-break:keep-all}
  .control-field .number-step,.control-field input,.settings-card .control-field #wonder,.control-field select{width:100%;max-width:none;min-height:48px;height:48px}
  .control-field label+.number-step input{height:100%;min-height:0}
- .sleep-settings .control-field:has(#sleepCycle){grid-template-columns:1fr}
  .settings-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
  .settings-actions button{width:100%;min-width:0;white-space:normal;padding:6px}
  #wonderSettings .settings-actions{width:auto;display:flex}
@@ -502,7 +500,6 @@ input[aria-invalid]{border-color:var(--red)}
 .quest-bundle-amounts{display:flex;flex-wrap:wrap;column-gap:4px;min-width:0;line-height:1.5}
 .quest-bundle-amounts>span{white-space:nowrap}
 .quest-bonus-badge{display:inline-block}
-.purchase-field{display:none}
 
 @media(max-width:720px){
  .card{padding:12px}
@@ -534,15 +531,10 @@ input[aria-invalid]{border-color:var(--red)}
  #panel-prod #productionSections .prodtable tbody td>.number-step{width:100%}
  #panel-wonder:not(.expanded) #goalTable tbody tr{margin-bottom:8px}
  #panel-wonder:not(.expanded) #goalTable tbody td:not(:first-child){min-height:66px}
- #panel-wonder :is(#goalTable,#sleepTable,#powerTable) td .mobilelabel{width:100%}
- .purchase-wrap{overflow:visible}
- .purchase-wrap :is(table,tbody,tfoot){display:block;width:100%;min-width:0!important}
- .purchase-wrap thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
- .purchase-wrap tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;overflow:hidden;margin-bottom:8px;border:1px solid var(--line);border-radius:8px;background:var(--line)}
- .purchase-wrap tr>*{display:flex;flex-direction:column;justify-content:center;gap:2px;padding:6px 5px;height:auto;min-height:50px;width:auto;min-width:0;border:0;overflow-wrap:anywhere}
- .purchase-wrap tr>th:first-child{grid-column:1/-1;position:static;width:auto;min-height:37px}
- .purchase-field{display:block;color:#64543e;font-size:12px;font-weight:400;line-height:1.4}
- #targetPurchaseTable tbody td:last-child{grid-column:1/-1}
+
+ .purchase-wrap table{min-width:540px}
+ .purchase-wrap :is(th,td){padding:6px;font-size:13px;white-space:nowrap}
+ .purchase-wrap tr>th:first-child{width:88px}
  #conversionCard #convert{max-width:100%;overflow:auto;overscroll-behavior-inline:contain}
  #conversionCard #tc{width:605px;min-width:605px}
  #conversionCard #tc tr>:nth-child(1){width:106px}
@@ -596,7 +588,9 @@ input[aria-invalid]{border-color:var(--red)}
 #photoReview .photo-candidates button{margin:3px;padding:4px 7px}
 #photoReview button[aria-pressed=true]{background:var(--blue);color:white}
 @media(max-width:720px){
- #productionSettings #photoImportBtn{grid-column:1/-1}
+ #productionSettings #prodView{grid-column:1/-1}
+ #productionSettings .settings-actions button{min-height:44px}
+ #bonusSummary{grid-template-columns:minmax(0,1fr)}
  #photoImportDialog{width:calc(100% - 16px);padding:12px}
  #photoImportDialog button{min-height:44px}
  #photoReview table,#photoReview tbody{display:block;width:100%}
@@ -604,6 +598,68 @@ input[aria-invalid]{border-color:var(--red)}
  #photoReview tr{display:grid;grid-template-columns:42px minmax(0,1fr);border:1px solid var(--line);border-radius:6px;margin:6px 0;overflow:hidden}
  #photoReview td{display:block;position:static;width:auto;border:0;text-align:left;white-space:normal}
  #photoReview td:first-child{grid-row:1/3;text-align:center}
+}
+/* Shared field sizing and mobile card alignment. */
+.quest-reward-note strong{color:var(--blue);font-size:16px;font-weight:800}
+.product-title-meta{align-items:center;gap:4px 10px}
+#goalSummary .metric small{display:block;line-height:1.5;overflow-wrap:anywhere}
+#ta .adjust-product-start>td{border-top:2px solid var(--line)}
+@media(min-width:721px){
+ #productionSettings .control-field>.number-step,#wonderSettings .control-field>.number-step{width:120px}
+ #productionSettings #wonder{width:210px}
+}
+@media(max-width:720px){
+ #panel-city .city-settings .control-field:has(#dirhamStock),
+ #panel-city .city-settings .control-field:has(#dirhamRate),
+ #panel-city .city-settings .control-field:has(#dirhamHours){grid-template-columns:1fr}
+ #conversionCard #tc{width:520px;min-width:520px}
+ #conversionCard #tc tr>*{height:42px}
+ #ta .adjust-product-start{margin-top:14px}
+ #ta .adjust-product-start>td{border-top:0}
+}
+#detailDialog{width:min(840px,calc(100% - 24px));max-height:calc(100dvh - 24px);overflow:hidden}
+#detailDialog[open]{display:flex;flex-direction:column}
+#detailDialog .modalhead,#detailDialog .modal-tabs,#detailDialog .detail-footer{flex:none}
+#detailDialog .detail-content{min-height:0;overflow:auto;overscroll-behavior:contain;padding:0 4px}
+#detailTabs button .detail-dot{display:inline-block;vertical-align:middle;width:7px;height:7px;margin-left:6px;border-radius:50%;background:currentColor}
+#cityBuildings td:first-child strong{display:block}
+#cityBuildings .building-size{display:block;color:#64543e;font-size:12px;font-weight:400;margin-top:3px}
+#cityResearchCard button[data-tech] small{line-height:1.4;overflow-wrap:anywhere}
+#cityResearchCard .research-node{height:auto;min-height:66px;padding:5px 7px}
+.research-legend .designated::before{background:#e1f0e9;border:2px solid #18563a}
+#cityResearchCard button[data-tech].designated{box-shadow:inset 0 0 0 1px #18563a}
+@media(max-width:720px){
+ #detailDialog{width:calc(100% - 16px);max-height:calc(100dvh - 16px)}
+ #detailDialog .detail-footer button{flex:1;min-width:0}
+ #detailRows .detail-row-label{grid-column:1;grid-row:1;align-self:center}
+ #detailRows button[data-native-remove]{grid-column:2;grid-row:1}
+ #cityBuildings tbody td:last-child{grid-column:1/-1}
+}
+@media(max-width:480px){
+ #cityResearchCard .research-stage{grid-template-columns:minmax(0,1fr)}
+ #cityResearchCard .research-mobile-node{text-align:left;min-height:56px}
+}
+/* Responsive table cards use plain field names, as in Maya. */
+@media(max-width:1100px){
+ #productionSections .prodtable tbody td[data-label]:not(:first-child)::before{
+  content:attr(data-label);
+  color:var(--blue);
+  font-size:12px;
+  font-weight:600;
+  line-height:1.4;
+  text-align:center;
+ }
+}
+@media(max-width:720px){
+ :is(#goalTable,#sleepTable,#powerTable,#cityBuildings,#construction) tbody td[data-label]:not(:first-child)::before{
+  content:attr(data-label);
+  color:var(--blue);
+  font-size:12px;
+  font-weight:600;
+  line-height:1.4;
+  text-align:center;
+ }
+ #construction tbody td[data-label]:last-child::before{content:none}
 }
 </style></head><body>
 <main>
@@ -621,8 +677,9 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="생산 설정">생산 설정</h2>
 <div class="settings-actions">
-<button id="photoImportBtn" type="button">사진으로 입력</button><button id="manualSave">기준값 저장</button>
-<button id="manualRestore" disabled>기준값 불러오기</button>
+<button id="photoImportBtn" type="button">사진으로 입력</button>
+<button id="manualSave" type="button" title="자동 저장과 별도로 복원할 생산 기준값을 보관합니다.">기준값 저장</button>
+<button id="manualRestore" type="button" title="별도로 저장해 둔 생산 기준값을 복원합니다." disabled>기준값 불러오기</button>
 <button id="resetBtn" class="danger">초기화</button>
 <button id="prodView" aria-controls="t1 t2 t3">상세 보기 ▼</button>
 </div>
@@ -663,12 +720,12 @@ input[aria-invalid]{border-color:var(--red)}
 <h2 data-tip-key="상품">상품</h2>
 <div class="product-title-meta">
 <span class="detail-summary" id="stage2DetailSummary"></span>
-<p id="questRewardNote" class="quest-reward-note"><strong>퀘스트 보상</strong> · 체크 시 불가사의 계산에 합산 (상품 입력값은 유지)</p>
+<p id="questRewardNote" class="quest-reward-note"><strong>퀘스트 보상</strong> · 선택한 보상을 불가사의 계산의 현재 보유량에 합산합니다.</p>
 <div id="wikiQuestRewards" class="quest-reward-options" role="group" aria-label="상품 퀘스트 예정 보상"></div>
 </div></div><span class="section-actions">
 <button data-detail-group="2" aria-label="상품 상세 설정"><span class="detail-wide-label">상품 </span>상세 설정</button></span>
 </div>
-<p class="section-guide">완료한 생산 주기를 기준으로 상품 생산량과 원료 소비량을 계산합니다.</p>
+<p class="section-guide">완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다.</p>
 <div class="wrap">
 <table class="prodtable" id="t2"><thead></thead><tbody></tbody></table>
 </div>
@@ -707,12 +764,13 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="수면 대비 자원 확보">수면 대비 자원 확보</h2>
 </div>
+<p class="section-guide">취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 취침 전 생산에 쓸 원료와 예약분을 합산하고, 보유 원료를 빼 구매에 필요한 금화·낙타를 계산합니다.</p>
 <div class="settings sleep-settings">
 <div class="control-field"><label for="sleepPrepH" data-tip-key="수면까지 남은 시간(h)">수면까지 남은 시간(h)</label><input id="sleepPrepH" type="number" min="0" step="any" placeholder="기본"></div>
 <div class="control-field"><label for="sleepCycle" data-tip-key="예약 생산 주기">예약 생산 주기</label><select id="sleepCycle"><option value="long">레벨별 최장</option><option value="30분">30분</option><option value="1시간">1시간</option><option value="2시간">2시간</option></select></div>
 <div class="control-field"><label for="sleepCount" data-tip-key="예약 횟수">예약 횟수</label><input id="sleepCount" type="number" min="0" step="1"></div>
 </div>
-<p class="section-guide">취침 전 생산은 입력한 운영 시간까지만 계산합니다. 여기에 예약 생산에 필요한 원료를 더하고, 보유 원료를 빼 금화·낙타 구매 비용을 계산합니다.</p>
+
 <div id="sleepTable" class="wrap">
 <table class="result-table" id="ts"><thead></thead><tbody></tbody></table>
 </div>
@@ -728,7 +786,7 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="목표 레벨 생산력 비교">목표 레벨 생산력 비교</h2>
 </div>
-<p class="section-guide">운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량과 현재 생산 방식을 반영하며, 금화·낙타는 목표에 부족한 상품을 만드는 데 필요한 원료의 구매 비용으로 계산합니다.</p>
+<p class="section-guide">설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 금화·낙타는 부족한 상품의 원료 구매비로 계산합니다.</p>
 <div id="powerTable" class="wrap">
 <table class="result-table" id="ta"><thead></thead><tbody></tbody></table>
 </div>
@@ -744,7 +802,7 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="card" id="conversionCard">
 <div class="sectionbar conversion-heading">
 <h2 data-tip-key="생산력 환산표">생산력 환산표</h2>
-<p class="section-guide">현재 설정한 생산 방식만 표시합니다. 다른 방식은 생산 계산기의 생산 방식을 변경해 비교할 수 있습니다.</p>
+<p class="section-guide">현재 설정한 생산 방식만 표시합니다.</p>
 </div>
 <div id="convert" class="wrap" role="region" aria-label="레벨별 생산력 환산표" tabindex="0">
 <table class="result-table" id="tc"><thead></thead><tbody></tbody></table>
@@ -752,13 +810,13 @@ input[aria-invalid]{border-color:var(--red)}
 </div>
 </section>
 <section class="panel" id="panel-city" role="tabpanel" aria-labelledby="tab-city">
-<nav class="mobile-section-nav" aria-label="도시 관리 섹션 바로가기"><a href="#cityOverviewCard">도시 현황</a><a href="#cityCompositionCard">주택·건물</a><a href="#dirhamCard">디르함</a><a href="#constructionCard">건설</a><a href="#cityResearchCard">연구</a>
+<nav class="mobile-section-nav" aria-label="도시 관리 섹션 바로가기"><a href="#cityOverviewCard">도시 현황</a><a href="#cityCompositionCard">주택·건물</a><a href="#dirhamCard">디르함</a><a href="#constructionCard">건설 비용</a><a href="#cityResearchCard">연구</a>
 </nav>
 <div class="card" id="cityOverviewCard">
 <div class="sectionbar">
 <h2 data-tip-key="도시 현황">도시 현황</h2>
 </div>
-<p class="section-guide">현재 건물 구성에 필요한 일꾼과 영토 면적을 확인합니다.</p>
+<p class="section-guide">입력한 건물 구성의 일꾼과 영토 사용량을 확인합니다. 실제 건물 배치 모양은 고려하지 않습니다.</p>
 <div class="summary city-summary" id="citySummary" role="status">
 </div><details class="city-breakdown"><summary>일꾼 계산 내역</summary>
 <div class="inline-status" id="workerStatus">
@@ -811,10 +869,10 @@ input[aria-invalid]{border-color:var(--red)}
 <h2 data-tip-key="건물 건설 비용">건물 건설 비용</h2>
 <button id="addConstruction">항목 추가</button>
 </div>
-<p class="section-guide">현재 레벨에서 목표 레벨까지 드는 비용을 계산합니다. 새로 지을 건물은 현재 레벨을 0으로 입력하세요.</p>
+<p class="section-guide">현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 새 건물은 현재 레벨을 0으로 입력하세요. 계산한 건물은 도시 구성에 자동 추가되지 않습니다.</p>
 <div class="wrap" id="construction">
 </div>
-<p class="costbox">누적 건설 비용 <b id="buildCost"></b></p>
+<p class="costbox">누적 비용 <b aria-live="polite" id="buildCost"></b></p>
 </div>
 <div class="card" id="cityResearchCard">
 <div class="sectionbar">
@@ -842,7 +900,7 @@ input[aria-invalid]{border-color:var(--red)}
 <button type="button" data-research-filter="needed" aria-pressed="false">목표까지 필요</button>
 </div>
 <div class="research-legend" aria-label="연구 상태">
-<span class="done">완료</span><span class="needed">추가 필요</span><span class="target">목표 연구</span>
+<span class="done">완료</span><span class="needed">추가 필요</span><span class="designated">완료 지정</span><span class="target">목표 연구</span>
 </div>
 <p class="section-guide" id="researchEmpty" role="status" hidden></p>
 <div class="research-wrap" role="region" aria-label="아라비아 연구 트리" tabindex="0">
@@ -853,7 +911,7 @@ input[aria-invalid]{border-color:var(--red)}
 </div>
 </div>
 </section>
-<footer>제작자 Mule · 수정일 2026. 11. 18.</footer>
+<footer>제작자 Mule · 수정일 2026. 11. 19.</footer>
 </main>
 <dialog id="photoImportDialog" aria-labelledby="photoImportTitle">
 <div class="modalhead"><h2 id="photoImportTitle">게임 사진으로 입력</h2><button id="photoImportClose" type="button">닫기</button></div>
@@ -868,10 +926,10 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="modalhead"><div><h2 id="detailTitle"></h2><p class="section-guide">서로 다른 레벨·생산 방식의 건물은 나누어 입력하세요.</p></div>
 <button type="button" data-close="detailDialog" aria-label="닫기">×</button></div>
 <div id="detailTabs" class="modal-tabs" role="group" aria-label="생산 항목"></div>
-<div class="detail-enable"><input id="detailEnabled" type="checkbox"><label for="detailEnabled">이 항목에 상세 설정 적용</label></div>
-<p class="section-guide">운영 시간이 빈칸이면 항목별 운영 시간, 기본 운영 시간 순서로 적용합니다. 행복도는 생산량에만 반영합니다.</p>
+<div class="detail-content"><div class="detail-enable"><input id="detailEnabled" type="checkbox" autofocus><label for="detailEnabled">이 항목에 상세 설정 적용</label></div>
+<p class="section-guide">운영 시간을 비우면 해당 항목의 시간 설정을 사용합니다. 행복도는 생산량에만 반영됩니다.</p>
 <p id="detailResult" class="section-guide" role="status"></p>
-<div id="detailRows"></div>
+<div id="detailRows"></div></div>
 <div class="detail-footer"><button id="detailAdd" type="button">+ 건물 구성 추가</button><button type="button" class="detail-done" data-close="detailDialog">완료</button></div>
 </dialog>
 <dialog id="resetDialog" aria-labelledby="resetTitle"><div class="modalhead"><h2 id="resetTitle">생산 계산기 초기화</h2><button data-close="resetDialog">닫기</button></div>
@@ -1166,7 +1224,7 @@ document.addEventListener('input', event => {
   if (event.target.matches('.stock-input,#dirhamStock')) event.target.dataset.edited = 'true';
 });
 document.addEventListener('keydown', event => {
-  if (event.key === 'Enter' && event.target.matches('[data-raw-stock],#dirhamStock')) {
+  if (event.key === 'Enter' && !event.isComposing && event.target.matches('main input[type=number],.stock-input,#dirhamStock,#detailRows input[type=number]')) {
     event.preventDefault();
     event.target.blur();
   }
@@ -1183,7 +1241,7 @@ document.addEventListener('focusout', event => {
     input.value = compact(Number(input.dataset.exact));
   }
 });
-function bindProductionRows(){document.querySelectorAll('#panel-prod tbody tr[data-group]').forEach(tr=>{const group=tr.dataset.group,name=tr.dataset.name;tr.querySelectorAll('[data-k]').forEach(el=>{const commit=()=>commitRow(el,group,name);el.addEventListener('change',commit);el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();el.blur();}});});});}
+function bindProductionRows(){document.querySelectorAll('#panel-prod tbody tr[data-group]').forEach(tr=>{const group=tr.dataset.group,name=tr.dataset.name;tr.querySelectorAll('[data-k]').forEach(el=>{const commit=()=>commitRow(el,group,name);el.addEventListener('change',commit);});});}
 function commitRow(el,group,name){
   const k=el.dataset.k,v=el.value,s=app[group][name];
   if(k==='lv'){s.lv=clamp(parseInt(v)||1,1,6);if(group==='products'){const modes=modesFor(productBuilding[name],s.lv);if(!modes.includes(s.mode))s.mode=modes[0]||s.mode;}else if(name!=='금화'){const modes=modesFor(resourceBuilding[name],s.lv);if(!modes.includes(s.mode))s.mode=modes[0]||s.mode;}}
@@ -1590,7 +1648,7 @@ function maxWonderLevel(){const need=Object.fromEntries(productOrder.map(n=>[n,0
 function metric(label,value){return '<div class="metric"><span>'+label+'</span><b>'+value+'</b></div>';}
 function cell(v,cls=''){return '<td class="'+cls+'">'+v+'</td>';}
 function makeTable(labels,rows){return '<table><thead><tr>'+labels.map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table>';}
-function ci(value,attrs=''){return '<input type="number" step="any" value="'+value+'" '+attrs+'>';}
+function ci(value,attrs='',step='any'){return '<input type="number" step="'+step+'" value="'+value+'" '+attrs+'>';}
 function selectedOptions(options,value){return options.map(([k,n])=>'<option value="'+k+'"'+(String(k)===String(value)?' selected':'')+'>'+n+'</option>').join('');}
 function camelDirham(){return configRows('낙타').reduce((sum,r)=>{const p=detailResourceInfo('낙타',r);let h=resourceDetailEnabled('낙타')?detailHours(r):effectiveHours('resources','낙타');return sum+(p?cyclesFor(h,p.min)*p.use1*num(r.count):0);},0);}
 function closure(ids){const seen=new Set();function add(id){if(seen.has(id))return;const t=CITY_DATA.research.find(t=>t.id===id);if(!t)return;seen.add(id);t.parents.forEach(add);}ids.forEach(add);return seen;}
@@ -1600,14 +1658,14 @@ function renderCity(){
  for(const b of CITY_DATA.buildings){const n=cityCount(b),lv=c.homes[b.id]?.lv||1,l=b.levels[lv];supply+=n*l.supply;used+=n*l.workers;area+=b.w*b.l*n;}
  $('workerStatus').innerHTML='현재 일꾼 <b>'+fmtQty(supply)+'</b> · 사용 일꾼 <b>'+fmtQty(used)+'</b> · <span class="'+(supply-used<0?'remain-bad':'remain-ok')+'">잔여/부족 <b>'+fmtQty(supply-used)+'</b></span>';
  const homeOrder=['Home_Medium','Home_Premium'];
- const homeRow=id=>{const h=c.homes[id],b=CITY_DATA.buildings.find(b=>b.id===id),n=num(h.count),supplyPer=b.levels[h.lv].supply;return '<tr>'+cell(b.name)+cell(ci(h.count,'min="0" data-home="'+id+'" data-field="count"'),'input-cell')+cell('<select data-home="'+id+'" data-field="lv">'+selectedOptions(Object.keys(b.levels).sort().map(lv=>[lv,'Lv.'+lv]),h.lv)+'</select>','input-cell')+cell(b.w+'×'+b.l,'calc')+cell(fmtQty(n*b.w*b.l),'calc')+cell('확보 '+fmtQty(n*supplyPer)+' ('+fmtQty(supplyPer)+'/채)','calc')+'</tr>';};
- const buildingRow=b=>'<tr'+(b.id==='City_CityHall'?'':' data-city-detail="1"')+'>'+cell(b.name)+cell(b.id==='City_CityHall'?'1':ci(c.manual[b.id]??'','min="0" placeholder="기본 '+cityCount({...b})+'" data-building="'+b.id+'"'),'input-cell')+cell(b.id==='City_CityHall'?'<select data-hall-level>'+selectedOptions([[1,'Lv.1'],[2,'Lv.2']],c.hallLv)+'</select>':'—','input-cell')+cell(b.w+'×'+b.l,'calc')+cell(fmtQty(cityCount(b)*b.w*b.l),'calc')+cell('필요 '+fmtQty(cityCount(b)*b.levels[1].workers),'calc')+'</tr>';
+ const homeRow=id=>{const h=c.homes[id],b=CITY_DATA.buildings.find(b=>b.id===id),n=num(h.count),supplyPer=b.levels[h.lv].supply;return '<tr>'+cell('<strong>'+b.name+'</strong><small class="building-size">'+b.w+'×'+b.l+'</small>')+cell(ci(h.count,'min="0" data-home="'+id+'" data-field="count"'),'input-cell')+cell('<select data-home="'+id+'" data-field="lv">'+selectedOptions(Object.keys(b.levels).sort().map(lv=>[lv,'Lv.'+lv]),h.lv)+'</select>','input-cell')+cell(fmtQty(n*b.w*b.l),'calc')+cell('확보 '+fmtQty(n*supplyPer)+' ('+fmtQty(supplyPer)+'/채)','calc')+'</tr>';};
+ const buildingRow=b=>'<tr'+(b.id==='City_CityHall'?'':' data-city-detail="1"')+'>'+cell('<strong>'+b.name+'</strong><small class="building-size">'+b.w+'×'+b.l+'</small>')+cell(b.id==='City_CityHall'?'1':ci(c.manual[b.id]??'','min="0" placeholder="기본 '+cityCount({...b})+'" data-building="'+b.id+'"'),'input-cell')+cell(b.id==='City_CityHall'?'<select data-hall-level>'+selectedOptions([[1,'Lv.1'],[2,'Lv.2']],c.hallLv)+'</select>':'—','input-cell')+cell(fmtQty(cityCount(b)*b.w*b.l),'calc')+cell('필요 '+fmtQty(cityCount(b)*b.levels[1].workers),'calc')+'</tr>';
  const cityHall=CITY_DATA.buildings.find(b=>b.id==='City_CityHall');
  const cityBuildingOrder=['Merchant_Average','CamelFarm_Average','Merchant_Premium','Workshop_Coffee','Workshop_Incense','Workshop_OilLamp','Workshop_Carpet','Workshop_Premium','Irrigation_Small','Irrigation_Oasis','Irrigation_Medium','Irrigation_Noria'];
  const cityBuildingById=new Map(CITY_DATA.buildings.map(b=>[b.id,b]));
  const orderedCityBuildings=[...cityBuildingOrder.map(id=>cityBuildingById.get(id)).filter(Boolean),...CITY_DATA.buildings.filter(b=>!c.homes[b.id]&&b.id!=='City_CityHall'&&!cityBuildingOrder.includes(b.id))];
  const cityRows=[...(cityHall?[buildingRow(cityHall)]:[]),...homeOrder.map(homeRow),...orderedCityBuildings.map(buildingRow)];
- $('cityBuildings').innerHTML=makeTable(['건물','건물 수','레벨','가로×세로','면적 합계','일꾼'],cityRows);
+ $('cityBuildings').innerHTML=makeTable(['건물','건물 수','레벨','사용 면적','일꾼'],cityRows);
  $('areaStatus').innerHTML='사용 면적 <b>'+fmtQty(area)+'</b>'+(c.plots===''?' · 현재 영토를 입력하세요.':' · 전체 면적 <b>'+fmtQty(c.plots*9)+'</b> · 잔여/부족 <b>'+fmtQty(c.plots*9-area)+'</b> ('+fmtBldg((c.plots*9-area)/9)+'칸)');
  for(const k of ['regularPlots','premiumPlots','dirhamRate','dirhamHours'])$(k).value=c[k];
  const stock = $('dirhamStock');
@@ -1619,19 +1677,28 @@ function renderCity(){
   $('dirhamStockError').hidden = true;
  }
  const choices=CITY_DATA.buildings.filter(b=>b.id!=='City_CityHall').map(b=>[b.id,b.name]);
- $('construction').innerHTML=makeTable(['건물 종류','현재 레벨','목표 레벨','건설 수','누적 비용','삭제'],c.construction.map((r,j)=>{const b=CITY_DATA.buildings.find(b=>b.id===r.id),cost={};for(let lv=r.cur+1;lv<=r.tgt;lv++)for(const[k,v]of Object.entries(b.levels[lv]?.costs||{}))cost[k]=(cost[k]||0)+v*r.count;return '<tr>'+cell('<select data-con="'+j+'" data-field="id">'+selectedOptions(choices,r.id)+'</select>','input-cell')+cell(ci(r.cur,'data-con="'+j+'" data-field="cur" min="0" max="6"'),'input-cell')+cell(ci(r.tgt,'data-con="'+j+'" data-field="tgt" min="1" max="6"'),'input-cell')+cell(ci(r.count,'data-con="'+j+'" data-field="count" min="0"'),'input-cell')+cell(money(cost),'calc')+cell('<button data-remove-con="'+j+'" aria-label="건설 항목 삭제">×</button>')+'</tr>';}));
+ $('construction').innerHTML=makeTable(['건물 종류','현재 레벨','목표 레벨','건설 수','누적 비용','삭제'],c.construction.map((r,j)=>{const b=CITY_DATA.buildings.find(b=>b.id===r.id),cost={};for(let lv=r.cur+1;lv<=r.tgt;lv++)for(const[k,v]of Object.entries(b.levels[lv]?.costs||{}))cost[k]=(cost[k]||0)+v*r.count;return '<tr>'+cell('<select data-con="'+j+'" data-field="id">'+selectedOptions(choices,r.id)+'</select>','input-cell')+cell(ci(r.cur,'data-con="'+j+'" data-field="cur" min="0" max="6"'),'input-cell')+cell(ci(r.tgt,'data-con="'+j+'" data-field="tgt" min="1" max="6"'),'input-cell')+cell(ci(r.count,'data-con="'+j+'" data-field="count" min="0"'),'input-cell')+cell(money(cost),'calc')+cell('<button type="button" data-remove-con="'+j+'" aria-label="건설 항목 '+(j+1)+' 삭제">삭제</button>')+'</tr>';}));
  $('buildCost').textContent=money(constructionCost());renderResearch();
 }
 function renderResearch(){const done=closure(app.city.current),goal=closure(app.city.target),needed=new Set([...goal].filter(id=>!done.has(id))),cost={};for(const t of CITY_DATA.research)if(needed.has(t.id))for(const[k,v]of Object.entries(t.costs))cost[k]=(cost[k]||0)+v;$('researchCost').textContent=money(cost);$('researchSummary').textContent='현재 완료 '+done.size+'개 · 목표까지 추가 '+needed.size+'개';const rows={};for(const t of CITY_DATA.research)(rows[t.row]??=[]).push(t);const pos={};for(const[row,list]of Object.entries(rows)){list.sort((a,b)=>a.col-b.col);list.forEach((t,j)=>pos[t.id]=[(j+1)*960/(list.length+1),Number(row)*84-35]);}const height=Math.max(...CITY_DATA.research.map(t=>t.row))*84;let svg='';for(const t of CITY_DATA.research)for(const p of t.parents){const a=pos[p],b=pos[t.id];svg+='<path d="M'+a[0]+','+(a[1]+34)+' L'+b[0]+','+(b[1]-34)+'" stroke="#c4b49e" fill="none"/>';}
- const node=(t,mobile=false)=>'<button type="button" aria-pressed="'+(app.city.current.includes(t.id)||app.city.target.includes(t.id))+'" data-tech="'+t.id+'" title="'+t.english+'" class="'+(mobile?'research-mobile-node ':'research-node ')+(done.has(t.id)?'done':app.city.target.includes(t.id)?'target':needed.has(t.id)?'needed':'')+'"'+(mobile?'':' style="left:'+pos[t.id][0]+'px;top:'+pos[t.id][1]+'px"')+'>'+t.name+'<small>'+money(t.costs)+'</small></button>';
+ const node=(tech,mobile=false)=>{
+  const designated=app.city.current.includes(tech.id),target=app.city.target.includes(tech.id);
+  const completed=done.has(tech.id),required=needed.has(tech.id);
+  const classes=[mobile?'research-mobile-node':'research-node',completed?'done':required?'needed':'',designated?'designated':'',target?'target':''];
+  const statuses=[designated?'완료 지정':completed?'완료':required&&!target?'추가 필요':'',target?'목표 연구':''].filter(Boolean);
+  const status=statuses.join(' · ')||'미완료';
+  return '<button type="button" aria-haspopup="dialog" data-tech="'+tech.id+'" title="'+tech.english
+   +'" class="'+classes.filter(Boolean).join(' ')+'"'+(mobile?'':' style="left:'+pos[tech.id][0]+'px;top:'+pos[tech.id][1]+'px"')
+   +'>'+tech.name+'<small>'+money(tech.costs)+' · '+status+'</small></button>';
+ };
  $('researchTree').style.height=height+'px';$('researchTree').innerHTML='<svg width="960" height="'+height+'">'+svg+'</svg>'+CITY_DATA.research.map(t=>node(t)).join('');$('researchMobile').innerHTML=Object.values(rows).map(list=>'<div class="research-stage">'+list.map(t=>node(t,true)).join('')+'</div>').join('');}
 
 const TOOLTIPS={"불가사의":"선택한 불가사의 종류에 따라 적용되는 보너스가 달라집니다.","보너스 적용 레벨":"현재 적용받는 불가사의 보너스 레벨입니다. 생산 보너스와 추가 일꾼 계산에 사용됩니다.","불가사의 보너스":"선택한 불가사의가 제공하는 생산 보너스와 추가 일꾼입니다.","기본 운영 시간(h)":"각 항목의 운영 시간을 따로 입력하지 않았을 때 공통으로 적용되는 시간입니다.","기본 운영 시간":"각 항목의 운영 시간을 따로 입력하지 않았을 때 공통으로 적용되는 시간입니다.","기초 자원":"현재 건물 구성과 운영 시간을 기준으로 기초 자원의 예상 생산량을 계산하고, 상위 생산에 필요한 양과 비교합니다.","중간 자원":"상품 생산에 필요한 원료입니다. 현재 보유량을 입력하면 부족한 원료의 구매 필요량과 금화·낙타 비용을 계산합니다.","상품":"현재 건물 구성과 운영 시간을 기준으로 생산량과 원료 사용량을 계산합니다. 생산량은 완료된 생산 주기만 반영하며, 행복도는 원료 사용량에 영향을 주지 않습니다.","생산 항목":"계산할 자원·중간 자원·상품의 이름입니다.","레벨":"해당 생산 건물이나 건물의 현재 레벨을 입력합니다.","생산 방식":"한 번 생산을 완료하는 데 걸리는 주기입니다. 낙타·상품은 완료한 생산 주기만 생산량에 포함됩니다.","건물 수":"해당 생산에 사용하는 건물 수를 입력합니다.","행복도(%)":"게임에 표시된 행복도를 0~100%로 입력하세요.","운영 시간(h)":"이 항목을 가동할 시간입니다. 비워 두면 기본 운영 시간을 사용합니다.","현재 보유량":"현재 가지고 있는 수량입니다. 입력한 보유량은 ‘불가사의 목표’ 계산에도 사용됩니다.","예상 생산량":"현재 입력한 건물 구성과 운영 시간을 기준으로 예상되는 생산량입니다.","소비·필요량":"금화·낙타는 원료 구매 비용, 상품은 생산에 사용할 원료량입니다.","잔여/부족":"생산과 필요한 양을 모두 반영한 뒤 남는 수량입니다. 양수면 남고, 음수면 부족합니다.","소요 시간":"현재 보유량을 포함해 필요한 수량을 모두 확보하기까지 걸리는 시간입니다.","구매 필요량":"상품 생산에 필요한 원료에서 현재 보유량을 뺀 구매 수량입니다.","금화 필요량":"부족한 원료를 구매하는 데 필요한 금화입니다.","낙타 필요량":"부족한 원료를 구매하는 데 필요한 낙타입니다.","상세 설정":"같은 생산 항목이라도 건물마다 레벨·생산 방식·행복도·운영 시간이 다를 때 각각 나누어 입력합니다.","상세 설정 적용":"같은 생산 항목의 건물 구성이 서로 다를 때 켭니다. 끄면 기본 설정으로 계산하며, 입력해 둔 상세 설정 값은 그대로 남아 있습니다.","목표 달성 현황":"현재 레벨부터 목표 레벨까지 필요한 상품과 예상 보유량을 비교합니다.","현재 레벨":"현재 불가사의 또는 건물의 레벨입니다.","목표 레벨":"도달하려는 불가사의 또는 건물의 목표 레벨입니다.","구간 필요량":"현재 레벨 다음부터 목표 레벨까지 불가사의가 요구하는 상품량입니다.","최대 도달(자원 기준)":"예상 보유 자원으로 올릴 수 있는 불가사의 레벨입니다. 부족한 상품의 추가 생산 시간은 제외합니다.","조정 필요 생산 항목":"기초 자원인 금화·낙타의 부족 여부를 표시합니다.","생산력 부족 항목":"현재 생산력으로 목표 레벨까지 필요한 수량을 운영 시간 내 생산하지 못하는 항목입니다.","수면 대비 자원 확보":"수면 중 생산에 필요한 원료를 취침 전까지 구매할 수 있는지 확인합니다. 수면 전 소비와 현재 보유량도 반영합니다.","수면까지 남은 시간(h)":"지금부터 취침 전까지 건물을 가동할 시간입니다. 비워 두면 기본 운영 시간을 사용합니다.","수면 중 생산 주기":"수면 중 상품을 생산할 주기입니다. 해당 주기가 없으면 가능한 최장 주기를 사용합니다.","생산 횟수":"수면 중 선택한 생산 주기를 몇 번 완료할지 입력합니다.","수면 중 생산 횟수":"수면 중 선택한 생산 주기를 몇 번 완료할지 입력합니다.","수면 필요량":"수면 전·중 상품 생산에 필요한 원료를 구매하는 금화·낙타입니다.","취침 전 확보량":"현재 금화·낙타 보유량에 취침 전 예상 생산량을 더한 값입니다.","목표 레벨 생산력 비교":"목표 상품의 부족분만 생산할 때 필요한 생산력과 현재 생산력을 비교합니다. 목표를 초과하는 생산은 제외하며, 생산력 차이가 음수이면 부족합니다.","필요량 환산 기준 주기":"부족한 상품을 만들 때 필요한 원료량을 계산하는 기준 생산 주기입니다. 실제 생산 방식은 바뀌지 않습니다.","생산력 차이":"현재 생산력 − 필요 생산력입니다. 0 이상이면 충분하고, 음수이면 부족합니다.","현재 생산력":"생산 계산기에 입력한 현재 건물 구성의 생산 능력입니다. 수치 기준은 아래 ‘생산력 환산표’를 참고하세요.","필요 생산력":"목표까지 필요한 양을 운영 시간 안에 생산하기 위해 필요한 생산 능력입니다. 수치 기준은 아래 ‘생산력 환산표’를 참고하세요.","생산력 환산표":"건물 1채의 레벨·생산 주기별 생산력을 같은 기준으로 비교하는 표입니다. Lv6·행복도 100%·30분 생산을 100으로 봅니다. 금화는 Lv6의 시간당 생산량을 기준으로 합니다.","도시 현황":"현재 입력된 주택과 생산 건물을 기준으로 일꾼과 영토 사용 현황을 보여줍니다. ‘상세 보기’에서 생산 건물 구성을 확인할 수 있습니다.","일꾼 현황 · 주택":"주택에서 확보하는 일꾼 수와 현재 건물에 필요한 인원을 비교합니다.","일꾼 현황":"현재 일꾼과 사용 일꾼을 비교합니다. 잔여/부족이 음수이면 일꾼이 부족합니다.","현재 일꾼":"주택과 불가사의 보너스로 확보한 전체 일꾼입니다.","사용 일꾼":"현재 건물 구성에 필요한 일꾼입니다.","주택":"일꾼을 제공하는 주택입니다.","일꾼/채":"주택 1채가 제공하는 일꾼입니다.","필요 일꾼":"현재 건물 수에 필요한 일꾼입니다.","영토 현황":"현재 해금한 영토 칸 수를 입력해 사용 면적과 남은 면적을 확인합니다.","현재 영토(칸)":"현재 해금한 영토 칸 수입니다. 아라비아의 1칸은 3×3입니다.","건물 구성":"생산 계산기에 입력한 생산 건물 수가 기본으로 들어옵니다. 여기서 건물 수를 직접 입력하면 직접 입력한 값을 사용합니다.","건물":"현재 도시에 배치한 건물입니다.","가로×세로":"건물 1채가 차지하는 영토 크기입니다.","면적 합계":"건물 1채의 면적에 현재 건물 수를 곱한 값입니다.","영토 사용":"현재 건물의 사용 면적입니다. 아라비아 1칸의 면적은 9입니다.","전체 면적":"현재 영토 칸 수 × 9입니다.","영토 잔여/부족":"전체 면적에서 건물 사용 면적을 뺀 값입니다.","디르함 현황":"현재 보유량과 시간당 생산량을 입력하면 운영 시간 후 예상 디르함을 계산합니다. 운영 시간을 비우면 기본 운영 시간을 사용합니다. 낙타 생산 비용은 자동 차감합니다.","디르함 현재 보유량":"현재 가지고 있는 디르함입니다.","시간당 생산량":"게임에 표시된 실제 시간당 생산량을 입력하세요. 비우면 시청·주택 레벨과 불가사의 보너스로 계산합니다.","예상 보유량":"현재 보유량에 운영 시간 동안 생산할 디르함을 더하고, 낙타 생산 비용을 뺀 예상 보유량입니다.","건물 건설 비용":"건물의 현재 레벨, 목표 레벨, 건설 수를 입력하면 필요한 디르함·보석을 계산합니다. 현재 레벨 0은 새 건물 건설을 뜻합니다.","건물 종류":"비용을 계산할 건물을 선택합니다.","건설 수":"같은 조건으로 건설하거나 업그레이드할 건물 수입니다. 비용 계산에만 사용됩니다.","누적 비용":"현재 레벨에서 목표 레벨까지 건설하거나 업그레이드하는 데 필요한 총비용입니다.","삭제":"이 건설 비용 계산 항목을 삭제합니다.","연구":"연구를 눌러 현재 완료 상태와 목표 연구를 선택합니다. 목표 연구에 필요한 선행 연구는 자동으로 포함되며, 필요한 디르함을 합산합니다.","자원":"원료 구매에 사용하는 금화·낙타입니다."};
 const escAttr=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const termSpec=x=>typeof x==='string'?{label:x,tip:TOOLTIPS[x]||''}:{label:x.label,tip:x.tip||TOOLTIPS[x.label]||''};
-const infoIcon=(label,tip,unavailable=false)=>tip?'<button type="button" class="info-tip'+(unavailable?' unavailable-value':'')+'" aria-label="'+escAttr(label)+' 설명" data-tip="'+escAttr(tip)+'">'+(unavailable?'—':'i')+'</button>':'';
+const infoIcon=(label,tip)=>tip?'<button type="button" class="info-tip" aria-label="'+escAttr(label)+' 설명" data-tip="'+escAttr(tip)+'">i</button>':'';
 const termHtml=x=>{const s=termSpec(x);return'<span class="term-wrap"><span class="term-text">'+s.label+'</span>'+infoIcon(s.label,s.tip)+'</span>'};
-const td=(v,cls='')=>'<td class="'+cls+'">'+v+'</td>',head=labels=>'<thead><tr>'+labels.map(x=>{const s=termSpec(x);return'<th data-label="'+escAttr(s.label)+'" data-help="'+escAttr(s.tip)+'">'+termHtml(s)+'</th>'}).join('')+'</tr></thead>';
+const td=(v,cls='')=>'<td class="'+cls+'">'+v+'</td>',head=labels=>'<thead><tr>'+labels.map(x=>{const s=termSpec(x);return'<th scope="col" data-label="'+escAttr(s.label)+'">'+termHtml(s)+'</th>'}).join('')+'</tr></thead>';
 
 function metricValue(v){if(!Array.isArray(v))return '<strong>'+v+'</strong>';return '<div class="metric-values">'+v.map(x=>Array.isArray(x)?'<span class="metric-part">'+(x[0]?'<span>'+x[0]+'</span>':'')+'<b>'+x[1]+'</b></span>':'<span class="metric-name">'+x+'</span>').join('')+'</div>'}
 function metricBox(k,v,cls=''){return '<div class="metric '+cls+'"><span>'+termHtml(k)+'</span>'+metricValue(v)+'</div>'}
@@ -1654,7 +1721,31 @@ function decorateNumbers(root=document){root.querySelectorAll('input[type="numbe
   wrapper.append(picker);
  }
 })}
-function labelInputs(target){const root=$(target);root.querySelectorAll('table').forEach(table=>{const hs=[...table.querySelectorAll('thead th')];const specs=hs.map(th=>{const label=th.dataset.label||th.querySelector('.term-text')?.textContent||th.textContent.trim(),tip=th.dataset.help||TOOLTIPS[label]||'';th.dataset.label=label;th.dataset.help=tip;if(!th.querySelector('.term-wrap'))th.innerHTML=termHtml({label,tip});return{label,tip}});table.querySelectorAll('tbody tr').forEach(row=>{const first=row.cells[0];let name='항목';if(first){const clone=first.cloneNode(true);clone.querySelectorAll('.mobilelabel,.badge').forEach(n=>n.remove());name=clone.textContent.trim()||'항목'}[...row.cells].forEach((cell,j)=>{const s=specs[j]||{label:'',tip:''};cell.dataset.label=s.label;cell.querySelector(':scope > .mobilelabel')?.remove();const mobile=document.createElement('span');mobile.className='mobilelabel';mobile.innerHTML=termHtml(s);cell.insertBefore(mobile,cell.firstChild)});row.querySelectorAll('input,select').forEach(el=>{const index=el.closest('td')?.cellIndex??0;el.setAttribute('aria-label',name+' '+(specs[index]?.label||'입력값'))})})});decorateNumbers(root)} function table(target,labels,rows){$(target).innerHTML='<table class="result-table">'+head(labels)+'<tbody>'+rows.join('')+'</tbody></table>';labelInputs(target)}
+function labelInputs(target){
+ const root=$(target);
+ for(const table of root.querySelectorAll('table')){
+  const labels=[...table.querySelectorAll('thead th')].map(header=>{
+   const label=header.dataset.label||header.textContent.trim();
+   header.dataset.label=label;
+   header.scope='col';
+   if(!header.querySelector('.term-wrap'))header.innerHTML=termHtml(label);
+   return label;
+  });
+  for(const row of table.querySelectorAll('tbody tr')){
+   const nameCell=row.cells[0]?.cloneNode(true);
+   nameCell?.querySelectorAll('.badge,.building-size').forEach(node=>node.remove());
+   const name=row.dataset.name||nameCell?.textContent.trim()||'항목';
+   for(const [index,cell] of [...row.cells].entries()){
+    const label=labels[index];
+    if(!label)continue;
+    cell.dataset.label=label;
+    for(const control of cell.querySelectorAll('input,select'))control.setAttribute('aria-label',name+' '+label);
+   }
+  }
+ }
+ decorateNumbers(root);
+}
+function table(target,labels,rows){$(target).innerHTML='<table class="result-table">'+head(labels)+'<tbody>'+rows.join('')+'</tbody></table>';labelInputs(target)}
 
 function decorateTipLabels(root=document){root.querySelectorAll('[data-tip-key]').forEach(el=>{if(el.dataset.tipReady)return;const key=el.dataset.tipKey,tip=TOOLTIPS[key];if(!tip)return;const node=[...el.childNodes].find(n=>n.nodeType===3&&n.textContent.trim());if(!node)return;const span=document.createElement('span');span.className='term-label';span.innerHTML='<span class="term-text">'+node.textContent.trim()+'</span>'+infoIcon(key,tip);node.replaceWith(span,document.createTextNode(' '));el.dataset.tipReady='1'})}
 function initTermTooltips() {
@@ -1705,7 +1796,8 @@ function initTermTooltips() {
   addEventListener('resize', hide);
 }
 
-let activeDetailName='금화',activeDetailGroup=0,activeTech=null;
+let activeDetailName='금화',activeTech=null;
+const lastDetailItem={0:resourceOrder[0],2:productOrder[0]};
 function detailGroup(name){return resourceOrder.includes(name)?'resources':'products';}
 function detailConfig(name){return detailGroup(name)==='resources'?app.resourceDetails[name]:app.details[name];}
 function nativeRows(name){const group=detailGroup(name),s=app[group][name],d=detailConfig(name);return d.enabled&&d.rows.length?d.rows:[{lv:s.lv,count:s.bldgs,irrigation:s.irrigation,hours:s.hours,mode:s.mode}];}
@@ -1721,7 +1813,7 @@ wonderTime=function(name){
  return need>0?timeToNative(name,Math.max(0,need-plannedProductStock(name))):0;
 };
 resourceRequiredHours=function(name,amount){return timeToNative(name,Math.max(0,amount-num(app.resources[name].stock)));};
-function rowInput(k,v,extra=''){return '<input type="number" step="'+(['lv','bldgs','irrigation'].includes(k)?'1':'any')+'" data-k="'+k+'" value="'+v+'" '+extra+'>';}
+function rowInput(k,v,extra=''){return '<input type="number" step="'+(k==='lv'?'1':'any')+'" data-k="'+k+'" value="'+v+'" '+extra+'>';}
 function rowMode(name,disabled){const group=detailGroup(name),s=app[group][name],building=(group==='resources'?resourceBuilding:productBuilding)[name];if(name==='금화')return '연속';return '<select data-k="mode" '+disabled+'>'+modeOptions(building,s.lv,s.mode)+'</select>';}
 function nativeRow(name){const group=detailGroup(name),s=app[group][name],enabled=group==='resources'?resourceDetailEnabled(name):detailEnabled(name),dis=enabled?'disabled':'',out=group==='resources'?resourceOutput(name):productOutput(name),use=group==='resources'?name+' 필요 '+fmtQty(resourceConsumption(name)):rawOrder.filter(r=>productUse(name,r)>0).map(r=>r+' '+fmtQty(productUse(name,r))).join('<br>')||'0',remain=s.stock+out-(group==='resources'?resourceConsumption(name):0),count=nativeRows(name).reduce((sum,r)=>sum+r.count,0);
  const reward=group==='products'?selectedQuestBonus(name):0;
@@ -1746,7 +1838,7 @@ renderBonus=function(){
 };
 function currentAdjustments(){const pa=Object.fromEntries(productOrder.map(n=>[n,productAdjustment(n)]));return [...resourceOrder.map(n=>resourceAdjustment(n,pa)),...productOrder.map(n=>pa[n])];}
 renderWonder=function(){
- const labels=['상품','잔여/부족','구간 필요량',{label:'현재 보유량',tip:'입력한 보유량에 선택한 퀘스트 보상을 더한 값입니다.'},'예상 생산량','예상 보유량','소요 시간'];
+ const labels=['상품','잔여/부족','구간 필요량',{label:'현재 보유량',tip:'입력한 보유량에 선택한 퀘스트 보상을 더한 값입니다.'},'예상 생산량','예상 보유량',{label:'소요 시간',tip:'보유량과 선택한 퀘스트 보상을 반영해, 부족한 상품의 생산이 완료될 때까지 걸리는 시간입니다. 원료 구매 대기는 제외합니다.'}];
  const rows=productOrder.map(name=>{
   const need=wonderNeed(name),stock=plannedProductStock(name),output=productOutput(name);
   const projected=stock+output,remain=projected-need;
@@ -1755,19 +1847,28 @@ renderWonder=function(){
   return '<tr>'+td(name)+balance+details+td(duration(wonderTime(name)),'calc')+'</tr>';
  });
  $('tw').innerHTML=head(labels)+'<tbody>'+rows.join('')+'</tbody>';
- const short=currentAdjustments().filter(a=>powerDifferenceIndex(a)<0).map(a=>a.name);
- metrics('goalSummary',[['최대 도달(자원 기준)','Lv.'+resourceReach()],['생산력 부족 항목',short.join(' · ')||'없음']]);
+ const shortage=[], missingHours=[];
+ for(const adjustment of currentAdjustments()){
+  const difference=powerDifferenceIndex(adjustment);
+  if(difference===null)missingHours.push(adjustment.name);
+  else if(difference< -1e-8)shortage.push(adjustment.name);
+ }
+ const status=shortage.join(' · ')||(missingHours.length?'운영 시간 확인':'없음');
+ metrics('goalSummary',[['최대 도달(자원 기준)','Lv.'+resourceReach()],
+  ['생산력 부족 항목',status,shortage.length||missingHours.length?'warning-metric':'']]);
+ if(missingHours.length){
+  const detail=document.createElement('small');
+  detail.textContent=(shortage.length?'운영 시간 확인 · ':'')+missingHours.join(' · ');
+  $('goalSummary').lastElementChild.append(detail);
+ }
  $('wonderContextName').textContent=WONDER_VARIANTS[activeWonder].name;
  $('wonderBonusLevel').textContent='Lv.'+app.settings.wLv;
  labelInputs('goalTable');
 };
 function powerStatus(diff) { return diff === null ? '' : diff < 0 ? 'bad' : 'ok'; }
-function unavailablePower() {
-  return infoIcon('생산력 계산','운영 시간과 선택한 생산 방식을 확인하세요. 생산할 수 있는 기준량이 없으면 생산력을 비교할 수 없습니다.',true);
-}
-renderSleepReserve=function(){const plan=sleepPurchasePlan(),purchases=purchaseTotals(plan.total);renderPurchaseBreakdown('sleepPurchaseTable',purchases,plan);const labels=['자원','생산력 차이','현재 생산력','필요 생산력','총 구매 필요량','취침 전 확보량','잔여/부족'];$('ts').innerHTML=head(labels)+'<tbody>'+resourceOrder.map(n=>{const a=sleepResourcePower(n,purchases);return '<tr>'+td(n)+td(a.diff===null?unavailablePower():fmtSignedPower(a.diff),'calc '+powerStatus(a.diff))+td(fmtPower(a.current),'calc detailcol')+td(fmtPower(a.needed),'calc detailcol')+td(compact(a.required),'calc detailcol')+td(compact(a.projected),'calc detailcol')+td(compact(a.remain),'calc detailcol '+(a.remain<0?'bad':'ok'))+'</tr>';}).join('')+'</tbody>';labelInputs('sleepTable');};
-renderAdjustment=function(){renderPurchaseBreakdown('targetPurchaseTable',purchaseTotals(adjustedRawConsumption()));$('ta').innerHTML=head(['생산 항목','생산력 차이','현재 생산력','필요 생산력'])+'<tbody>'+currentAdjustments().map(a=>{const diff=powerDifferenceIndex(a);return '<tr>'+td(a.name)+td(diff===null?unavailablePower():fmtSignedPower(diff),'calc '+powerStatus(diff))+td(fmtPower(currentPowerIndex(a)),'calc detailcol')+td(fmtPower(requiredPowerIndex(a)),'calc detailcol')+'</tr>';}).join('')+'</tbody>';labelInputs('powerTable');};
-renderConversion=function(){$('tc').innerHTML=head(['생산 항목','생산 방식','Lv1','Lv2','Lv3','Lv4','Lv5','Lv6'])+'<tbody>'+[...resourceOrder,...productOrder].flatMap(name=>{const building=(resourceBuilding[name]||productBuilding[name]),modes=[...new Set(nativeRows(name).map(r=>r.mode||app[detailGroup(name)][name].mode))];return modes.map(m=>'<tr>'+td(name)+td(m)+[1,2,3,4,5,6].map(lv=>{const p=info(building,lv,m);return td(p?fmtPower((name==='금화'?outputForInfoHappy(p,1,1,true,100):happyCycleOutput(p,100)*60/p.min)/benchmarkRate(name)*100):infoIcon('생산 방식','이 레벨에서는 선택한 생산 방식을 사용할 수 없습니다.',true),'calc');}).join('')+'</tr>');}).join('')+'</tbody>';labelInputs('convert');};
+renderSleepReserve=function(){const plan=sleepPurchasePlan(),purchases=purchaseTotals(plan.total);renderPurchaseBreakdown('sleepPurchaseTable',purchases,plan);const labels=['자원','생산력 차이','현재 생산력','필요 생산력','총 구매 필요량',{label:'취침 전 확보량',tip:'현재 보유량에 취침 전 예상 생산량을 더한 값입니다.'},{label:'잔여/부족',tip:'취침 전 확보량 − 총 구매 필요량입니다. 음수이면 취침 전에 더 확보해야 합니다.'}];$('ts').innerHTML=head(labels)+'<tbody>'+resourceOrder.map(n=>{const a=sleepResourcePower(n,purchases);return '<tr>'+td(n)+td(a.diff===null?'운영 시간 확인':fmtSignedPower(a.diff),'calc '+powerStatus(a.diff))+td(fmtPower(a.current),'calc detailcol')+td(fmtPower(a.needed),'calc detailcol')+td(compact(a.required),'calc detailcol')+td(compact(a.projected),'calc detailcol')+td(compact(a.remain),'calc detailcol '+(a.remain<0?'bad':'ok'))+'</tr>';}).join('')+'</tbody>';labelInputs('sleepTable');};
+renderAdjustment=function(){renderPurchaseBreakdown('targetPurchaseTable',purchaseTotals(adjustedRawConsumption()));$('ta').innerHTML=head(['생산 항목','생산력 차이','현재 생산력','필요 생산력'])+'<tbody>'+currentAdjustments().map(a=>{const diff=powerDifferenceIndex(a);return '<tr'+(a.name===productOrder[0]?' class="adjust-product-start"':'')+'>'+td(a.name)+td(diff===null?'운영 시간 확인':fmtSignedPower(diff),'calc '+powerStatus(diff))+td(fmtPower(currentPowerIndex(a)),'calc detailcol')+td(fmtPower(requiredPowerIndex(a)),'calc detailcol')+'</tr>';}).join('')+'</tbody>';labelInputs('powerTable');};
+renderConversion=function(){$('tc').innerHTML=head(['생산 항목','생산 방식','Lv1','Lv2','Lv3','Lv4','Lv5','Lv6'])+'<tbody>'+[...resourceOrder,...productOrder].flatMap(name=>{const building=(resourceBuilding[name]||productBuilding[name]),modes=[...new Set(nativeRows(name).map(r=>r.mode||app[detailGroup(name)][name].mode))];return modes.map(m=>'<tr>'+td(name)+td(m)+[1,2,3,4,5,6].map(lv=>{const p=info(building,lv,m);return td(p?fmtPower((name==='금화'?outputForInfoHappy(p,1,1,true,100):happyCycleOutput(p,100)*60/p.min)/benchmarkRate(name)*100):'—','calc');}).join('')+'</tr>');}).join('')+'</tbody>';labelInputs('convert');};
 function renderPurchaseBreakdown(id, purchases, sleepPlan = null) {
   const demandColumns = sleepPlan ? ['취침 전 소비량', '예약 필요량'] : ['목표 필요량'];
   const labels = ['원료', ...demandColumns, '현재 보유량', '구매 필요량', '금화', '낙타'];
@@ -1776,13 +1877,10 @@ function renderPurchaseBreakdown(id, purchases, sleepPlan = null) {
     const demand = sleepPlan ? [sleepPlan.before[row.raw], sleepPlan.reserved[row.raw]] : [row.consumed];
     const quantities = [...demand, row.stock, row.need];
     const cells = [...quantities.map(wholeQuantity), row.gold, row.camel];
-    return '<tr><th scope="row">'+row.raw+'</th>'+cells.map((value,index) =>
-      '<td class="calc"><span class="purchase-field">'+labels[index+1]+'</span>'+fmtQty(value)+'</td>'
-    ).join('')+'</tr>';
+    return '<tr><th scope="row">'+row.raw+'</th>'+cells.map(value=>td(fmtQty(value),'calc')).join('')+'</tr>';
   });
   const total = '<tr><th scope="row" colspan="'+(labels.length-2)+'">총 구매 비용</th>'
-    +'<td><span class="purchase-field">금화</span>'+fmtQty(purchases.gold)+'</td>'
-    +'<td><span class="purchase-field">낙타</span>'+fmtQty(purchases.camel)+'</td></tr>';
+    +td(fmtQty(purchases.gold))+td(fmtQty(purchases.camel))+'</tr>';
   $(id).innerHTML = head(labels)+'<tbody>'+rows.join('')+'</tbody><tfoot>'+total+'</tfoot>';
 }
 function updateNativeViews(){
@@ -1797,11 +1895,48 @@ function updateNativeViews(){
 }
 function cityNativeDecorations(){for(const id of ['cityBuildings','construction'])labelInputs(id);const text=$('workerStatus').textContent;const current=text.match(/현재 일꾼\s*(\d[\d,]*)/)?.[1]||'0',used=text.match(/사용 일꾼\s*(\d[\d,]*)/)?.[1]||'0',remain=text.match(/잔여\/부족\s*(-?\d[\d,]*)/)?.[1]||'0';$('workerStatus').innerHTML=[['현재 일꾼',current+'명'],['사용 일꾼',used+'명'],['잔여/부족',remain+'명']].map(([k,v])=>'<div class="inline-status-row"><span class="inline-status-label">'+termHtml(k)+'</span><span class="inline-status-value '+(k==='잔여/부족'?(num(remain)<0?'bad':'ok'):'')+'">'+v+'</span></div>').join('');decorateTipLabels();}
 renderAll=function(){app.city??=cityDefault();app.views??={prod:false,wonder:false,city:false};syncSettingsInputs();syncQuestRewards();renderTables();renderBonus();renderWonder();renderSleepReserve();renderAdjustment();renderConversion();renderCity();cityNativeDecorations();updateNativeViews();decorateNumbers();};
-function showNativeDetail(name=null){if(name)activeDetailName=name;const names=activeDetailGroup===0?resourceOrder:productOrder,d=detailConfig(activeDetailName),group=detailGroup(activeDetailName),s=app[group][activeDetailName],building=(group==='resources'?resourceBuilding:productBuilding)[activeDetailName];$('detailTitle').textContent=group==='resources'?'기초 자원 상세 설정':'상품 상세 설정';
- const output=group==='resources'?resourceOutput(activeDetailName):productOutput(activeDetailName);
- const count=nativeRows(activeDetailName).reduce((total,row)=>total+row.count,0);
+function updateDetailResult(){
+ const name=activeDetailName;
+ const output=detailGroup(name)==='resources'?resourceOutput(name):productOutput(name);
+ const count=nativeRows(name).reduce((total,row)=>total+row.count,0);
  $('detailResult').textContent='현재 계산 · 건물 '+fmtBldg(count)+'채 · 예상 생산량 '+compact(output);
- $('detailTabs').innerHTML=names.map(n=>'<button type="button" data-native-name="'+n+'" aria-pressed="'+(n===activeDetailName)+'" class="'+(n===activeDetailName?'active':'')+'">'+n+'</button>').join('');$('detailEnabled').checked=d.enabled;$('detailAdd').disabled=!d.enabled;$('detailRows').innerHTML=d.rows.map((r,j)=>'<div class="detailrow" data-native-row="'+j+'"><strong class="detail-row-label">구성 '+(j+1)+'</strong><label data-tip-key="레벨">레벨'+ci(r.lv,'data-native-field="lv" min="1" max="6" step="1"')+'</label><label data-tip-key="생산 방식">생산 방식<select data-native-field="mode" '+(activeDetailName==='금화'?'disabled':'')+'>'+modeOptions(building,r.lv,r.mode)+'</select></label><label data-tip-key="건물 수">건물 수'+ci(r.count,'data-native-field="count" min="0"')+'</label><label data-tip-key="행복도(%)">행복도(%)'+ci(r.irrigation,'data-native-field="irrigation" min="0" max="100"')+'</label><label data-tip-key="운영 시간(h)">운영 시간(h)'+ci(r.hours,'data-native-field="hours" min="0" placeholder="기본"')+'</label><button data-native-remove="'+j+'" aria-label="구성 삭제">×</button></div>').join('');$('detailRows').querySelectorAll('input,select,[data-native-remove]').forEach(el=>el.disabled=!d.enabled||(activeDetailName==='금화'&&el.dataset.nativeField==='mode'));decorateTipLabels($('detailRows'));decorateNumbers($('detailRows'));}
+}
+function showNativeDetail(){
+ const name=activeDetailName,group=detailGroup(name),d=detailConfig(name);
+ const resource=group==='resources',names=resource?resourceOrder:productOrder;
+ const building=(resource?resourceBuilding:productBuilding)[name];
+ const defaultHours=fmtBldg(effectiveHours(group,name))+'시간';
+ $('detailTitle').textContent=resource?'기초 자원 상세 설정':'상품 상세 설정';
+ $('detailTabs').innerHTML=names.map(item=>{
+  const selected=item===name;
+  const applied=detailConfig(item).enabled;
+  return '<button type="button" data-native-name="'+item+'" aria-pressed="'+selected
+   +'" class="'+(selected?'active':'')+'"'+(applied?' aria-label="'+item+' 상세 설정 적용 중"':'')+'>'
+   +item+(applied?'<span class="detail-dot" aria-hidden="true"></span>':'')+'</button>';
+ }).join('');
+ $('detailEnabled').checked=d.enabled;
+ $('detailAdd').disabled=!d.enabled||d.rows.length>=20;
+ $('detailAdd').title=d.rows.length>=20?'건물 구성은 최대 20개까지 입력할 수 있습니다.':'';
+ const container=$('detailRows');
+ container.innerHTML=d.rows.map((row,index)=>'<div class="detailrow" data-native-row="'+index+'">'
+  +'<strong class="detail-row-label">구성 '+(index+1)+'</strong>'
+  +'<label>레벨'+ci(row.lv,'data-native-field="lv" min="1" max="6"','1')+'</label>'
+  +'<label>생산 방식<select data-native-field="mode">'+modeOptions(building,row.lv,row.mode)+'</select></label>'
+  +'<label>건물 수'+ci(row.count,'data-native-field="count" min="0"')+'</label>'
+  +'<label>행복도(%)'+ci(row.irrigation,'data-native-field="irrigation" min="0" max="100"')+'</label>'
+  +'<label>운영 시간(h)'+ci(row.hours,'data-native-field="hours" min="0" placeholder="기본 '+defaultHours+'"')+'</label>'
+  +'<button type="button" data-native-remove="'+index+'" aria-label="구성 '+(index+1)+' 삭제">×</button></div>').join('');
+ container.querySelectorAll('[data-native-field],[data-native-remove]').forEach(control=>{
+  control.disabled=!d.enabled||(name==='금화'&&control.dataset.nativeField==='mode');
+ });
+ container.querySelectorAll('[data-native-field]').forEach(control=>{
+  const index=Number(control.closest('[data-native-row]').dataset.nativeRow)+1;
+  const label=control.closest('label').firstChild.textContent;
+  control.setAttribute('aria-label',name+' 구성 '+index+' '+label);
+ });
+ decorateNumbers(container);
+ updateDetailResult();
+}
 function syncTarget(){app.wonder.tgt=Math.max(app.wonder.tgt,app.wonder.cur);$('tgtLv').min=app.wonder.cur;$('tgtLv').disabled=app.wonder.cur===50;$('tgtLv').value=app.wonder.tgt;}
 function initializeNativeUI(){
  try{
@@ -1871,14 +2006,60 @@ function initializeNativeUI(){
  $('factory').onclick=()=>{resetState();$('resetDialog').close();};
  document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).close());
  document.addEventListener('click',e=>{const arrows=e.target.closest('[data-number-delta]');if(arrows){const input=arrows.closest('.number-step').querySelector('input');if(input.disabled)return;let v=num(input.value)+Number(arrows.dataset.numberDelta);if(input.min!=='')v=Math.max(num(input.min),v);if(input.max!=='')v=Math.min(num(input.max),v);input.value=String(v);input.dispatchEvent(new Event('change',{bubbles:true}));}
- const group=e.target.closest('[data-detail-group]');if(group){activeDetailGroup=Number(group.dataset.detailGroup);activeDetailName=(activeDetailGroup===0?resourceOrder:productOrder)[0];showNativeDetail();$('detailDialog').showModal();}
- const tab=e.target.closest('[data-native-name]');if(tab)showNativeDetail(tab.dataset.nativeName);
- const remove=e.target.closest('[data-native-remove]');if(remove){detailConfig(activeDetailName).rows.splice(Number(remove.dataset.nativeRemove),1);renderAll();showNativeDetail();saveState();}
+ const group=e.target.closest('[data-detail-group]');
+ if(group){
+  activeDetailName=lastDetailItem[group.dataset.detailGroup];
+  showNativeDetail();
+  $('detailDialog').showModal();
+ }
+ const tab=e.target.closest('[data-native-name]');
+ if(tab){
+  activeDetailName=tab.dataset.nativeName;
+  lastDetailItem[detailGroup(activeDetailName)==='resources'?0:2]=activeDetailName;
+  showNativeDetail();
+  $('detailTabs').querySelector('[aria-pressed="true"]').focus();
+ }
+ const remove=e.target.closest('[data-native-remove]');
+ if(remove){
+  const d=detailConfig(activeDetailName),index=Number(remove.dataset.nativeRemove);
+  d.rows.splice(index,1);
+  if(!d.rows.length)d.enabled=false;
+  renderAll();
+  showNativeDetail();
+  ($('detailRows').querySelector('[data-native-remove="'+Math.min(index,d.rows.length-1)+'"]')||$('detailEnabled')).focus();
+  saveState();
+ }
  const con=e.target.closest('[data-remove-con]');if(con){app.city.construction.splice(Number(con.dataset.removeCon),1);renderAll();saveState();}
  const tech=e.target.closest('[data-tech]');if(tech){activeTech=tech.dataset.tech;const t=CITY_DATA.research.find(t=>t.id===activeTech);$('researchTitle').textContent=t.name;$('currentResearch').textContent=app.city.current.includes(activeTech)?'완료 지정 해제':'완료로 지정';$('targetResearch').textContent=app.city.target.includes(activeTech)?'목표 지정 해제':'목표로 지정';$('researchInfo').textContent='연구 비용 '+money(t.costs);$('researchDialog').showModal();}});
  $('detailEnabled').onchange=e=>{const d=detailConfig(activeDetailName),s=app[detailGroup(activeDetailName)][activeDetailName];d.enabled=e.target.checked;if(d.enabled&&!d.rows.length)d.rows=[{lv:s.lv,count:s.bldgs,irrigation:s.irrigation,hours:s.hours,mode:s.mode}];normalizeNative(activeDetailName);renderAll();showNativeDetail();saveState();};
- $('detailAdd').onclick=()=>{const d=detailConfig(activeDetailName),s=app[detailGroup(activeDetailName)][activeDetailName];d.rows.push({lv:s.lv,count:1,irrigation:s.irrigation,hours:'',mode:s.mode});normalizeNative(activeDetailName);renderAll();showNativeDetail();saveState();};
- $('detailRows').addEventListener('change',e=>{const el=e.target;if(!el.dataset.nativeField)return;const row=detailConfig(activeDetailName).rows[Number(el.closest('[data-native-row]').dataset.nativeRow)],k=el.dataset.nativeField;row[k]=k==='mode'?el.value:k==='hours'&&el.value===''?'':num(el.value);normalizeNative(activeDetailName);renderAll();showNativeDetail();saveState();});
+ $('detailAdd').onclick=()=>{
+  const detail=detailConfig(activeDetailName);
+  if(!detail.enabled||detail.rows.length>=20)return;
+  const basic=app[detailGroup(activeDetailName)][activeDetailName];
+  detail.rows.push({lv:basic.lv,count:1,irrigation:basic.irrigation,hours:'',mode:basic.mode});
+  normalizeNative(activeDetailName);
+  renderAll();
+  showNativeDetail();
+  $('detailRows').lastElementChild.querySelector('[data-native-field="lv"]').focus();
+  saveState();
+ };
+ $('detailRows').addEventListener('change',e=>{
+  const input=e.target,field=input.dataset.nativeField;
+  if(!field)return;
+  const rowElement=input.closest('[data-native-row]'),index=Number(rowElement.dataset.nativeRow);
+  const detail=detailConfig(activeDetailName);
+  detail.rows[index][field]=field==='mode'||(field==='hours'&&input.value==='')?input.value:num(input.value);
+  normalizeNative(activeDetailName);
+  const row=detail.rows[index];
+  input.value=row[field];
+  if(field==='lv'){
+   const building=resourceBuilding[activeDetailName]||productBuilding[activeDetailName];
+   rowElement.querySelector('[data-native-field="mode"]').innerHTML=modeOptions(building,row.lv,row.mode);
+  }
+  renderAll();
+  updateDetailResult();
+  saveState();
+ });
  $('dirhamUseBase').onclick = () => {
   app.city.dirhamHours = '';
   renderAll();
@@ -1887,7 +2068,17 @@ function initializeNativeUI(){
  };
  $('addConstruction').onclick=()=>{app.city.construction.push({id:'Home_Medium',cur:0,tgt:1,count:1});renderAll();saveState();};
  $('researchReset').onclick=()=>{app.city.current=[];app.city.target=[];renderAll();saveState();};
- for(const [id,key]of [['currentResearch','current'],['targetResearch','target']])$(id).onclick=()=>{const a=app.city[key],j=a.indexOf(activeTech);if(j>=0)a.splice(j,1);else a.push(activeTech);$('researchDialog').close();renderAll();saveState();};
+ for(const [id,key]of [['currentResearch','current'],['targetResearch','target']])$(id).onclick=()=>{
+  const selected=app.city[key],index=selected.indexOf(activeTech);
+  if(index>=0)selected.splice(index,1);
+  else selected.push(activeTech);
+  $('researchDialog').close();
+  renderAll();
+  const list=$(matchMedia('(max-width:720px)').matches?'researchMobile':'researchTree');
+  const node=list.querySelector('[data-tech="'+CSS.escape(activeTech)+'"]:not(.research-filter-hidden)');
+  (node||document.querySelector('[data-research-filter][aria-pressed="true"]'))?.focus({preventScroll:true});
+  saveState();
+ };
  $('panel-city').addEventListener('change',e=>{const el=e.target;let recognized=true;if(el.id==='dirhamStock'){const stock=readStock(el,$('dirhamStockError'));if(stock===null)return;app.city.dirhamStock=stock;}else if(['regularPlots','premiumPlots','dirhamRate','dirhamHours'].includes(el.id))app.city[el.id]=el.value===''&&['dirhamRate','dirhamHours'].includes(el.id)?'':num(el.value);else if(el.dataset.hallLevel!==undefined)app.city.hallLv=num(el.value);else if(el.dataset.home)app.city.homes[el.dataset.home][el.dataset.field]=num(el.value);else if(el.dataset.building)app.city.manual[el.dataset.building]=el.value===''?'':num(el.value);else if(el.dataset.con!==undefined)app.city.construction[Number(el.dataset.con)][el.dataset.field]=el.dataset.field==='id'?el.value:num(el.value);else recognized=false;if(recognized){app.city=normalizeCity(app.city);renderAll();saveState();}});
 }
 // User-facing clarity pass; shared Ithaca UI and Arabia production rules are retained.
@@ -1896,7 +2087,6 @@ const previousRequiredPowerEquivalent=requiredPowerEquivalent;
 requiredPowerEquivalent=function(a){if(a.remain!==null&&a.remain>=-1e-8&&Number.isFinite(a.current)&&a.current===0)return 0;return previousRequiredPowerEquivalent(a);};
 const previousRenderAllQuality=renderAll;
 function showDetailedConfigValues(){for(const name of [...resourceOrder,...productOrder]){const group=detailGroup(name),enabled=group==='resources'?resourceDetailEnabled(name):detailEnabled(name);if(!enabled)continue;const row=$('productionSections').querySelector('tr[data-name="'+name+'"]'),rows=nativeRows(name).filter(r=>r.count>0);if(!row||!rows.length)continue;const unique=k=>[...new Set(rows.map(k))];const levels=unique(r=>r.lv),modes=unique(r=>r.mode),happy=unique(r=>r.irrigation),hours=unique(r=>detailHours(r));for(const [index,text]of [[1,levels.length===1?'Lv.'+levels[0]:'혼합'],[2,modes.length===1?modes[0]:'혼합'],[4,happy.length===1?fmtPct(happy[0]):'혼합'],[5,hours.length===1?duration(hours[0]):'혼합']]){row.cells[index].innerHTML=text;row.cells[index].classList.add('calc');} }labelInputs('productionSections');}
-function refreshSummaryQuality(){const adjustments=currentAdjustments(),needsTime=adjustments.some(a=>a.status==='warn'||(a.remain!==null&&a.remain<0&&powerDifferenceIndex(a)===null));if(needsTime){const summary=$('goalSummary').querySelectorAll('.metric')[1];summary.innerHTML='<span>'+termHtml('생산력 부족 항목')+'</span><strong>운영 시간 확인</strong>';}}
 function renderUserGuidance(){
  for (const [id, items, enabled] of [['stage0DetailSummary', resourceOrder, resourceDetailEnabled],
                                     ['stage2DetailSummary', productOrder, detailEnabled]]) {
@@ -1912,7 +2102,7 @@ function renderUserGuidance(){
  if(!app.city.construction.length)$('construction').innerHTML='<p class="empty-state">항목 추가를 눌러 건설·업그레이드 비용을 계산하세요.</p>';
  $('tgtLv').closest('.number-step')?.querySelectorAll('[data-number-delta]').forEach(b=>b.disabled=$('tgtLv').disabled);
 }
-renderAll=function(){previousRenderAllQuality();showDetailedConfigValues();refreshSummaryQuality();renderUserGuidance();};
+renderAll=function(){previousRenderAllQuality();showDetailedConfigValues();renderUserGuidance();};
 // Keep existing input and stored values, while constraining invalid construction ranges.
 const previousNormalizeCityQuality=normalizeCity;
 normalizeCity=function(v){const c=previousNormalizeCityQuality(v);for(const row of c.construction)row.tgt=Math.max(row.cur,row.tgt);return c;};
@@ -2053,7 +2243,7 @@ Object.assign(TOOLTIPS,{
  '생산 설정':'건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다.',
  '불가사의 목표':'현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다.',
  '예약 생산 주기':'취침 전에 예약할 생산 주기입니다. 선택한 주기를 지원하지 않으면 가장 가까운 주기를 사용합니다. 차이가 같으면 더 짧은 주기를 사용합니다.',
- '예약 횟수':'건물 1채당 예약할 생산 횟수입니다.',
+ '예약 횟수':'건물 1채당 예약할 생산 횟수입니다. 모든 예약에 필요한 원료를 취침 전까지 확보해야 합니다.',
  '수면까지 남은 시간(h)':'지금부터 취침까지 남은 시간입니다. 생산과 소비는 각 건물의 운영 시간까지만 계산합니다. 이 칸이 비어 있으면 기본 운영 시간을 사용합니다.',
  '총 구매 필요량':'취침 전 소비와 예약 생산에 필요한 원료를 더한 뒤, 보유 원료를 차감해 금화·낙타 구매 비용을 계산합니다.',
  '소요 시간':'현재 생산 설정으로 부족한 양을 생산하는 데 걸리는 시간입니다. 원료 구매 대기와 디르함 부족에 따른 지연은 제외합니다.',
@@ -2122,7 +2312,15 @@ Object.assign(TOOLTIPS,{
  '예상 보유량':'현재 보유량에 예상 생산량을 더한 값입니다.',
  '기본 운영 시간(h)':'항목별 운영 시간이 빈칸이면 이 시간을 사용합니다. 0은 생산하지 않습니다.',
  '목표 달성 현황':'설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다.',
- '목표 레벨 생산력 비교':'설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 먼저 빼고 부족한 상품에 필요한 생산력을 계산합니다.',
+ '목표 레벨 생산력 비교':'설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다.',
+ '수면 대비 자원 확보':'취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다.',
+ '생산력 환산표':'Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 Lv6·30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다. 낙타도 30분 생산, 금화는 시간당 연속 생산을 기준으로 환산합니다. 대시(—)는 해당 레벨에서 사용할 수 없는 생산 방식입니다.',
+ '상품':'완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다.',
+ '건물 수':'소수점도 입력할 수 있습니다. 0.5채는 생산량·소비량을 절반으로 계산합니다.',
+ '운영 시간(h)':'빈칸은 기본 운영 시간을 사용합니다. 0은 생산하지 않습니다.',
+ '상세 운영 시간':'빈칸은 해당 항목의 운영 시간을 사용합니다. 0은 생산하지 않습니다.',
+ '현재 보유량':'음수를 포함한 정수 또는 K·M 단위로 입력하세요. 예: -12000 또는 -12K',
+ '건물 건설 비용':'현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 계산한 건물은 도시 구성에 자동 추가되지 않습니다.',
  '연구':'완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다.',
  '건물 구성':'생산 건물 수는 생산 계산기에서 가져옵니다. 직접 입력한 값은 도시의 일꾼·면적 계산에만 사용되며, 생산 계산기로 전달되지 않습니다.',
  '디르함 현황':'현재 보유량 + 예상 생산량 − 낙타 생산·건설·목표 연구 비용으로 계획 후 잔여/부족을 계산합니다.',
