@@ -240,32 +240,33 @@ main{padding:14px 8px;max-width:100%;overflow-x:clip}h1{font-size:21px}.card{pad
  #panel-prod.expanded #productionSections .prodtable td{padding:8px 5px;min-width:0;width:auto}
  #panel-prod.expanded #productionSections .prodtable th .term-text{white-space:nowrap}
  #panel-prod.expanded #t1 th:nth-child(1){width:8%}
- #panel-prod.expanded #t1 th:nth-child(2){width:5.5%}
+ #panel-prod.expanded #t1 th:nth-child(2){width:6.5%}
  #panel-prod.expanded #t1 th:nth-child(3){width:8%}
- #panel-prod.expanded #t1 th:nth-child(4){width:7%}
+ #panel-prod.expanded #t1 th:nth-child(4){width:8%}
  #panel-prod.expanded #t1 th:nth-child(5){width:9%}
  #panel-prod.expanded #t1 th:nth-child(6){width:10%}
- #panel-prod.expanded #t1 th:nth-child(7){width:10%}
+ #panel-prod.expanded #t1 th:nth-child(7){width:11%}
  #panel-prod.expanded #t1 th:nth-child(8){width:10%}
  #panel-prod.expanded #t1 th:nth-child(9){width:9.5%}
- #panel-prod.expanded #t1 th:nth-child(10){width:13%}
+ #panel-prod.expanded #t1 th:nth-child(10){width:10%}
  #panel-prod.expanded #t1 th:nth-child(11){width:10%}
  #panel-prod.expanded #t2 th:nth-child(1){width:9%}
- #panel-prod.expanded #t2 th:nth-child(2){width:6%}
- #panel-prod.expanded #t2 th:nth-child(3){width:9%}
- #panel-prod.expanded #t2 th:nth-child(4){width:8%}
- #panel-prod.expanded #t2 th:nth-child(5){width:10%}
- #panel-prod.expanded #t2 th:nth-child(6){width:11%}
- #panel-prod.expanded #t2 th:nth-child(7){width:12%}
+ #panel-prod.expanded #t2 th:nth-child(2){width:7.5%}
+ #panel-prod.expanded #t2 th:nth-child(3){width:11%}
+ #panel-prod.expanded #t2 th:nth-child(4){width:10%}
+ #panel-prod.expanded #t2 th:nth-child(5){width:11%}
+ #panel-prod.expanded #t2 th:nth-child(6){width:12%}
+ #panel-prod.expanded #t2 th:nth-child(7){width:13%}
  #panel-prod.expanded #t2 th:nth-child(8){width:12%}
- #panel-prod.expanded #t2 th:nth-child(9){width:23%}
+ #panel-prod.expanded #t2 th:nth-child(9){width:14.5%}
  #panel-prod.expanded #t3 th:first-child{width:18%}
  #panel-prod.expanded #t1 td:first-child,#panel-prod.expanded #t2 td:first-child{white-space:normal}
  #panel-prod.expanded #t1 th,#panel-prod.expanded #t1 td{font-size:clamp(13px,1.04vw,16px)}
  #panel-prod.expanded #t1 input,#panel-prod.expanded #t1 select{font-size:clamp(13px,1.04vw,16px);padding-left:3px;padding-right:3px}
  #panel-prod.expanded #t1 .number-arrows{width:21px}
- #panel-prod.expanded :is(#t1,#t2) td[data-label="소비·필요량"]{white-space:nowrap;font-size:14px}
 }
+.material-use{display:block;line-height:1.35}
+.material-use span{display:inline-block}
 /* Narrow windows use the existing labeled-card pattern without widening the page. */
 @media(min-width:721px) and (max-width:1100px){
  #panel-prod.expanded #productionSections .wrap{overflow:visible}
@@ -437,7 +438,7 @@ input[aria-invalid]{border-color:var(--red)}
 .happiness-option:hover,.happiness-option:focus-visible{background:#f9efe1}
 #panel-city>.mobile-section-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
 #panel-city>.mobile-section-nav a{border:1px solid #d8c6ab;background:#fff;border-radius:999px;padding:8px 11px;font-size:13px;font-weight:700;color:var(--blue);text-decoration:none}
-#panel-city>.card{scroll-margin-top:72px}
+#panel-city>.card,#cityTerritory{scroll-margin-top:72px}
 @media(max-width:720px){
  .happiness-combo{grid-template-columns:minmax(0,1fr) 32px}
  .happiness-combo>.happiness-input,.happiness-combo>.happiness-toggle{height:48px;min-height:48px}
@@ -708,9 +709,8 @@ input[aria-invalid]{border-color:var(--red)}
 <button id="prodView" aria-controls="t1 t2 t3">상세 보기 ▼</button>
 </div>
 </div>
-<p class="section-guide">건물 구성과 운영 시간으로 생산량을 계산합니다. 원료·일꾼 부족에 따른 생산 중단은 자동 반영하지 않습니다.</p>
 <div class="settings">
-<div class="control-field"><label for="wonder" data-tip-key="불가사의">불가사의</label><select id="wonder" aria-label="불가사의 선택"><option value="petra">페트라</option><option value="brass">황금의 도시</option><option value="hama">하마의 노리아</option></select></div>
+<div class="control-field"><label for="wonder">불가사의</label><select id="wonder" aria-label="불가사의 선택"><option value="petra">페트라</option><option value="brass">황금의 도시</option><option value="hama">하마의 노리아</option></select></div>
 <div class="control-field"><label for="wLv" data-tip-key="보너스 적용 레벨">보너스 적용 레벨</label><input id="wLv" type="number" min="0" max="50" step="1"></div>
 <div class="control-field"><label for="baseH" data-tip-key="기본 운영 시간(h)">기본 운영 시간(h)</label><input id="baseH" type="number" min="0" step="any"></div>
 </div><span id="resetStatus" role="status" class="status"></span>
@@ -724,7 +724,6 @@ input[aria-invalid]{border-color:var(--red)}
 <h2 data-tip-key="기초 자원">기초 자원</h2><span class="detail-summary" id="stage0DetailSummary"></span></div><span class="section-actions">
 <button data-detail-group="0" aria-label="기초 자원 상세 설정"><span class="detail-wide-label">기초 자원 </span>상세 설정</button></span>
 </div>
-<p class="section-guide">금화·낙타의 보유량과 예상 생산량을 원료 구매에 필요한 수량과 비교합니다.</p>
 <div class="wrap">
 <table class="prodtable" id="t1"><thead></thead><tbody></tbody></table>
 </div>
@@ -733,7 +732,6 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="중간 자원">중간 자원</h2>
 </div>
-<p class="section-guide">보유 원료를 입력하면 부족한 원료의 구매량과 금화·낙타 비용을 계산합니다.</p>
 <div class="wrap">
 <table class="prodtable" id="t3"><thead></thead><tbody></tbody></table>
 </div>
@@ -749,7 +747,6 @@ input[aria-invalid]{border-color:var(--red)}
 </div></div><span class="section-actions">
 <button data-detail-group="2" aria-label="상품 상세 설정"><span class="detail-wide-label">상품 </span>상세 설정</button></span>
 </div>
-<p class="section-guide">완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다.</p>
 <div class="wrap">
 <table class="prodtable" id="t2"><thead></thead><tbody></tbody></table>
 </div>
@@ -764,10 +761,9 @@ input[aria-invalid]{border-color:var(--red)}
 <h2 data-tip-key="불가사의 목표">불가사의 목표</h2>
 <div class="settings-actions"><button id="wonderView" aria-controls="tw ts ta">상세 보기 ▼</button></div>
 </div>
-<p class="section-guide">현재 레벨 다음부터 목표 레벨까지 필요한 상품량을 계산합니다.</p>
 <div class="settings">
-<div class="control-field"><label for="curLv" data-tip-key="현재 레벨">현재 레벨</label><input id="curLv" type="number" min="0" max="50"></div>
-<div class="control-field"><label for="tgtLv" data-tip-key="목표 레벨">목표 레벨</label><input id="tgtLv" type="number" min="0" max="50"></div><span class="wonder-context" id="wonderContext" aria-live="polite">
+<div class="control-field"><label for="curLv">현재 레벨</label><input id="curLv" type="number" min="0" max="50"></div>
+<div class="control-field"><label for="tgtLv">목표 레벨</label><input id="tgtLv" type="number" min="0" max="50"></div><span class="wonder-context" id="wonderContext" aria-live="polite">
 <span>불가사의</span><strong id="wonderContextName">페트라</strong><span>보너스</span><strong id="wonderBonusLevel"></strong>
 </span>
 
@@ -779,7 +775,6 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="목표 달성 현황">목표 달성 현황</h2>
 </div>
-<p class="section-guide">설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다.</p>
 <div id="goalTable" class="wrap">
 <table class="result-table" id="tw"><thead></thead><tbody></tbody></table>
 </div>
@@ -788,7 +783,6 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="수면 대비 자원 확보">수면 대비 자원 확보</h2>
 </div>
-<p class="section-guide">취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 취침 전 생산에 쓸 원료와 예약분을 합산하고, 보유 원료를 빼 구매에 필요한 금화·낙타를 계산합니다.</p>
 <div class="settings sleep-settings">
 <div class="control-field"><label for="sleepPrepH" data-tip-key="수면까지 남은 시간(h)">수면까지 남은 시간(h)</label><input id="sleepPrepH" type="number" min="0" step="any" placeholder="기본"></div>
 <div class="control-field"><label for="sleepCycle" data-tip-key="예약 생산 주기">예약 생산 주기</label><select id="sleepCycle"><option value="long">레벨별 최장</option><option value="30분">30분</option><option value="1시간">1시간</option><option value="2시간">2시간</option></select></div>
@@ -810,13 +804,11 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="목표 레벨 생산력 비교">목표 레벨 생산력 비교</h2>
 </div>
-<p class="section-guide">설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다. 금화·낙타는 부족한 상품의 원료 구매비로 계산합니다.</p>
 <div id="powerTable" class="wrap">
 <table class="result-table" id="ta"><thead></thead><tbody></tbody></table>
 </div>
 <details class="purchase-details">
 <summary>목표 레벨 원료 구매 내역</summary>
-<p class="section-guide">원료 수량은 정수로 올려 표시합니다. 금화와 낙타는 실제 환산량에 구매 단가를 적용해 계산합니다.</p>
 <div class="purchase-wrap" role="region" aria-label="목표 레벨 원료 구매 내역" tabindex="0">
 <table id="targetPurchaseTable"></table>
 </div>
@@ -840,12 +832,11 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="도시 현황">도시 현황</h2>
 </div>
-<p class="section-guide">입력한 건물 구성의 일꾼과 영토 사용량을 확인합니다. 실제 건물 배치 모양은 고려하지 않습니다.</p>
 <div class="summary city-summary" id="citySummary" role="status">
 </div><details class="city-breakdown"><summary>일꾼 계산 내역</summary>
 <div class="inline-status" id="workerStatus">
 </div></details>
-<div class="city-territory">
+<div class="city-territory" id="cityTerritory">
 <div class="sectionbar">
 <h3 data-tip-key="영토 현황">영토 현황</h3>
 </div>
@@ -863,7 +854,7 @@ input[aria-invalid]{border-color:var(--red)}
 <h2 data-tip-key="건물 구성">주택·건물 구성</h2>
 <button class="push" id="cityView" aria-controls="cityBuildings">생산 건물 보기 ▼</button>
 </div>
-<p class="section-guide">생산 건물 수는 생산 계산기와 연동됩니다. 직접 입력한 값은 도시 관리의 일꾼·면적 계산에 적용됩니다.</p>
+<p class="section-guide">주택 수를 입력하세요. 생산 건물은 생산 계산기와 연동됩니다.</p>
 <div class="composition-actions" id="cityCompositionActions" hidden>
 <button class="danger" id="cityBuildingReset" type="button">건물 수 기본값 복원</button>
 <span id="cityBuildingResetStatus" class="status" role="status"></span>
@@ -875,11 +866,10 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="sectionbar">
 <h2 data-tip-key="디르함 현황·사용 계획">디르함 현황·사용 계획</h2>
 </div>
-<p class="section-guide">현재 보유량에 예상 생산량을 더한 뒤 낙타 생산·건설·연구 비용을 차감합니다.</p>
 <div class="settings city-settings">
 <div class="control-field"><label for="dirhamStock">현재 보유량</label><input id="dirhamStock" type="text" inputmode="text" placeholder="0" aria-describedby="dirhamStockError"></div>
 <div class="control-field"><label for="dirhamRate" data-tip-key="시간당 생산량">시간당 생산량</label><input id="dirhamRate" type="number" min="0" step="any" inputmode="decimal"></div>
-<div class="control-field"><label for="dirhamHours" data-tip-key="디르함 운영 시간">운영 시간(h)</label><input id="dirhamHours" type="number" min="0" step="any" placeholder="기본 운영 시간"></div>
+<div class="control-field"><label for="dirhamHours">운영 시간(h)</label><input id="dirhamHours" type="number" min="0" step="any" placeholder="기본 운영 시간"></div>
 </div>
 <small class="stock-error" id="dirhamStockError" role="status" hidden></small>
 <div class="currency-time-context"><p class="section-guide" id="dirhamTimeBasis"></p><button id="dirhamUseBase" type="button" hidden>기본 시간 사용</button></div>
@@ -893,7 +883,7 @@ input[aria-invalid]{border-color:var(--red)}
 <h2 data-tip-key="건물 건설 비용">건물 건설 비용</h2>
 <button id="addConstruction">항목 추가</button>
 </div>
-<p class="section-guide">현재 레벨에서 목표 레벨까지의 건설·업그레이드 비용을 계산합니다. 새 건물은 현재 레벨을 0으로 입력하세요. 계산한 건물은 도시 구성에 자동 추가되지 않습니다.</p>
+<p class="section-guide">건설 비용만 계산합니다. 실제 건물 구성과 일꾼·영토 현황에는 자동 반영되지 않습니다.</p>
 <div class="wrap" id="construction">
 </div>
 <p class="costbox">누적 비용 <b aria-live="polite" id="buildCost"></b></p>
@@ -904,7 +894,7 @@ input[aria-invalid]{border-color:var(--red)}
 <button class="danger" id="researchReset" type="button">연구 초기화</button>
 <div class="costbox">필요 디르함 <b id="researchCost"></b></div>
 </div>
-<p class="section-guide">완료한 연구와 목표 연구를 선택하세요. 필요한 선행 연구를 포함하고, 이미 완료한 연구의 비용은 제외합니다.</p><div class="bar"><span class="muted" id="researchSummary"></span>
+<div class="bar"><span class="muted" id="researchSummary"></span>
 </div>
 <details class="city-breakdown" id="cityResearchSelection">
 <summary>완료한 연구·목표 연구</summary>
@@ -1727,7 +1717,7 @@ function money(c){return Object.entries(c).filter(([,v])=>v!==0).map(([k,v])=>co
 function maxWonderLevel(){const need=Object.fromEntries(productOrder.map(n=>[n,0]));let reachable=app.wonder.cur;for(let lv=app.wonder.cur+1;lv<=50;lv++){for(const n of productOrder)need[n]+=num(wonderCost(lv)?.[n]);if(productOrder.some(n=>need[n]>num(app.products[n].stock)+productOutput(n)+1e-8))break;reachable=lv;}return reachable;}
 function metric(label,value){return '<div class="metric"><span>'+label+'</span><b>'+value+'</b></div>';}
 function cell(v,cls=''){return '<td class="'+cls+'">'+v+'</td>';}
-function makeTable(labels,rows){return '<table><thead><tr>'+labels.map(t=>'<th>'+t+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table>';}
+function makeTable(labels,rows){return '<table>'+head(labels)+'<tbody>'+rows.join('')+'</tbody></table>';}
 function ci(value,attrs='',step='any'){return '<input type="number" step="'+step+'" value="'+value+'" '+attrs+'>';}
 function selectedOptions(options,value){return options.map(([k,n])=>'<option value="'+k+'"'+(String(k)===String(value)?' selected':'')+'>'+n+'</option>').join('');}
 function camelDirham(){return configRows('낙타').reduce((sum,r)=>{const p=detailResourceInfo('낙타',r);let h=resourceDetailEnabled('낙타')?detailHours(r):effectiveHours('resources','낙타');return sum+(p?cyclesFor(h,p.min)*p.use1*num(r.count):0);},0);}
@@ -1745,7 +1735,7 @@ function renderCity(){
  const cityBuildingById=new Map(CITY_DATA.buildings.map(b=>[b.id,b]));
  const orderedCityBuildings=[...cityBuildingOrder.map(id=>cityBuildingById.get(id)).filter(Boolean),...CITY_DATA.buildings.filter(b=>!c.homes[b.id]&&b.id!=='City_CityHall'&&!cityBuildingOrder.includes(b.id))];
  const cityRows=[...(cityHall?[buildingRow(cityHall)]:[]),...homeOrder.map(homeRow),...orderedCityBuildings.map(buildingRow)];
- $('cityBuildings').innerHTML=makeTable(['건물','건물 수','레벨','사용 면적','일꾼'],cityRows);
+ $('cityBuildings').innerHTML=makeTable([{label:'건물',tip:''},{label:'건물 수',tip:'주택은 보유한 수를 입력하세요. 생산 건물은 입력값이 없으면 생산 계산기 값을 사용합니다.'},{label:'레벨',tip:''},'사용 면적','일꾼'],cityRows);
  $('areaStatus').innerHTML='사용 면적 <b>'+fmtQty(area)+'</b>'+(c.plots===''?' · 현재 영토를 입력하세요.':' · 전체 면적 <b>'+fmtQty(c.plots*9)+'</b> · 잔여/부족 <b>'+fmtQty(c.plots*9-area)+'</b> ('+fmtBldg((c.plots*9-area)/9)+'칸)');
  for(const k of ['regularPlots','premiumPlots','dirhamRate','dirhamHours'])$(k).value=c[k];
  const stock = $('dirhamStock');
@@ -1757,7 +1747,7 @@ function renderCity(){
   $('dirhamStockError').hidden = true;
  }
  const choices=CITY_DATA.buildings.filter(b=>b.id!=='City_CityHall').map(b=>[b.id,b.name]);
- $('construction').innerHTML=makeTable(['건물 종류','현재 레벨','목표 레벨','건설 수','누적 비용','삭제'],c.construction.map((r,j)=>{const b=CITY_DATA.buildings.find(b=>b.id===r.id),cost={};for(let lv=r.cur+1;lv<=r.tgt;lv++)for(const[k,v]of Object.entries(b.levels[lv]?.costs||{}))cost[k]=(cost[k]||0)+v*r.count;return '<tr>'+cell('<select data-con="'+j+'" data-field="id">'+selectedOptions(choices,r.id)+'</select>','input-cell')+cell(ci(r.cur,'data-con="'+j+'" data-field="cur" min="0" max="6"'),'input-cell')+cell(ci(r.tgt,'data-con="'+j+'" data-field="tgt" min="1" max="6"'),'input-cell')+cell(ci(r.count,'data-con="'+j+'" data-field="count" min="0"'),'input-cell')+cell(money(cost),'calc')+cell('<button type="button" data-remove-con="'+j+'" aria-label="건설 항목 '+(j+1)+' 삭제">삭제</button>')+'</tr>';}));
+ $('construction').innerHTML=makeTable([{label:'건물',tip:''},{label:'현재 레벨',tip:'새 건물은 현재 레벨을 0으로 입력하세요.'},{label:'목표 레벨',tip:'건설하거나 업그레이드할 목표 레벨입니다.'},'건설 수','누적 비용',{label:'삭제',tip:''}],c.construction.map((r,j)=>{const b=CITY_DATA.buildings.find(b=>b.id===r.id),cost={};for(let lv=r.cur+1;lv<=r.tgt;lv++)for(const[k,v]of Object.entries(b.levels[lv]?.costs||{}))cost[k]=(cost[k]||0)+v*r.count;return '<tr>'+cell('<select data-con="'+j+'" data-field="id">'+selectedOptions(choices,r.id)+'</select>','input-cell')+cell(ci(r.cur,'data-con="'+j+'" data-field="cur" min="0" max="6"'),'input-cell')+cell(ci(r.tgt,'data-con="'+j+'" data-field="tgt" min="1" max="6"'),'input-cell')+cell(ci(r.count,'data-con="'+j+'" data-field="count" min="0"'),'input-cell')+cell(money(cost),'calc')+cell('<button type="button" data-remove-con="'+j+'" aria-label="건설 항목 '+(j+1)+' 삭제">삭제</button>')+'</tr>';}));
  $('buildCost').textContent=money(constructionCost());renderResearch();
 }
 function renderResearch(){const done=closure(app.city.current),goal=closure(app.city.target),needed=new Set([...goal].filter(id=>!done.has(id))),cost={};for(const t of CITY_DATA.research)if(needed.has(t.id))for(const[k,v]of Object.entries(t.costs))cost[k]=(cost[k]||0)+v;$('researchCost').textContent=money(cost);$('researchSummary').textContent='현재 완료 '+done.size+'개 · 목표까지 추가 '+needed.size+'개';const rows={};for(const t of CITY_DATA.research)(rows[t.row]??=[]).push(t);const pos={};for(const[row,list]of Object.entries(rows)){list.sort((a,b)=>a.col-b.col);list.forEach((t,j)=>pos[t.id]=[(j+1)*960/(list.length+1),Number(row)*84-35]);}const height=Math.max(...CITY_DATA.research.map(t=>t.row))*84;let svg='';for(const t of CITY_DATA.research)for(const p of t.parents){const a=pos[p],b=pos[t.id];svg+='<path d="M'+a[0]+','+(a[1]+34)+' L'+b[0]+','+(b[1]-34)+'" stroke="#c4b49e" fill="none"/>';}
@@ -1775,7 +1765,7 @@ function renderResearch(){const done=closure(app.city.current),goal=closure(app.
 
 const TOOLTIPS={"불가사의":"선택한 불가사의 종류에 따라 적용되는 보너스가 달라집니다.","보너스 적용 레벨":"현재 적용받는 불가사의 보너스 레벨입니다. 생산 보너스와 추가 일꾼 계산에 사용됩니다.","불가사의 보너스":"선택한 불가사의가 제공하는 생산 보너스와 추가 일꾼입니다.","기본 운영 시간(h)":"각 항목의 운영 시간을 따로 입력하지 않았을 때 공통으로 적용되는 시간입니다.","기본 운영 시간":"각 항목의 운영 시간을 따로 입력하지 않았을 때 공통으로 적용되는 시간입니다.","기초 자원":"현재 건물 구성과 운영 시간을 기준으로 기초 자원의 예상 생산량을 계산하고, 상위 생산에 필요한 양과 비교합니다.","중간 자원":"상품 생산에 필요한 원료입니다. 현재 보유량을 입력하면 부족한 원료의 구매 필요량과 금화·낙타 비용을 계산합니다.","상품":"현재 건물 구성과 운영 시간을 기준으로 생산량과 원료 사용량을 계산합니다. 생산량은 완료된 생산 주기만 반영하며, 행복도는 원료 사용량에 영향을 주지 않습니다.","생산 항목":"계산할 자원·중간 자원·상품의 이름입니다.","레벨":"해당 생산 건물이나 건물의 현재 레벨을 입력합니다.","생산 방식":"한 번 생산을 완료하는 데 걸리는 주기입니다. 낙타·상품은 완료한 생산 주기만 생산량에 포함됩니다.","건물 수":"해당 생산에 사용하는 건물 수를 입력합니다.","행복도(%)":"게임에 표시된 행복도를 0~100%로 입력하세요.","운영 시간(h)":"이 항목을 가동할 시간입니다. 비워 두면 기본 운영 시간을 사용합니다.","현재 보유량":"현재 가지고 있는 수량입니다. 입력한 보유량은 ‘불가사의 목표’ 계산에도 사용됩니다.","예상 생산량":"현재 입력한 건물 구성과 운영 시간을 기준으로 예상되는 생산량입니다.","소비·필요량":"금화·낙타는 원료 구매 비용, 상품은 생산에 사용할 원료량입니다.","잔여/부족":"생산과 필요한 양을 모두 반영한 뒤 남는 수량입니다. 양수면 남고, 음수면 부족합니다.","소요 시간":"현재 보유량을 포함해 필요한 수량을 모두 확보하기까지 걸리는 시간입니다.","구매 필요량":"상품 생산에 필요한 원료에서 현재 보유량을 뺀 구매 수량입니다.","금화 필요량":"부족한 원료를 구매하는 데 필요한 금화입니다.","낙타 필요량":"부족한 원료를 구매하는 데 필요한 낙타입니다.","상세 설정":"같은 생산 항목이라도 건물마다 레벨·생산 방식·행복도·운영 시간이 다를 때 각각 나누어 입력합니다.","상세 설정 적용":"같은 생산 항목의 건물 구성이 서로 다를 때 켭니다. 끄면 기본 설정으로 계산하며, 입력해 둔 상세 설정 값은 그대로 남아 있습니다.","목표 달성 현황":"현재 레벨부터 목표 레벨까지 필요한 상품과 예상 보유량을 비교합니다.","현재 레벨":"현재 불가사의 또는 건물의 레벨입니다.","목표 레벨":"도달하려는 불가사의 또는 건물의 목표 레벨입니다.","구간 필요량":"현재 레벨 다음부터 목표 레벨까지 불가사의가 요구하는 상품량입니다.","최대 도달(자원 기준)":"예상 보유 자원으로 올릴 수 있는 불가사의 레벨입니다. 부족한 상품의 추가 생산 시간은 제외합니다.","조정 필요 생산 항목":"기초 자원인 금화·낙타의 부족 여부를 표시합니다.","생산력 부족 항목":"현재 생산력으로 목표 레벨까지 필요한 수량을 운영 시간 내 생산하지 못하는 항목입니다.","수면 대비 자원 확보":"수면 중 생산에 필요한 원료를 취침 전까지 구매할 수 있는지 확인합니다. 수면 전 소비와 현재 보유량도 반영합니다.","수면까지 남은 시간(h)":"지금부터 취침 전까지 건물을 가동할 시간입니다. 비워 두면 기본 운영 시간을 사용합니다.","수면 중 생산 주기":"수면 중 상품을 생산할 주기입니다. 해당 주기가 없으면 가능한 최장 주기를 사용합니다.","생산 횟수":"수면 중 선택한 생산 주기를 몇 번 완료할지 입력합니다.","수면 중 생산 횟수":"수면 중 선택한 생산 주기를 몇 번 완료할지 입력합니다.","수면 필요량":"수면 전·중 상품 생산에 필요한 원료를 구매하는 금화·낙타입니다.","취침 전 확보량":"현재 금화·낙타 보유량에 취침 전 예상 생산량을 더한 값입니다.","목표 레벨 생산력 비교":"목표 상품의 부족분만 생산할 때 필요한 생산력과 현재 생산력을 비교합니다. 목표를 초과하는 생산은 제외하며, 생산력 차이가 음수이면 부족합니다.","필요량 환산 기준 주기":"부족한 상품을 만들 때 필요한 원료량을 계산하는 기준 생산 주기입니다. 실제 생산 방식은 바뀌지 않습니다.","생산력 차이":"현재 생산력 − 필요 생산력입니다. 0 이상이면 충분하고, 음수이면 부족합니다.","현재 생산력":"생산 계산기에 입력한 현재 건물 구성의 생산 능력입니다. 수치 기준은 아래 ‘생산력 환산표’를 참고하세요.","필요 생산력":"목표까지 필요한 양을 운영 시간 안에 생산하기 위해 필요한 생산 능력입니다. 수치 기준은 아래 ‘생산력 환산표’를 참고하세요.","생산력 환산표":"건물 1채의 레벨·생산 주기별 생산력을 같은 기준으로 비교하는 표입니다. Lv6·행복도 100%·30분 생산을 100으로 봅니다. 금화는 Lv6의 시간당 생산량을 기준으로 합니다.","도시 현황":"현재 입력된 주택과 생산 건물을 기준으로 일꾼과 영토 사용 현황을 보여줍니다. ‘상세 보기’에서 생산 건물 구성을 확인할 수 있습니다.","일꾼 현황 · 주택":"주택에서 확보하는 일꾼 수와 현재 건물에 필요한 인원을 비교합니다.","일꾼 현황":"현재 일꾼과 사용 일꾼을 비교합니다. 잔여/부족이 음수이면 일꾼이 부족합니다.","현재 일꾼":"주택과 불가사의 보너스로 확보한 전체 일꾼입니다.","사용 일꾼":"현재 건물 구성에 필요한 일꾼입니다.","주택":"일꾼을 제공하는 주택입니다.","일꾼/채":"주택 1채가 제공하는 일꾼입니다.","필요 일꾼":"현재 건물 수에 필요한 일꾼입니다.","영토 현황":"현재 해금한 영토 칸 수를 입력해 사용 면적과 남은 면적을 확인합니다.","현재 영토(칸)":"현재 해금한 영토 칸 수입니다. 아라비아의 1칸은 3×3입니다.","건물 구성":"생산 계산기에 입력한 생산 건물 수가 기본으로 들어옵니다. 여기서 건물 수를 직접 입력하면 직접 입력한 값을 사용합니다.","건물":"현재 도시에 배치한 건물입니다.","가로×세로":"건물 1채가 차지하는 영토 크기입니다.","면적 합계":"건물 1채의 면적에 현재 건물 수를 곱한 값입니다.","영토 사용":"현재 건물의 사용 면적입니다. 아라비아 1칸의 면적은 9입니다.","전체 면적":"현재 영토 칸 수 × 9입니다.","영토 잔여/부족":"전체 면적에서 건물 사용 면적을 뺀 값입니다.","디르함 현황":"현재 보유량과 시간당 생산량을 입력하면 운영 시간 후 예상 디르함을 계산합니다. 운영 시간을 비우면 기본 운영 시간을 사용합니다. 낙타 생산 비용은 자동 차감합니다.","디르함 현재 보유량":"현재 가지고 있는 디르함입니다.","시간당 생산량":"게임에 표시된 실제 시간당 생산량을 입력하세요. 비우면 시청·주택 레벨과 불가사의 보너스로 계산합니다.","예상 보유량":"현재 보유량에 운영 시간 동안 생산할 디르함을 더하고, 낙타 생산 비용을 뺀 예상 보유량입니다.","건물 건설 비용":"건물의 현재 레벨, 목표 레벨, 건설 수를 입력하면 필요한 디르함·보석을 계산합니다. 현재 레벨 0은 새 건물 건설을 뜻합니다.","건물 종류":"비용을 계산할 건물을 선택합니다.","건설 수":"같은 조건으로 건설하거나 업그레이드할 건물 수입니다. 비용 계산에만 사용됩니다.","누적 비용":"현재 레벨에서 목표 레벨까지 건설하거나 업그레이드하는 데 필요한 총비용입니다.","삭제":"이 건설 비용 계산 항목을 삭제합니다.","연구":"연구를 눌러 현재 완료 상태와 목표 연구를 선택합니다. 목표 연구에 필요한 선행 연구는 자동으로 포함되며, 필요한 디르함을 합산합니다.","자원":"원료 구매에 사용하는 금화·낙타입니다."};
 const escAttr=s=>String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-const termSpec=x=>typeof x==='string'?{label:x,tip:TOOLTIPS[x]||''}:{label:x.label,tip:x.tip||TOOLTIPS[x.label]||''};
+const termSpec=x=>typeof x==='string'?{label:x,tip:TOOLTIPS[x]||''}:{label:x.label,tip:x.tip??TOOLTIPS[x.label]??''};
 const infoIcon=(label,tip)=>tip?'<button type="button" class="info-tip" aria-label="'+escAttr(label)+' 설명" data-tip="'+escAttr(tip)+'">i</button>':'';
 const termHtml=x=>{const s=termSpec(x);return'<span class="term-wrap"><span class="term-text">'+s.label+'</span>'+infoIcon(s.label,s.tip)+'</span>'};
 const td=(v,cls='')=>'<td class="'+cls+'">'+v+'</td>',head=labels=>'<thead><tr>'+labels.map(x=>{const s=termSpec(x);return'<th scope="col" data-label="'+escAttr(s.label)+'">'+termHtml(s)+'</th>'}).join('')+'</tr></thead>';
@@ -1880,13 +1870,16 @@ wonderTime=function(name){
 resourceRequiredHours=function(name,amount){return timeToNative(name,Math.max(0,amount-num(app.resources[name].stock)));};
 function rowInput(k,v,extra=''){return '<input type="number" step="'+(k==='lv'?'1':'any')+'" data-k="'+k+'" value="'+v+'" '+extra+'>';}
 function rowMode(name,disabled){const group=detailGroup(name),s=app[group][name],building=(group==='resources'?resourceBuilding:productBuilding)[name];if(name==='금화')return '연속';return '<select data-k="mode" '+disabled+'>'+modeOptions(building,s.lv,s.mode)+'</select>';}
-function nativeRow(name){const group=detailGroup(name),s=app[group][name],enabled=group==='resources'?resourceDetailEnabled(name):detailEnabled(name),dis=enabled?'disabled':'',out=group==='resources'?resourceOutput(name):productOutput(name),use=group==='resources'?name+' 필요 '+fmtQty(resourceConsumption(name)):rawOrder.filter(r=>productUse(name,r)>0).map(r=>r+' '+fmtQty(productUse(name,r))).join('<br>')||'0',remain=s.stock+out-(group==='resources'?resourceConsumption(name):0),count=nativeRows(name).reduce((sum,r)=>sum+r.count,0);
+function nativeRow(name){const group=detailGroup(name),s=app[group][name],enabled=group==='resources'?resourceDetailEnabled(name):detailEnabled(name),dis=enabled?'disabled':'',out=group==='resources'?resourceOutput(name):productOutput(name),use=group==='resources'?fmtQty(resourceConsumption(name)):rawOrder.map(raw=>{
+ const amount=productUse(name,raw);
+ return amount>0?'<span class="material-use">'+raw+' <span>'+fmtQty(amount)+'</span></span>':'';
+ }).join('')||'0',remain=s.stock+out-(group==='resources'?resourceConsumption(name):0),count=nativeRows(name).reduce((sum,r)=>sum+r.count,0);
  const reward=group==='products'?selectedQuestBonus(name):0;
  const badge=reward?'<span class="badge quest-bonus-badge" aria-label="퀘스트 보상 '+fmtQty(reward)+'">+'+fmtQty(reward)+'</span>':'';
  return '<tr data-group="'+group+'" data-name="'+name+'">'+td(name+(enabled?'<span class="badge">상세</span>':'')+badge)+td(rowInput('lv',s.lv,'min="1" max="6" '+dis))+td(rowMode(name,dis))+td(rowInput('bldgs',enabled?count:s.bldgs,'min="0" '+dis))+td(happinessInput('irrigation',s.irrigation,'data-k',enabled))+td(rowInput('hours',s.hours,'min="0" placeholder="기본" '+dis))+td(stockInput(s.stock,'data-k="stock"'))+(group==='resources'?td(compact(remain),'calc '+(remain<0?'bad':'ok')):'')+td(compact(out),'calc detailcol')+td(use,'calc detailcol')+(group==='resources'?td(duration(resourceRequiredHours(name,resourceConsumption(name))),'calc'):'')+'</tr>';
 }
-renderTables=function(){for(const [id,names]of [['t1',resourceOrder],['t2',productOrder]]){const labels=['생산 항목','레벨','생산 방식','건물 수','행복도(%)','운영 시간(h)','현재 보유량'];if(id==='t1')labels.push('잔여/부족');labels.push('예상 생산량','소비·필요량');if(id==='t1')labels.push('소요 시간');$(id).innerHTML=head(labels)+'<tbody>'+names.map(nativeRow).join('')+'</tbody>';$(id).querySelectorAll('thead th').forEach(th=>th.classList.toggle('detailcol',['예상 생산량','소비·필요량'].includes(th.dataset.label)));}
- $('t3').innerHTML=head(['중간 자원','현재 보유량','구매 필요량','금화 필요량','낙타 필요량'])+'<tbody>'+rawOrder.map(n=>{const r=purchaseRowData(n);return '<tr data-raw="'+n+'">'+td(n)+td(stockInput(r.stock,'data-raw-stock'))+td(fmtQty(r.need),'calc detailcol')+td(fmtQty(r.gold),'calc detailcol')+td(fmtQty(r.camel),'calc detailcol')+'</tr>';}).join('')+'</tbody>';$('t3').querySelectorAll('thead th').forEach((th,j)=>th.classList.toggle('detailcol',j>=2));bindProductionRows();$('t3').querySelectorAll('[data-raw-stock]').forEach(el=>el.addEventListener('change',()=>{const stock=readStock(el);if(stock===null)return;app.rawStocks[el.closest('tr').dataset.raw]=stock;renderAll();saveState();}));labelInputs('productionSections');};
+renderTables=function(){for(const [id,names]of [['t1',resourceOrder],['t2',productOrder]]){const labels=[{label:id==='t1'?'자원':'상품',tip:''},'레벨','생산 방식','건물 수','행복도(%)','운영 시간(h)','현재 보유량'];if(id==='t1')labels.push('잔여/부족');labels.push('예상 생산량',id==='t1'?'필요량':'원료 사용량');if(id==='t1')labels.push('소요 시간');$(id).innerHTML=head(labels)+'<tbody>'+names.map(nativeRow).join('')+'</tbody>';$(id).querySelectorAll('thead th').forEach(th=>th.classList.toggle('detailcol',['예상 생산량','필요량','원료 사용량'].includes(th.dataset.label)));}
+ $('t3').innerHTML=head([{label:'중간 자원',tip:''},'현재 보유량','구매 필요량','금화 필요량','낙타 필요량'])+'<tbody>'+rawOrder.map(n=>{const r=purchaseRowData(n);return '<tr data-raw="'+n+'">'+td(n)+td(stockInput(r.stock,'data-raw-stock'))+td(fmtQty(r.need),'calc detailcol')+td(fmtQty(r.gold),'calc detailcol')+td(fmtQty(r.camel),'calc detailcol')+'</tr>';}).join('')+'</tbody>';$('t3').querySelectorAll('thead th').forEach((th,j)=>th.classList.toggle('detailcol',j>=2));bindProductionRows();$('t3').querySelectorAll('[data-raw-stock]').forEach(el=>el.addEventListener('change',()=>{const stock=readStock(el);if(stock===null)return;app.rawStocks[el.closest('tr').dataset.raw]=stock;renderAll();saveState();}));labelInputs('productionSections');};
 renderBonus=function(){
  const level=app.settings.wLv, bonus=wonderBenefits();
  const milestones=WONDER_VARIANTS[activeWonder].workers;
@@ -1898,12 +1891,14 @@ renderBonus=function(){
  const hasHours=names.some(name=>nativeRows(name).some(row=>row.count>0&&detailHours(row)>0));
  const short=resourceOrder.filter(name=>app.resources[name].stock+resourceOutput(name)<resourceConsumption(name));
  const status=hasHours?short.join(' · ')||'없음':hasBuildings?'운영 시간을 입력하세요.':'건물 수를 입력하세요.';
- $('bonusSummary').innerHTML='<div class="metric"><span>'+termHtml('불가사의 보너스')+'</span><strong>'+bonusText
-  +'</strong><small>'+nextText+'</small></div>'+metricBox(hasHours?'조정 필요 생산 항목':'생산 설정 확인',status,hasHours&&short.length?'warning-metric':'');
+ $('bonusSummary').innerHTML='<div class="metric"><span>불가사의 보너스</span><strong>'+bonusText
+  +'</strong><small>'+nextText+'</small></div>'+metricBox(
+   {label:hasHours?'조정 필요 생산 항목':'생산 설정 확인',tip:''},status,hasHours&&short.length?'warning-metric':''
+  );
 };
 function currentAdjustments(){const pa=Object.fromEntries(productOrder.map(n=>[n,productAdjustment(n)]));return [...resourceOrder.map(n=>resourceAdjustment(n,pa)),...productOrder.map(n=>pa[n])];}
 renderWonder=function(){
- const labels=['상품','잔여/부족','구간 필요량',{label:'현재 보유량',tip:'입력한 보유량에 선택한 퀘스트 보상을 더한 값입니다.'},'예상 생산량','예상 보유량',{label:'소요 시간',tip:'보유량과 선택한 퀘스트 보상을 반영해, 부족한 상품의 생산이 완료될 때까지 걸리는 시간입니다. 원료 구매 대기는 제외합니다.'}];
+ const labels=[{label:'상품',tip:''},'잔여/부족','구간 필요량',{label:'현재 보유량',tip:'입력한 보유량에 선택한 퀘스트 보상을 더한 값입니다.'},'예상 생산량','예상 보유량',{label:'소요 시간',tip:'보유량과 선택한 퀘스트 보상을 반영해, 부족한 상품의 생산이 완료될 때까지 걸리는 시간입니다. 원료 구매 대기는 제외합니다.'}];
  const rows=productOrder.map(name=>{
   const need=wonderNeed(name),stock=plannedProductStock(name),output=productOutput(name);
   const projected=stock+output,remain=projected-need;
@@ -1920,7 +1915,7 @@ renderWonder=function(){
  }
  const status=shortage.join(' · ')||(missingHours.length?'운영 시간 확인':'없음');
  metrics('goalSummary',[['최대 도달(자원 기준)','Lv.'+resourceReach()],
-  ['생산력 부족 항목',status,shortage.length||missingHours.length?'warning-metric':'']]);
+  [{label:'생산력 부족 항목',tip:''},status,shortage.length||missingHours.length?'warning-metric':'']]);
  if(missingHours.length){
   const detail=document.createElement('small');
   detail.textContent=(shortage.length?'운영 시간 확인 · ':'')+missingHours.join(' · ');
@@ -1931,11 +1926,11 @@ renderWonder=function(){
  labelInputs('goalTable');
 };
 function powerStatus(diff) { return diff === null ? '' : diff < 0 ? 'bad' : 'ok'; }
-renderSleepReserve=function(){const plan=sleepPurchasePlan(),purchases=purchaseTotals(plan.total);renderPurchaseBreakdown('sleepPurchaseTable',purchases,plan);const labels=['자원','생산력 차이','현재 생산력','필요 생산력','총 구매 필요량',{label:'취침 전 확보량',tip:'현재 보유량에 취침 전 예상 생산량을 더한 값입니다.'},{label:'잔여/부족',tip:'취침 전 확보량 − 총 구매 필요량입니다. 음수이면 취침 전에 더 확보해야 합니다.'}];$('ts').innerHTML=head(labels)+'<tbody>'+resourceOrder.map(n=>{const a=sleepResourcePower(n,purchases);return '<tr>'+td(n)+td(a.diff===null?'운영 시간 확인':fmtSignedPower(a.diff),'calc '+powerStatus(a.diff))+td(fmtPower(a.current),'calc detailcol')+td(fmtPower(a.needed),'calc detailcol')+td(compact(a.required),'calc detailcol')+td(compact(a.projected),'calc detailcol')+td(compact(a.remain),'calc detailcol '+(a.remain<0?'bad':'ok'))+'</tr>';}).join('')+'</tbody>';labelInputs('sleepTable');};
-renderAdjustment=function(){renderPurchaseBreakdown('targetPurchaseTable',purchaseTotals(adjustedRawConsumption()));$('ta').innerHTML=head(['생산 항목','생산력 차이','현재 생산력','필요 생산력'])+'<tbody>'+currentAdjustments().map(a=>{const diff=powerDifferenceIndex(a);return '<tr'+(a.name===productOrder[0]?' class="adjust-product-start"':'')+'>'+td(a.name)+td(diff===null?'운영 시간 확인':fmtSignedPower(diff),'calc '+powerStatus(diff))+td(fmtPower(currentPowerIndex(a)),'calc detailcol')+td(fmtPower(requiredPowerIndex(a)),'calc detailcol')+'</tr>';}).join('')+'</tbody>';labelInputs('powerTable');};
-renderConversion=function(){$('tc').innerHTML=head(['생산 항목','생산 방식','Lv1','Lv2','Lv3','Lv4','Lv5','Lv6'])+'<tbody>'+[...resourceOrder,...productOrder].flatMap(name=>{const building=(resourceBuilding[name]||productBuilding[name]),modes=[...new Set(nativeRows(name).map(r=>r.mode||app[detailGroup(name)][name].mode))];return modes.map(m=>'<tr>'+td(name)+td(m)+[1,2,3,4,5,6].map(lv=>{const p=info(building,lv,m);return td(p?fmtPower((name==='금화'?outputForInfoHappy(p,1,1,true,100):happyCycleOutput(p,100)*60/p.min)/benchmarkRate(name)*100):'—','calc');}).join('')+'</tr>');}).join('')+'</tbody>';labelInputs('convert');};
+renderSleepReserve=function(){const plan=sleepPurchasePlan(),purchases=purchaseTotals(plan.total);renderPurchaseBreakdown('sleepPurchaseTable',purchases,plan);const labels=[{label:'자원',tip:''},'생산력 차이','현재 생산력','필요 생산력','총 구매 필요량',{label:'취침 전 확보량',tip:''},{label:'잔여/부족',tip:'취침 전 확보량 − 총 구매 필요량입니다. 음수이면 취침 전에 더 확보해야 합니다.'}];$('ts').innerHTML=head(labels)+'<tbody>'+resourceOrder.map(n=>{const a=sleepResourcePower(n,purchases);return '<tr>'+td(n)+td(a.diff===null?'운영 시간 확인':fmtSignedPower(a.diff),'calc '+powerStatus(a.diff))+td(fmtPower(a.current),'calc detailcol')+td(fmtPower(a.needed),'calc detailcol')+td(compact(a.required),'calc detailcol')+td(compact(a.projected),'calc detailcol')+td(compact(a.remain),'calc detailcol '+(a.remain<0?'bad':'ok'))+'</tr>';}).join('')+'</tbody>';labelInputs('sleepTable');};
+renderAdjustment=function(){renderPurchaseBreakdown('targetPurchaseTable',purchaseTotals(adjustedRawConsumption()));$('ta').innerHTML=head([{label:'생산 항목',tip:''},'생산력 차이','현재 생산력','필요 생산력'])+'<tbody>'+currentAdjustments().map(a=>{const diff=powerDifferenceIndex(a);return '<tr'+(a.name===productOrder[0]?' class="adjust-product-start"':'')+'>'+td(a.name)+td(diff===null?'운영 시간 확인':fmtSignedPower(diff),'calc '+powerStatus(diff))+td(fmtPower(currentPowerIndex(a)),'calc detailcol')+td(fmtPower(requiredPowerIndex(a)),'calc detailcol')+'</tr>';}).join('')+'</tbody>';labelInputs('powerTable');};
+renderConversion=function(){$('tc').innerHTML=head([{label:'생산 항목',tip:''},{label:'생산 방식',tip:''},'Lv1','Lv2','Lv3','Lv4','Lv5','Lv6'])+'<tbody>'+[...resourceOrder,...productOrder].flatMap(name=>{const building=(resourceBuilding[name]||productBuilding[name]),modes=[...new Set(nativeRows(name).map(r=>r.mode||app[detailGroup(name)][name].mode))];return modes.map(m=>'<tr>'+td(name)+td(m)+[1,2,3,4,5,6].map(lv=>{const p=info(building,lv,m);return td(p?fmtPower((name==='금화'?outputForInfoHappy(p,1,1,true,100):happyCycleOutput(p,100)*60/p.min)/benchmarkRate(name)*100):'—','calc');}).join('')+'</tr>');}).join('')+'</tbody>';labelInputs('convert');};
 function renderPurchaseBreakdown(id, purchases, sleepPlan = null) {
-  const demandColumns = sleepPlan ? ['취침 전 소비량', '예약 필요량'] : ['목표 필요량'];
+  const demandColumns = sleepPlan ? ['취침 전 소비량', '예약 필요량'] : [{label:'목표 필요량',tip:'원료 수량은 정수로 올려 표시합니다. 금화와 낙타는 올리기 전 수량에 구매 단가를 적용해 계산합니다.'}];
   const labels = ['원료', ...demandColumns, '현재 보유량', '구매 필요량', '금화', '낙타'];
   const wholeQuantity = value => Math.ceil(value - 1e-9);
   const rows = purchases.rows.map(row => {
@@ -2351,10 +2346,13 @@ function renderCityPlanning(){
  areaBar.setAttribute('aria-valuetext',fmtQty(st.area)+' / '+fmtQty(totalArea)+' 면적');
  $('areaStatus').textContent = totalArea === null
   ? '사용 '+fmtQty(st.area)+' 면적 · 현재 영토를 입력하세요.'
-  : '사용 '+fmtQty(st.area)+' / 전체 '+fmtQty(totalArea)+' 면적 · 시작 '+WONDER_VARIANTS[activeWonder].initialPlots+'칸 + 일반 '+fmtQty(c.regularPlots)+'칸 + 보석 '+fmtQty(c.premiumPlots)+'칸, 1칸 = 9면적)';
- $('citySummary').innerHTML=cityMetric('일꾼 현황',fmtQty(Math.abs(st.workers))+'명 '+(st.workers<0?'부족':'잔여'),st.workers<0,true)
-  +cityMetric('면적 현황',st.space===null?'영토 입력 필요':fmtQty(Math.abs(st.space))+' '+(st.space<0?'부족':'잔여'),st.space!==null&&st.space<0,st.space!==null)
-  +cityMetric('계획 후 디르함',compact(d.remaining),d.remaining<0,true,'<a href="#dirhamCard">사용 계획 확인</a>');
+  : '사용 '+fmtQty(st.area)+' / 전체 '+fmtQty(totalArea)+' 면적 · 시작 '+WONDER_VARIANTS[activeWonder].initialPlots+'칸 + 일반 '+fmtQty(c.regularPlots)+'칸 + 보석 '+fmtQty(c.premiumPlots)+'칸 (1칸 = 9면적)';
+ $('citySummary').innerHTML=cityMetric('일꾼 잔여/부족',fmtQty(st.workers)+'명',st.workers<0,true,
+   '확보 '+fmtQty(st.supply)+'명 · 사용 '+fmtQty(st.used)+'명<br><a href="#cityCompositionCard">주택·건물 조정</a>')
+  +cityMetric('영토 잔여/부족',st.space===null?'영토 입력 필요':fmtQty(st.space)+' 면적',st.space!==null&&st.space<0,st.space!==null,
+   (totalArea===null?'':'확보 '+fmtQty(totalArea)+' · 사용 '+fmtQty(st.area)+'<br>')+'<a href="#cityTerritory">영토 설정</a>')
+  +cityMetric('계획 후 디르함',compact(d.remaining),d.remaining<0,true,
+   '확보 '+compact(d.secured)+' · 필요 '+compact(d.spend+d.required)+'<br><a href="#dirhamCard">사용 계획 확인</a>');
  $('dirhamRate').placeholder='기본 '+compact(d.baseRate);
  $('dirhamTimeBasis').textContent = (c.dirhamHours===''?'기본 운영 시간 ':'직접 입력한 운영 시간 ')+fmtBldg(d.h)+'시간 · '
   +(c.dirhamRate===''?'시청·주택 기준':'직접 입력')+' 시간당 '+fmtBldg(d.rate)+' 디르함';
@@ -2380,10 +2378,15 @@ Object.assign(TOOLTIPS,{
  '예상 보유량':'현재 보유량에 예상 생산량을 더한 값입니다.',
  '기본 운영 시간(h)':'항목별 운영 시간이 빈칸이면 이 시간을 사용합니다. 0은 생산하지 않습니다.',
  '목표 달성 현황':'설정한 운영 시간 기준으로 목표에 필요한 상품이 얼마나 남거나 부족한지 확인합니다.',
- '목표 레벨 생산력 비교':'설정한 운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 보유량을 반영하고, 목표량을 넘는 상품 생산분은 제외합니다.',
- '수면 대비 자원 확보':'취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 현재 보유량과 취침 전 생산·소비를 반영합니다.',
+ '목표 레벨 생산력 비교':'운영 시간 안에 목표량을 만들 수 있는지 비교합니다. 목표까지 부족한 상품만 생산한다고 가정하고, 금화·낙타는 필요한 원료의 구매 비용으로 계산합니다.',
+ '수면 대비 자원 확보':'취침 전에 예약 생산에 필요한 원료를 확보할 수 있는지 확인합니다. 취침 전 사용분과 예약분에서 보유 원료를 빼고, 추가 구매에 필요한 금화·낙타를 계산합니다.',
  '생산력 환산표':'Lv6 건물 1채의 생산력을 100으로 비교합니다. 상품은 Lv6·30분 생산을 기준으로 하며, 행복도는 100%로 맞춥니다. 낙타도 30분 생산, 금화는 시간당 연속 생산을 기준으로 환산합니다. 대시(—)는 해당 레벨에서 사용할 수 없는 생산 방식입니다.',
+ '기초 자원':'금화·낙타의 보유량과 예상 생산량을 원료 구매에 필요한 수량과 비교합니다.',
+ '중간 자원':'보유 원료를 입력하면 부족한 원료의 구매량과 금화·낙타 비용을 계산합니다.',
  '상품':'완료한 생산 주기를 기준으로 생산량과 소비량을 계산합니다.',
+ '필요량':'부족한 원료를 구매하는 데 필요한 금화 또는 낙타입니다.',
+ '원료 사용량':'설정한 운영 시간 동안 상품을 생산하는 데 쓰는 원료량입니다.',
+ '사용 면적':'건물 1채의 면적에 건물 수를 곱한 값입니다. 배치 모양은 고려하지 않습니다.',
  '건물 수':'소수점도 입력할 수 있습니다. 0.5채는 생산량·소비량을 절반으로 계산합니다.',
  '운영 시간(h)':'빈칸은 기본 운영 시간을 사용합니다. 0은 생산하지 않습니다.',
  '상세 운영 시간':'빈칸은 해당 항목의 운영 시간을 사용합니다. 0은 생산하지 않습니다.',
