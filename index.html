@@ -1047,8 +1047,8 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 <h2 data-tip-key="상품">상품</h2>
 <div class="product-title-meta">
 <span class="detail-summary" id="stage2DetailSummary"></span>
-<p id="questRewardNote" class="quest-reward-note"><strong>퀘스트 보상</strong> · 선택한 보상을 불가사의 계산의 현재 보유량에 합산합니다.</p>
-<div id="wikiQuestRewards" class="quest-reward-options" role="group" aria-label="상품 퀘스트 예정 보상"></div>
+<p id="questRewardNote" class="quest-reward-note"><strong>퀘스트 보상</strong> · 선택한 보상을 상품·중간 자원 보유량 계산에 합산합니다.</p>
+<div id="wikiQuestRewards" class="quest-reward-options" role="group" aria-label="퀘스트 예정 보상"></div>
 </div></div><span class="section-actions">
 <button data-detail-group="2" aria-label="상품 상세 설정"><span class="detail-wide-label">상품 </span>상세 설정</button></span>
 </div>
@@ -1279,8 +1279,8 @@ const productOrder=['커피','향','오일 램프','카펫'];
 const rawOrder=['커피콩','황동','몰약','석유','면화'];
 // Heroes of History Wiki, Allied Cultures → The Desert Trail Gambit (Petra) → Quests.
 const PETRA_QUEST_REWARDS = {
-  seed: {name:'From Seed to Summit', products:{'향':7000,'오일 램프':1500}},
-  distinction: {name:'Marks of Distinction', products:{'커피':25000,'향':14000,'오일 램프':3000,'카펫':1500}}
+  seed: {name:'From Seed to Summit', items:{'커피콩':12500,'향':7000,'오일 램프':1500}},
+  distinction: {name:'Marks of Distinction', items:{'커피':25000,'향':14000,'오일 램프':3000,'카펫':1500}}
 };
 function questRewards(){return activeWonder==='petra'?PETRA_QUEST_REWARDS:{};}
 const productBuilding={'커피':'커피 제조자','향':'향 제조자','오일 램프':'오일 램프 제조자','카펫':'카펫 제조자'};
@@ -1456,7 +1456,7 @@ function productCycleMinutes(name){
 function purchaseRowData(raw,consumptionMap=null){
   const consumed=consumptionMap?num(consumptionMap[raw],0):rawConsumption(raw);
   const stock=num(app.rawStocks[raw],0);
-  const need=consumptionMap&&consumed<=0?0:Math.max(0,consumed-stock);
+  const need=consumptionMap&&consumed<=0?0:Math.max(0,consumed-stock-selectedQuestBonus(raw));
   const b=BUY[raw];
   const gold=need>0&&b?Math.ceil((need/b.unit*b.gold)-1e-12):0,camel=need>0&&b?Math.ceil((need/b.unit*b.camel)-1e-12):0;
   return {raw,stock,consumed,need,gold,camel};
@@ -1578,7 +1578,7 @@ function commitRow(el,group,name){
 
 function selectedQuestBonus(name) {
   return Object.entries(questRewards()).reduce((total,[phase,reward]) =>
-    total + (app.settings.questRewards[phase] ? reward.products[name] || 0 : 0),0);
+    total + (app.settings.questRewards[phase] ? reward.items[name] || 0 : 0),0);
 }
 function plannedProductStock(name) {
   return app.products[name].stock + selectedQuestBonus(name);
@@ -1589,7 +1589,7 @@ function syncQuestRewards() {
   if (options.dataset.wonder!==activeWonder) {
     options.dataset.wonder=activeWonder;
     options.innerHTML = Object.entries(questRewards()).map(([phase,reward]) => {
-      const amounts = Object.entries(reward.products).map(([name,qty]) => name+' +'+fmtQty(qty));
+      const amounts = Object.entries(reward.items).map(([name,qty]) => name+' +'+fmtQty(qty));
       return '<label class="quest-bundle" title="'+reward.name+'"><input type="checkbox" data-quest-phase="'+phase
         +'" aria-label="'+reward.name+': '+amounts.join(', ')+'"><span class="quest-bundle-amounts">'
         +amounts.map((amount,index)=>'<span>'+amount+(index<amounts.length-1?' ·':'')+'</span>').join('')
@@ -2179,16 +2179,19 @@ wonderTime=function(name){
 resourceRequiredHours=function(name,amount){return timeToNative(name,Math.max(0,amount-num(app.resources[name].stock)));};
 function rowInput(k,v,extra=''){return '<input type="number" step="'+(k==='lv'?'1':'any')+'" data-k="'+k+'" value="'+v+'" '+extra+'>';}
 function rowMode(name,disabled){const group=detailGroup(name),s=app[group][name],building=(group==='resources'?resourceBuilding:productBuilding)[name];if(name==='금화')return '연속';return '<select data-k="mode" '+disabled+'>'+modeOptions(building,s.lv,s.mode)+'</select>';}
+function questBonusBadge(reward){
+ return reward?'<span class="badge quest-bonus-badge" aria-label="퀘스트 보상 '+fmtQty(reward)+'">+'+fmtQty(reward)+'</span>':'';
+}
 function nativeRow(name){const group=detailGroup(name),s=app[group][name],enabled=group==='resources'?resourceDetailEnabled(name):detailEnabled(name),dis=enabled?'disabled':'',out=group==='resources'?resourceOutput(name):productOutput(name),use=group==='resources'?fmtQty(resourceConsumption(name)):rawOrder.map(raw=>{
  const amount=productUse(name,raw);
  return amount>0?'<span class="material-use">'+raw+' <span>'+fmtQty(amount)+'</span></span>':'';
  }).join('')||'0',remain=s.stock+out-(group==='resources'?resourceConsumption(name):0),count=nativeRows(name).reduce((sum,r)=>sum+r.count,0);
  const reward=group==='products'?selectedQuestBonus(name):0;
- const badge=reward?'<span class="badge quest-bonus-badge" aria-label="퀘스트 보상 '+fmtQty(reward)+'">+'+fmtQty(reward)+'</span>':'';
+ const badge=questBonusBadge(reward);
  return '<tr data-group="'+group+'" data-name="'+name+'">'+td(name+(enabled?'<span class="badge">상세</span>':'')+badge)+td(rowInput('lv',s.lv,'min="1" max="6" '+dis))+td(rowMode(name,dis))+td(rowInput('bldgs',enabled?count:s.bldgs,'min="0" '+dis))+td(happinessInput('irrigation',s.irrigation,'data-k',enabled))+td(rowInput('hours',s.hours,'min="0" placeholder="기본" '+dis),'detailcol')+td(stockInput(s.stock,'data-k="stock"'))+(group==='resources'?td(compact(remain),'calc '+(remain<0?'bad':'ok')):'')+td(compact(out),'calc detailcol')+td(use,'calc detailcol')+(group==='resources'?td(duration(resourceRequiredHours(name,resourceConsumption(name))),'calc'):'')+'</tr>';
 }
 renderTables=function(){for(const [id,names]of [['t1',resourceOrder],['t2',productOrder]]){const labels=[{label:id==='t1'?'자원':'상품',tip:''},'레벨','생산 방식','건물 수','행복도(%)','운영 시간(h)','현재 보유량'];if(id==='t1')labels.push('잔여/부족');labels.push('예상 생산량',id==='t1'?'필요량':'원료 사용량');if(id==='t1')labels.push('소요 시간');$(id).innerHTML=head(labels)+'<tbody>'+names.map(nativeRow).join('')+'</tbody>';$(id).querySelectorAll('thead th').forEach(th=>th.classList.toggle('detailcol',['운영 시간(h)','예상 생산량','필요량','원료 사용량'].includes(th.dataset.label)));}
- $('t3').innerHTML=head([{label:'중간 자원',tip:''},'현재 보유량','구매 필요량','금화 필요량','낙타 필요량'])+'<tbody>'+rawOrder.map(n=>{const r=purchaseRowData(n);return '<tr data-raw="'+n+'">'+td(n)+td(stockInput(r.stock,'data-raw-stock'))+td(fmtQty(r.need),'calc detailcol')+td(fmtQty(r.gold),'calc detailcol')+td(fmtQty(r.camel),'calc detailcol')+'</tr>';}).join('')+'</tbody>';$('t3').querySelectorAll('thead th').forEach((th,j)=>th.classList.toggle('detailcol',j>=2));bindProductionRows();$('t3').querySelectorAll('[data-raw-stock]').forEach(el=>el.addEventListener('change',()=>{const stock=readStock(el);if(stock===null)return;app.rawStocks[el.closest('tr').dataset.raw]=stock;renderAll();saveState();}));labelInputs('productionSections');};
+ $('t3').innerHTML=head([{label:'중간 자원',tip:''},'현재 보유량','구매 필요량','금화 필요량','낙타 필요량'])+'<tbody>'+rawOrder.map(n=>{const r=purchaseRowData(n);return '<tr data-raw="'+n+'">'+td(n+questBonusBadge(selectedQuestBonus(n)))+td(stockInput(r.stock,'data-raw-stock'))+td(fmtQty(r.need),'calc detailcol')+td(fmtQty(r.gold),'calc detailcol')+td(fmtQty(r.camel),'calc detailcol')+'</tr>';}).join('')+'</tbody>';$('t3').querySelectorAll('thead th').forEach((th,j)=>th.classList.toggle('detailcol',j>=2));bindProductionRows();$('t3').querySelectorAll('[data-raw-stock]').forEach(el=>el.addEventListener('change',()=>{const stock=readStock(el);if(stock===null)return;app.rawStocks[el.closest('tr').dataset.raw]=stock;renderAll();saveState();}));labelInputs('productionSections');};
 renderBonus=function(){
  const level=app.settings.wLv, bonus=wonderBenefits();
  const milestones=WONDER_VARIANTS[activeWonder].workers;
@@ -2592,7 +2595,7 @@ function resourceReach(){
  const limits=Object.fromEntries(rawOrder.map(raw=>{
   const rate=BUY[raw];
   const quantity=Math.min(Math.floor(budget.gold)*rate.unit/rate.gold,Math.floor(budget.camel)*rate.unit/rate.camel);
-  return [raw,Math.max(0,app.rawStocks[raw]+quantity+1e-8)];
+  return [raw,Math.max(0,app.rawStocks[raw]+selectedQuestBonus(raw)+quantity+1e-8)];
  }));
  const gross=Object.fromEntries(productOrder.map(name=>[name,0]));
  const levels=[{...gross}];
