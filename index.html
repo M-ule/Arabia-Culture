@@ -887,10 +887,43 @@ input[aria-invalid]{border-color:var(--red)}
  #cityCompositionCard .sectionbar{align-items:flex-start;justify-content:flex-end}
  #cityCompositionCard h2{margin-inline-end:auto}
 }
+
+/* Page rhythm shared with the China and Maya simulators. */
+h1{margin:0 0 12px}
+.panel{scroll-margin-top:76px}
+.card{min-width:0}
+.wrap{width:100%}
+.legend{display:flex;align-items:center;gap:16px;flex-wrap:wrap;line-height:normal}
+.legend-item{display:flex;align-items:center;gap:6px}
+.legend .chip{width:13px;height:13px;border-radius:2px;margin:0}
+#citySummary .metric>small{line-height:1.8}
+#cityResearchCard .city-settings{column-gap:20px}
+#detailDialog .detail-enable{flex-wrap:wrap}
+#detailDialog .detail-enable-title{flex-basis:100%;font-size:14px;line-height:1.5}
+#detailDialog .detail-content{padding-inline:0}
+#detailDialog .detail-done{min-width:80px}
+#photoImportDialog{padding:20px;border-radius:8px}
+#termHelpDialog{width:min(440px,calc(100vw - 32px));padding:20px;border-radius:12px;max-height:80dvh}
+#termHelpDialog p{font-size:15px;line-height:1.75;margin:14px 0 0;word-break:keep-all}
+#researchDialog{width:min(460px,calc(100% - 24px));padding:20px}
+#researchDialog p{font-size:15px;line-height:1.6}
+@media(max-width:720px){
+ .tabs{padding-block-start:6px}
+ .panel,.card{scroll-margin-top:72px}
+ .card{margin-block:10px}
+ .card>.sectionbar{margin-bottom:12px}
+ #detailDialog .detail-footer .detail-done{flex:0 0 50%}
+ #detailDialog .detail-enable-title{font-size:13px}
+ :is(#photoImportDialog,#termHelpDialog){width:min(560px,calc(100% - 16px));max-width:none;max-height:calc(100dvh - 24px);padding:14px 12px;border-radius:12px}
+ #photoApply{width:100%;min-height:48px}
+ #researchDialog{max-width:none}
+ #researchDialog .bar{display:grid;grid-template-columns:1fr;gap:8px}
+ #researchDialog .bar button{width:100%;min-height:48px}
+}
 </style></head><body>
 <main>
 <h1>아라비아 문명 시뮬레이터</h1>
-<div class="legend muted"><span class="chip"></span>노란 칸에 입력</div>
+<div class="legend muted"><div class="legend-item"><span class="chip" aria-hidden="true"></span>노란 칸에 입력</div></div>
 <nav class="tabs" aria-label="계산기 탭" role="tablist">
 <button type="button" class="tab active" data-tab="prod" id="tab-prod" role="tab" aria-controls="panel-prod" aria-selected="true" tabindex="0">생산 계산기</button>
 <button type="button" class="tab" data-tab="wonder" id="tab-wonder" role="tab" aria-controls="panel-wonder" aria-selected="false" tabindex="-1">불가사의 목표</button>
@@ -1140,7 +1173,7 @@ input[aria-invalid]{border-color:var(--red)}
 <div class="modalhead"><div><h2 id="detailTitle"></h2><p class="section-guide">서로 다른 레벨·생산 방식의 건물은 나누어 입력하세요.</p></div>
 <button type="button" data-close="detailDialog" aria-label="닫기">×</button></div>
 <div id="detailTabs" class="modal-tabs" role="group" aria-label="생산 항목"></div>
-<div class="detail-content"><div class="detail-enable"><input id="detailEnabled" type="checkbox" autofocus><label for="detailEnabled">이 항목에 상세 설정 적용</label></div>
+<div class="detail-content"><div class="detail-enable"><span class="detail-enable-title" aria-hidden="true">상세 설정</span><input id="detailEnabled" type="checkbox" autofocus><label for="detailEnabled">이 항목에 상세 설정 적용</label></div>
 <p class="section-guide">빈칸은 해당 항목의 운영 시간을 사용하고, 0은 생산하지 않습니다. 행복도는 생산량에만 반영됩니다.</p>
 <p id="detailResult" class="section-guide" role="status"></p>
 <div id="detailRows"></div></div>
@@ -1714,7 +1747,7 @@ function incrementStepInput(input,delta){let cur=num(input.value,0),next=Math.ro
 document.addEventListener('click',e=>{const btn=e.target.closest('.step-btn');if(!btn)return;const input=btn.closest('.step-wrap')?.querySelector('input');if(!input)return;incrementStepInput(input,num(btn.dataset.delta,0));});
 document.addEventListener('keydown',e=>{if(!e.target.classList?.contains('step-one'))return;if(e.key==='ArrowUp'||e.key==='ArrowDown'){e.preventDefault();incrementStepInput(e.target,e.key==='ArrowUp'?1:-1);}});
 const tabs = [...document.querySelectorAll('[role="tab"]')];
-function selectTab(tab) {
+function selectTab(tab, scrollToPanel = false) {
   try { localStorage.setItem(STORAGE_KEY+'_tab',tab.dataset.tab); } catch {}
   for (const button of tabs) {
     const active = button === tab;
@@ -1723,17 +1756,18 @@ function selectTab(tab) {
     button.tabIndex = active ? 0 : -1;
     document.getElementById(button.getAttribute('aria-controls')).classList.toggle('active', active);
   }
+  if (scrollToPanel) document.getElementById(tab.getAttribute('aria-controls')).scrollIntoView({block:'start',behavior:'instant'});
   postSize();
 }
 tabs.forEach((tab, index) => {
-  tab.addEventListener('click', () => selectTab(tab));
+  tab.addEventListener('click', () => selectTab(tab, true));
   tab.addEventListener('keydown', event => {
     const next = { ArrowLeft: (index+tabs.length-1)%tabs.length,
       ArrowRight: (index+1)%tabs.length, Home: 0, End: tabs.length-1 }[event.key];
     if (next === undefined) return;
     event.preventDefault();
-    selectTab(tabs[next]);
-    tabs[next].focus();
+    selectTab(tabs[next], true);
+    tabs[next].focus({preventScroll:true});
   });
 });
 document.getElementById('wLv').addEventListener('change',e=>{app.settings.wLv=clamp(parseInt(e.target.value)||0,0,50);e.target.value=app.settings.wLv;renderAll();saveState();});
@@ -2077,9 +2111,9 @@ function nativeRow(name){const group=detailGroup(name),s=app[group][name],enable
  }).join('')||'0',remain=s.stock+out-(group==='resources'?resourceConsumption(name):0),count=nativeRows(name).reduce((sum,r)=>sum+r.count,0);
  const reward=group==='products'?selectedQuestBonus(name):0;
  const badge=reward?'<span class="badge quest-bonus-badge" aria-label="퀘스트 보상 '+fmtQty(reward)+'">+'+fmtQty(reward)+'</span>':'';
- return '<tr data-group="'+group+'" data-name="'+name+'">'+td(name+(enabled?'<span class="badge">상세</span>':'')+badge)+td(rowInput('lv',s.lv,'min="1" max="6" '+dis))+td(rowMode(name,dis))+td(rowInput('bldgs',enabled?count:s.bldgs,'min="0" '+dis))+td(happinessInput('irrigation',s.irrigation,'data-k',enabled))+td(rowInput('hours',s.hours,'min="0" placeholder="기본" '+dis))+td(stockInput(s.stock,'data-k="stock"'))+(group==='resources'?td(compact(remain),'calc '+(remain<0?'bad':'ok')):'')+td(compact(out),'calc detailcol')+td(use,'calc detailcol')+(group==='resources'?td(duration(resourceRequiredHours(name,resourceConsumption(name))),'calc'):'')+'</tr>';
+ return '<tr data-group="'+group+'" data-name="'+name+'">'+td(name+(enabled?'<span class="badge">상세</span>':'')+badge)+td(rowInput('lv',s.lv,'min="1" max="6" '+dis))+td(rowMode(name,dis))+td(rowInput('bldgs',enabled?count:s.bldgs,'min="0" '+dis))+td(happinessInput('irrigation',s.irrigation,'data-k',enabled))+td(rowInput('hours',s.hours,'min="0" placeholder="기본" '+dis),'detailcol')+td(stockInput(s.stock,'data-k="stock"'))+(group==='resources'?td(compact(remain),'calc '+(remain<0?'bad':'ok')):'')+td(compact(out),'calc detailcol')+td(use,'calc detailcol')+(group==='resources'?td(duration(resourceRequiredHours(name,resourceConsumption(name))),'calc'):'')+'</tr>';
 }
-renderTables=function(){for(const [id,names]of [['t1',resourceOrder],['t2',productOrder]]){const labels=[{label:id==='t1'?'자원':'상품',tip:''},'레벨','생산 방식','건물 수','행복도(%)','운영 시간(h)','현재 보유량'];if(id==='t1')labels.push('잔여/부족');labels.push('예상 생산량',id==='t1'?'필요량':'원료 사용량');if(id==='t1')labels.push('소요 시간');$(id).innerHTML=head(labels)+'<tbody>'+names.map(nativeRow).join('')+'</tbody>';$(id).querySelectorAll('thead th').forEach(th=>th.classList.toggle('detailcol',['예상 생산량','필요량','원료 사용량'].includes(th.dataset.label)));}
+renderTables=function(){for(const [id,names]of [['t1',resourceOrder],['t2',productOrder]]){const labels=[{label:id==='t1'?'자원':'상품',tip:''},'레벨','생산 방식','건물 수','행복도(%)','운영 시간(h)','현재 보유량'];if(id==='t1')labels.push('잔여/부족');labels.push('예상 생산량',id==='t1'?'필요량':'원료 사용량');if(id==='t1')labels.push('소요 시간');$(id).innerHTML=head(labels)+'<tbody>'+names.map(nativeRow).join('')+'</tbody>';$(id).querySelectorAll('thead th').forEach(th=>th.classList.toggle('detailcol',['운영 시간(h)','예상 생산량','필요량','원료 사용량'].includes(th.dataset.label)));}
  $('t3').innerHTML=head([{label:'중간 자원',tip:''},'현재 보유량','구매 필요량','금화 필요량','낙타 필요량'])+'<tbody>'+rawOrder.map(n=>{const r=purchaseRowData(n);return '<tr data-raw="'+n+'">'+td(n)+td(stockInput(r.stock,'data-raw-stock'))+td(fmtQty(r.need),'calc detailcol')+td(fmtQty(r.gold),'calc detailcol')+td(fmtQty(r.camel),'calc detailcol')+'</tr>';}).join('')+'</tbody>';$('t3').querySelectorAll('thead th').forEach((th,j)=>th.classList.toggle('detailcol',j>=2));bindProductionRows();$('t3').querySelectorAll('[data-raw-stock]').forEach(el=>el.addEventListener('change',()=>{const stock=readStock(el);if(stock===null)return;app.rawStocks[el.closest('tr').dataset.raw]=stock;renderAll();saveState();}));labelInputs('productionSections');};
 renderBonus=function(){
  const level=app.settings.wLv, bonus=wonderBenefits();
@@ -2109,7 +2143,7 @@ renderWonder=function(){
  });
  $('tw').innerHTML=head(labels)+'<tbody>'+rows.join('')+'</tbody>';
  const shortage=[], missingHours=[];
- for(const adjustment of currentAdjustments()){
+ for(const adjustment of app.wonder.tgt>app.wonder.cur?currentAdjustments():[]){
   const difference=powerDifferenceIndex(adjustment);
   if(difference===null)missingHours.push(adjustment.name);
   else if(difference< -1e-8)shortage.push(adjustment.name);
