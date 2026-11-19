@@ -1456,10 +1456,11 @@ function productCycleMinutes(name){
 function purchaseRowData(raw,consumptionMap=null){
   const consumed=consumptionMap?num(consumptionMap[raw],0):rawConsumption(raw);
   const stock=num(app.rawStocks[raw],0);
-  const need=consumptionMap&&consumed<=0?0:Math.max(0,consumed-stock-selectedQuestBonus(raw));
+  const availableStock=stock+selectedQuestBonus(raw);
+  const need=consumptionMap&&consumed<=0?0:Math.max(0,consumed-availableStock);
   const b=BUY[raw];
   const gold=need>0&&b?Math.ceil((need/b.unit*b.gold)-1e-12):0,camel=need>0&&b?Math.ceil((need/b.unit*b.camel)-1e-12):0;
-  return {raw,stock,consumed,need,gold,camel};
+  return {raw,stock,availableStock,consumed,need,gold,camel};
 }
 function purchaseTotals(consumptionMap=null){const rows=rawOrder.map(r=>purchaseRowData(r,consumptionMap));return {rows,gold:rows.reduce((s,r)=>s+r.gold,0),camel:rows.reduce((s,r)=>s+r.camel,0)};}
 function resourceConsumption(name){const p=purchaseTotals();return name==='금화'?p.gold:p.camel;}
@@ -2243,11 +2244,11 @@ renderAdjustment=function(){renderPurchaseBreakdown('targetPurchaseTable',purcha
 renderConversion=function(){$('tc').innerHTML=head([{label:'생산 항목',tip:''},{label:'생산 방식',tip:''},'Lv1','Lv2','Lv3','Lv4','Lv5','Lv6'])+'<tbody>'+[...resourceOrder,...productOrder].flatMap(name=>{const building=(resourceBuilding[name]||productBuilding[name]),modes=[...new Set(nativeRows(name).map(r=>r.mode||app[detailGroup(name)][name].mode))];return modes.map(m=>'<tr>'+td(name)+td(m)+[1,2,3,4,5,6].map(lv=>{const p=info(building,lv,m);return td(p?fmtPower((name==='금화'?outputForInfoHappy(p,1,1,true,100):happyCycleOutput(p,100)*60/p.min)/benchmarkRate(name)*100):'—','calc');}).join('')+'</tr>');}).join('')+'</tbody>';labelInputs('convert');};
 function renderPurchaseBreakdown(id, purchases, sleepPlan = null) {
   const demandColumns = sleepPlan ? ['취침 전 소비량', '예약 필요량'] : [{label:'목표 필요량',tip:'원료 수량은 정수로 올려 표시합니다. 금화와 낙타는 올리기 전 수량에 구매 단가를 적용해 계산합니다.'}];
-  const labels = ['원료', ...demandColumns, '현재 보유량', '구매 필요량', '금화', '낙타'];
+  const labels = ['원료', ...demandColumns, {label:'현재 보유량',tip:'입력한 원료 보유량에 선택한 퀘스트 보상을 더한 값입니다.'}, '구매 필요량', '금화', '낙타'];
   const wholeQuantity = value => Math.ceil(value - 1e-9);
   const rows = purchases.rows.map(row => {
     const demand = sleepPlan ? [sleepPlan.before[row.raw], sleepPlan.reserved[row.raw]] : [row.consumed];
-    const quantities = [...demand, row.stock, row.need];
+    const quantities = [...demand, row.availableStock, row.need];
     const cells = [...quantities.map(wholeQuantity), row.gold, row.camel];
     return '<tr><th scope="row">'+row.raw+'</th>'+cells.map(value=>td(fmtQty(value),'calc')).join('')+'</tr>';
   });
