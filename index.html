@@ -1233,7 +1233,7 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 </main>
 <dialog id="photoImportDialog" aria-labelledby="photoImportTitle">
 <div class="modalhead"><h2 id="photoImportTitle">게임 사진으로 입력</h2><button id="photoImportClose" type="button">닫기</button></div>
-<p class="photo-description">건물 목록과 보유량 사진을 함께 올리세요. 아라비아 생산 건물과 이름이 보이는 자원·상품의 인식값을 확인한 뒤 적용할 수 있습니다. 사진은 브라우저에서 분석합니다.</p>
+<p class="photo-description">기초·중간 자원은 상단에 보유량이 보이는 시장 화면을 올리세요. 생산 건물 목록과 동맹 문화 생산물 화면도 함께 분석할 수 있습니다. 인식값을 확인한 뒤 적용하세요. 사진은 브라우저에서 분석합니다.</p>
 <div class="photo-file"><label for="photoFiles">게임 사진</label><input id="photoFiles" type="file" accept="image/*" multiple></div>
 <div class="bar"><button id="photoScan" type="button">사진 분석</button><button id="photoReset" type="button" disabled>사진 입력 초기화</button></div>
 <p id="photoStatus" class="status" role="status">건물 목록과 보유량 사진을 함께 선택할 수 있습니다.</p>
@@ -2913,7 +2913,32 @@ function parseBuildingLines(lines){
  for(const [field,m]of [['lv',lv],['count',count]])out.push(entry(group+'_'+field,b.name+(field==='lv'?' 레벨':' 수량'),m?Number(m.match[1]):null,{kind:'building',building:b.id,field,group,anchor:p,box:m?.box,needsReview:true}));
  }return out;
 }
-function mergeFindings(additions){for(const f of additions){const prior=findings.find(p=>(f.kind==='stock'?p.kind==='stock'&&p.target===f.target:p.source===f.source&&p.building===f.building&&p.field===f.field&&Math.abs((p.anchor?.y0||0)-(f.anchor?.y0||0))<25&&Math.abs((p.anchor?.x0||0)-(f.anchor?.x0||0))<25));if(!prior){findings.push(f);continue;}if(f.value===null||f.value===undefined)continue;if(prior.value===null||prior.value===undefined){prior.value=f.value;prior.needsReview=!!f.needsReview;prior.preview=f.preview||prior.preview;}else if(prior.value!==f.value){prior.needsReview=true;prior.candidates=[...new Set([prior.value,f.value,...(prior.candidates||[])])];}}}
+function mergeFindings(additions){
+ for(const f of additions){
+  const prior=findings.find(p=>f.kind==='stock'?p.kind==='stock'&&p.target===f.target:
+   p.source===f.source&&p.building===f.building&&p.field===f.field&&
+   Math.abs((p.anchor?.y0||0)-(f.anchor?.y0||0))<25&&Math.abs((p.anchor?.x0||0)-(f.anchor?.x0||0))<25);
+  if(!prior){findings.push(f);continue;}
+  if(f.kind==='stock'){
+   if(f.stockOrigin!==prior.stockOrigin){
+    if(f.stockOrigin==='market'){Object.assign(prior,f);continue;}
+    if(prior.stockOrigin==='market')continue;
+   }
+   const candidates=[...new Set([prior.value,f.value,...(prior.candidates||[]),...(f.candidates||[])].filter(Number.isSafeInteger))];
+   if(f.value!==null&&prior.value===null)prior.preview=f.preview||prior.preview;
+   prior.candidates=candidates.length>1?candidates:[];
+   prior.value=candidates.length===1?candidates[0]:null;
+   continue;
+  }
+  if(f.value===null||f.value===undefined)continue;
+  if(prior.value===null||prior.value===undefined){
+   prior.value=f.value;prior.needsReview=!!f.needsReview;prior.preview=f.preview||prior.preview;
+  }else if(prior.value!==f.value){
+   prior.needsReview=true;
+   prior.candidates=[...new Set([prior.value,f.value,...(prior.candidates||[])])];
+  }
+ }
+}
 // Overlapping scrolling screenshots show the same card at different positions.
 // Preserve its count once by matching a building and its displayed level.
 function dedupePhotoPages(){
@@ -2945,7 +2970,251 @@ function dedupePhotoPages(){
 function reviewLabel(f){if(f.kind!=='building')return f.label;const b=BUILDINGS.find(b=>b.id===f.building);if(!b)return f.label;const lv=findings.find(g=>g.group===f.group&&g.field==='lv')?.value;return b.name+(Number.isInteger(lv)&&lv>=1&&lv<=6?' (Lv.'+lv+')':'')+(f.field==='lv'?' 레벨':' 수량');}
 function syncReviewLabels(group){for(const [i,f]of findings.entries()){if(!group||f.group!==group)continue;const label=reviewLabel(f),node=document.querySelector('[data-photo-label="'+i+'"]');if(node)node.textContent=label;for(const [selector,suffix]of [['[data-photo-value="'+i+'"]',' 인식값'],['[data-photo-check="'+i+'"]',' 적용']])document.querySelector(selector)?.setAttribute('aria-label',label+suffix);}}
 function render(){el('photoReview').innerHTML=findings.length?'<button type="button" id="photoSelectAll">모두 선택</button> <button type="button" id="photoDeselectAll">모두 해제</button><table class="photo-table"><thead><tr><th>적용</th><th>항목</th><th>인식값 · 수정 가능</th></tr></thead><tbody>'+findings.map((f,i)=>'<tr><td><input type="checkbox" data-photo-check="'+i+'" '+(f.value!==null&&!f.needsReview&&!findings.some(g=>g.group&&g.group===f.group&&(g.value===null||g.needsReview))?'checked ':'')+'aria-label="'+safeText(reviewLabel(f))+' 적용"></td><td><span data-photo-label="'+i+'">'+safeText(reviewLabel(f))+'</span>'+(f.needsReview?'<small class="photo-caution">'+(f.value===null&&!f.candidates?.length?'인식값 없음 · 직접 입력':'추가 확인 필요')+'</small>':'')+'</td><td><input type="text" inputmode="decimal" placeholder="직접 입력" data-photo-value="'+i+'" value="'+(f.value??'')+'" aria-label="'+safeText(reviewLabel(f))+' 인식값">'+(f.candidates?.length&&(f.needsReview||f.candidates.length>1)?'<div class="photo-candidates">'+f.candidates.map(n=>'<button type="button" data-photo-pick="'+i+'" data-photo-number="'+n+'" aria-pressed="'+(f.value===n)+'">'+n+'</button>').join('')+'</div>':'')+(f.preview?'<img class="photo-preview" src="'+f.preview+'" alt="'+safeText(reviewLabel(f))+' 원본 숫자 확대">':'')+'</td></tr>').join('')+'</tbody></table><p class="photo-description">인식값을 수정한 뒤 적용할 항목을 체크하세요. 건물은 레벨과 수량을 함께 선택하세요. 기존 상세 설정의 다른 레벨은 유지됩니다.</p>':'';el('photoApply').disabled=!findings.length;}
+// Opaque color samples from the game resource icons, relative to each icon center.
+const RESOURCE_ICONS=[
+ ["디르함",[[9,11,232,208,173],[-15,3,135,197,193],[-7,7,244,236,212],[5,15,223,213,190],[9,15,181,160,124],[-7,-1,204,191,168],[1,11,190,177,154],[1,7,190,179,155],[1,-9,157,136,105],[1,-17,180,169,144],[-11,-5,187,177,158],[-3,3,180,172,151],[1,-5,152,136,110],[1,-1,160,147,124],[13,-1,158,147,122],[-7,3,152,139,114],[13,3,158,147,125],[-7,11,165,157,139],[-11,11,135,163,143],[-3,-5,139,124,104],[-3,-1,162,155,141],[5,-13,146,134,117],[13,-5,153,145,129],[-3,-9,149,139,124],[-11,3,123,113,101],[1,-13,155,155,143],[-15,-5,144,152,140],[-11,-13,143,139,131]]],
+ ["금화",[[8,7,221,183,59],[4,-1,205,147,37],[-12,-9,226,189,82],[8,3,229,209,93],[8,11,219,183,81],[-4,15,133,69,6],[0,7,214,173,74],[-8,-5,201,158,53],[8,15,239,209,118],[-8,3,200,153,55],[-8,7,207,168,69],[-12,7,140,78,16],[0,11,226,197,105],[0,-1,190,140,45],[-4,-5,159,108,29],[4,-5,168,114,35],[-4,7,208,172,80],[12,7,177,129,41],[-8,-9,183,136,46],[0,-9,179,133,44],[12,-9,136,80,21],[8,-9,171,125,41],[8,-5,198,169,74],[12,-1,176,132,48],[16,3,212,161,99],[4,-13,165,118,45],[12,-5,157,113,42],[-12,-13,112,64,24],[-12,3,110,63,37],[-12,11,87,94,72]]],
+ ["커피콩",[[3,-2,145,59,0],[15,6,142,55,2],[-5,2,135,53,0],[7,-2,139,40,19],[-13,2,99,40,1],[-1,-10,95,39,2],[3,-10,124,65,24],[11,2,175,128,57],[15,2,165,97,56],[-5,-6,69,25,0],[7,6,204,145,103],[-9,6,66,25,2],[-9,-2,114,69,32],[-5,6,58,25,0],[-1,-2,55,24,2],[11,-6,185,135,92],[-1,2,118,88,49],[-17,6,121,99,68]]],
+ ["황동",[[-10,-12,234,198,87],[14,-4,224,187,79],[10,-4,230,195,90],[2,0,237,209,103],[2,-4,218,177,71],[10,0,214,173,66],[2,-12,239,213,112],[-2,4,186,136,36],[-6,0,195,147,48],[14,0,199,159,57],[6,-8,186,137,44],[-2,8,165,114,35],[6,4,191,152,57],[-2,-8,154,111,33],[-6,8,139,90,27],[-2,12,111,64,14],[-2,-4,152,113,39],[2,8,167,131,49],[2,12,120,80,28],[-14,-8,144,136,100]]],
+ ["몰약",[[9,-4,235,141,25],[-7,-8,209,97,21],[9,4,239,174,69],[-3,-12,144,53,1],[13,4,219,143,56],[-11,-4,157,63,11],[-11,0,154,59,10],[-7,0,149,50,10],[5,8,169,100,18],[5,0,184,95,33],[-7,-4,135,45,10],[-7,4,176,115,30],[5,12,131,64,7],[-3,-8,157,77,27],[5,4,207,139,65],[-7,8,118,55,8],[-3,12,101,39,5],[1,4,202,133,76],[1,-4,112,57,23],[5,-8,185,138,100]]],
+ ["석유",[[-4,8,252,235,7],[-8,8,252,232,8],[-8,-4,250,228,12],[-4,4,248,224,10],[-8,0,248,223,12],[8,-4,245,223,12],[-12,12,241,215,11],[12,4,246,226,23],[-12,4,237,206,9],[4,-8,243,211,19],[12,-4,236,205,9],[-12,8,235,203,11],[4,-4,231,201,8],[12,-8,235,196,16],[8,-12,255,226,55],[-16,8,212,125,4],[-4,16,255,247,79],[-4,-8,251,232,77],[4,12,181,79,3],[4,4,206,134,14],[-16,4,202,133,16],[0,16,186,103,14],[8,4,254,247,115],[-12,16,163,79,12],[8,8,158,133,9],[-16,12,135,61,18],[-16,0,84,93,50]]],
+ ["낙타",[[0,-9,204,155,56],[4,-13,219,175,86],[-4,-13,179,131,38],[8,3,196,148,58],[-4,-9,186,132,48],[4,-5,196,146,62],[-8,-5,156,108,32],[8,11,173,123,42],[4,-1,160,111,37],[-4,-5,169,120,44],[4,11,179,131,51],[-12,-17,156,114,42],[-4,-17,186,138,68],[-8,-1,139,96,47],[-4,7,159,178,128],[-4,15,167,162,120]]],
+ ["면화",[[4,-16,45,22,10],[-8,12,102,75,51],[-8,-12,251,251,246],[-4,-16,80,54,46],[-4,0,247,250,246],[0,0,255,255,255],[4,8,240,243,239],[-8,4,240,242,239],[-12,8,140,103,87],[8,12,227,233,230],[-16,-4,157,184,188],[8,-8,226,228,223],[4,12,230,230,227],[-8,-8,223,224,222],[8,-4,213,218,214],[4,-12,213,217,213],[0,-12,211,215,211],[4,0,204,209,206],[-12,4,119,97,86],[-8,8,136,111,99],[4,-4,197,200,196],[12,8,110,94,87],[0,-8,186,190,186],[-4,-8,187,190,187],[0,-4,176,181,181],[16,0,156,148,144],[8,-12,144,139,137]]],
+];
+// Crops use the 709 px reference height of the landscape game screen.
+function photoCrop(canvas,[x,y,width,height],threshold=null,light=true){
+ const scale=canvas.height/709;
+ const crop=document.createElement('canvas');
+ crop.width=width*4+32;crop.height=height*4+32;
+ const ctx=crop.getContext('2d',{willReadFrequently:true});
+ ctx.fillStyle='#fff';
+ ctx.fillRect(0,0,crop.width,crop.height);
+ ctx.drawImage(canvas,x*scale,y*scale,width*scale,height*scale,16,16,width*4,height*4);
+ if(threshold===null)return crop;
+ const image=ctx.getImageData(16,16,width*4,height*4);
+ for(let i=0;i<image.data.length;i+=4){
+  const gray=.299*image.data[i]+.587*image.data[i+1]+.114*image.data[i+2];
+  const ink=light?gray>threshold:gray<threshold;
+  image.data[i]=image.data[i+1]=image.data[i+2]=ink?0:255;
+ }
+ ctx.putImageData(image,16,16);
+ return crop;
+}
+function colorRatio(image,x,y,width,height,match){
+ let hits=0;
+ for(let row=y;row<y+height;row++)for(let col=x;col<x+width;col++){
+  const i=(row*image.width+col)*4;
+  if(match(image.data[i],image.data[i+1],image.data[i+2]))hits++;
+ }
+ return hits/(width*height);
+}
+function resourceIconMatches(image,target,x,y,radius=6,scales=[1,.9,1.1]){
+ const points=RESOURCE_ICONS.find(([name])=>name===target)[1];
+ let best=null;
+ for(const scale of scales){
+  const scaled=points.map(([dx,dy,r,g,b])=>[Math.round(dx*scale),Math.round(dy*scale),r,g,b]);
+  for(let cy=y-radius;cy<=y+radius;cy++)for(let cx=x-radius;cx<=x+radius;cx++){
+   let error=0;
+   const limit=scaled.length*3*(best?.error??27);
+   for(const [dx,dy,r,g,b] of scaled){
+    const i=((cy+dy)*image.width+cx+dx)*4;
+    error+=Math.abs(image.data[i]-r)+Math.abs(image.data[i+1]-g)+Math.abs(image.data[i+2]-b);
+    if(error>=limit)break;
+   }
+   if(error<limit)best={x:cx,y:cy,error:error/(scaled.length*3)};
+  }
+ }
+ return best;
+}
+function findResourceIcons(image,offset,market){
+ const blue=(r,g,b)=>b>r+24&&g>r+12&&b>70;
+ const slots=market?
+  [['커피콩',422,28],['황동',531,28],['몰약',640,28],
+   ['석유',422,77],['면화',531,77],['금화',640,77]]:
+  [['디르함',422,28],['금화',531,28],['커피콩',640,28],
+   ['황동',422,77],['몰약',531,77],['석유',640,77]];
+ const positions=[];
+ for(const [target,x,y] of slots){
+  if(colorRatio(image,x+21+offset,y-9,60,19,blue)<.30)continue;
+  if(resourceIconMatches(image,target,x+offset,y)){
+   const inset=target==='면화'?23:19;
+   positions.push([target,[x+inset+offset,y-11,83-inset,23]]);
+  }
+ }
+ // The bazaar shows owned camels in a separate blue circle, above its offers.
+ if(market&&resourceIconMatches(image,'낙타',798+offset,41,8,[.9,1,1.2,1.35])){
+  positions.push(['낙타',[778+offset,65,42,33]]);
+ }
+ return positions;
+}
+async function readCrop(w,canvas,box,threshold,light=true){
+ const {data}=await w.recognize(photoCrop(canvas,box,threshold,light));
+ return String(data.text||'').trim();
+}
+function cropStockNumber(text){
+ if(!/^\d+(?:[.,]\d+)*\s*[KM]?$/i.test(text))return null;
+ if(/[,]/.test(text)&&!/^\d{1,3}(?:,\d{3})+(?:\.\d+)?\s*[KM]?$/i.test(text))return null;
+ return stockNumber(text);
+}
+const HUD_DIGITS={
+ "0":[[49,[112,510,462,902,903,903,903,903,903,903,903,903,902,974,510,120]],[53,[120,252,462,390,390,902,903,903,903,903,903,902,390,454,254,124]]],
+ "1":[[34,[992,1016,1022,1007,960,896,896,896,896,896,896,896,896,896,896,384]],[36,[992,1016,1022,1007,960,960,960,960,960,960,960,960,960,960,960,384]]],
+ "2":[[47,[120,510,962,896,896,896,448,192,224,112,56,28,14,31,1023,1023]],[50,[120,510,454,384,896,384,384,448,224,112,56,28,14,14,1023,1023]]],
+ "3":[[49,[60,511,450,896,384,384,192,124,248,448,896,896,896,448,511,126]],[47,[120,511,994,896,896,384,192,120,248,960,896,896,896,960,511,127]]],
+ "4":[[58,[224,224,240,240,248,216,204,198,198,198,1023,1023,480,448,192,192]],[60,[224,224,240,248,248,204,204,206,198,198,487,1023,1023,192,192,192]]],
+ "5":[[50,[254,254,7,7,7,7,255,510,960,896,896,896,896,448,255,127]],[50,[508,510,14,14,14,14,254,508,960,896,768,768,896,960,255,126]]],
+ "6":[[48,[224,248,28,6,6,7,231,511,903,903,903,903,902,910,510,120]],[50,[496,124,30,6,6,7,103,511,455,903,903,903,902,454,510,120]]],
+ "7":[[50,[1023,1023,896,384,448,448,224,224,96,112,120,56,56,60,28,12]],[43,[0,0,511,1023,960,448,448,224,224,96,112,112,56,56,28,28]]],
+ "8":[[55,[0,248,508,908,908,908,476,248,248,476,908,910,910,908,508,248]]],
+ "9":[[51,[56,254,462,455,903,899,903,967,1022,958,896,448,448,224,126,30]]],
+};
+// Read the game font directly before falling back to general OCR. Its narrow
+// digits can otherwise be confidently misread, especially 5 as 9.
+function readHudDigits(crop){
+ const {width,height}=crop;
+ const {data}=crop.getContext('2d').getImageData(0,0,width,height);
+ const ink=(x,y)=>data[(y*width+x)*4]===0;
+ const glyphs=[];
+ for(let x=16;x<width-16;x++){
+  let top=height,bottom=0;
+  for(let y=16;y<height-16;y++)if(ink(x,y)){top=Math.min(top,y);bottom=y+1;}
+  if(bottom===0)continue;
+  const prior=glyphs.at(-1);
+  if(prior?.right===x){
+   prior.right=x+1;prior.top=Math.min(prior.top,top);prior.bottom=Math.max(prior.bottom,bottom);
+  }else glyphs.push({left:x,right:x+1,top,bottom});
+ }
+ const spans=glyphs.filter(g=>g.right-g.left>=3);
+ const tallest=Math.max(0,...spans.map(g=>g.bottom-g.top));
+ if(tallest<height*.35||spans.length>15)return null;
+ let text='';
+ for(const {left,right,top,bottom} of spans){
+  const w=right-left,h=bottom-top;
+  if(h<tallest*.45){
+   if(top<height*.53||h<tallest*.17)return null;
+   text+=',';
+   continue;
+  }
+  const rows=Array.from({length:16},(_,y)=>{
+   let bits=0;
+   for(let x=0;x<10;x++)if(ink(left+Math.floor((x+.5)*w/10),top+Math.floor((y+.5)*h/16)))bits|=1<<x;
+   return bits;
+  });
+  const scores=Object.entries(HUD_DIGITS).map(([digit,patterns])=>{
+   const distance=([aspect,pattern])=>{
+    let error=Math.abs(aspect-w/h*100)*.6;
+    for(let i=0;i<rows.length;i++){
+     for(let diff=rows[i]^pattern[i];diff;diff&=diff-1)error++;
+    }
+    return error;
+   };
+   return [digit,Math.min(...patterns.map(distance))];
+  }).sort((a,b)=>a[1]-b[1]);
+  if(scores[0][1]>30||scores[1][1]-scores[0][1]<6)return null;
+  text+=scores[0][0];
+ }
+ return cropStockNumber(text);
+}
+async function readStockCrops(w,canvas,positions,light,stockOrigin){
+ await w.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:'0123456789.,KMkm'});
+ const rows=[];
+ for(const [target,box] of positions){
+  const values=[];
+  if(light){
+   const digits=[165,185,200].map(level=>readHudDigits(photoCrop(canvas,box,level)));
+   const agreed=digits.find(n=>n!==null&&digits.filter(value=>value===n).length>=2);
+   if(agreed!==undefined)values.push(agreed);
+  }
+  for(const threshold of values.length?[]:light?[165,195,185]:[110,140,155]){
+   const value=cropStockNumber(await readCrop(w,canvas,box,threshold,light));
+   if(value===null)continue;
+   values.push(value);
+   if(values[0]===values[1])break;
+  }
+  const candidates=[...new Set(values)];
+  const value=candidates.length===1?candidates[0]:null;
+  rows.push(entry('stock_'+target,target+' 보유량',value,{kind:'stock',target,stockOrigin,candidates:candidates.length>1?candidates:[],needsReview:true,preview:photoCrop(canvas,box).toDataURL('image/png')}));
+ }
+ return rows;
+}
+async function readBuildingCards(w,canvas,image){
+ const rows=[];
+ for(const y of [98,230,362,494])for(const x of [92,224]){
+  await w.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
+  const nameBox=[x,y,127,25];
+  const building=matchBuilding(await readCrop(w,canvas,nameBox,155))||
+   matchBuilding(await readCrop(w,canvas,nameBox,185));
+  if(!building)continue;
+  await w.setParameters({tessedit_char_whitelist:'0123456789'});
+  const levelBox=[x+34,y+29,19,22];
+  const level=await readCrop(w,canvas,levelBox,150);
+  const badgeBox=[x+94,y-39,35,35];
+  const orange=colorRatio(image,...badgeBox,(r,g,b)=>r>175&&g>95&&g<220&&r>g+25&&g>b+35);
+  let count=null;
+  if(orange>.3){
+   await w.setParameters({tessedit_char_whitelist:'0123456789xX'});
+   const text=await readCrop(w,canvas,[x+100,y-30,26,22],115,false);
+   const match=text.match(/^[xX]?\s*([1-9]\d{0,3})$/);
+   if(match)count=Number(match[1]);
+  }else if(orange<.16)count=1;
+  const scale=canvas.height/709;
+  const group=building.id+'_'+x+'_'+y;
+  for(const [field,value,box] of [['lv',/^[1-6]$/.test(level)?Number(level):null,levelBox],['count',count,badgeBox]]){
+   rows.push(entry(group+'_'+field,building.name+(field==='lv'?' 레벨':' 수량'),value,{
+    kind:'building',building:building.id,field,group,anchor:{x0:x*scale,y0:y*scale},
+    preview:photoCrop(canvas,box).toDataURL('image/png'),needsReview:true
+   }));
+  }
+ }
+ return rows;
+}
+async function readGameLayout(w,canvas){
+ const width=Math.round(canvas.width*709/canvas.height);
+ if(width<1150||width>2000)return null;
+ const reference=document.createElement('canvas');
+ reference.width=width;reference.height=709;
+ const ctx=reference.getContext('2d',{willReadFrequently:true});
+ ctx.drawImage(canvas,0,0,width,709);
+ const offset=Math.round((width-1536)/2);
+ const header=ctx.getImageData(0,0,width,170);
+ const amber=(r,g,b)=>r>175&&g>95&&r>g+30&&g>b+50;
+ const dark=(r,g,b)=>r<65&&g<65&&b<80;
+ const marketBanner=colorRatio(header,480+offset,122,110,22,amber)>.75&&
+  colorRatio(header,950+offset,122,110,22,amber)>.75&&
+  colorRatio(header,115+offset,116,45,30,dark)>.9&&
+  colorRatio(header,1360+offset,116,45,30,dark)>.9;
+ const marketStocks=findResourceIcons(header,offset,true);
+ if(marketBanner||marketStocks.length>=5){
+  // Whitelist the ownership header. Never run full-image OCR on an identified market.
+  return readStockCrops(w,canvas,marketStocks,true,'market');
+ }
+ const paper=ctx.getImageData(742+offset,340,54,30);
+ const parchment=colorRatio(paper,0,0,paper.width,paper.height,(r,g,b)=>r>215&&g>195&&r>g&&g>b+20)>.9;
+ if(parchment){
+  await w.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
+  const title=await readCrop(w,canvas,[304+offset,121,91,26],208);
+  if(clean(title).includes('아라비아')){
+   return readStockCrops(w,canvas,[
+    ['커피',[374+offset,183,105,27]],['향',[686+offset,183,105,27]],
+    ['오일 램프',[998+offset,183,103,27]],['카펫',[374+offset,266,105,27]]
+   ],false);
+  }
+ }
+ const resources=findResourceIcons(header,offset,false);
+ if(resources.length>=2)return readStockCrops(w,canvas,resources,true);
+ await w.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
+ const sceneTitle=await readCrop(w,canvas,[62,18,63,34],185);
+ if(clean(sceneTitle)==='시장')return readStockCrops(w,canvas,marketStocks,true,'market');
+ const footer=await readCrop(w,canvas,[109,646,79,29],155);
+ if(clean(footer).includes('보관')){
+  const buildings=await readBuildingCards(w,canvas,ctx.getImageData(0,0,356,550));
+  if(buildings.length)return buildings;
+ }
+ return null;
+}
 async function recognizePhoto(w,canvas){
+ const layoutRows=await readGameLayout(w,canvas);
+ if(layoutRows!==null)return layoutRows;
  const rows=[];
  await w.setParameters({tessedit_pageseg_mode:'11',tessedit_char_whitelist:''});
  for(const input of [canvas,contrastImage(canvas)]){
