@@ -2949,28 +2949,25 @@ function mergeFindings(additions){
   }
  }
 }
-// Overlapping scrolling screenshots show the same card at different positions.
-// Preserve its count once by matching a building and its displayed level.
 function dedupePhotoPages(){
- const grouped=new Map(),seen=new Map(),removed=new Set();
- for(const f of findings){if(f.kind!=='building'||!f.group)continue;if(!grouped.has(f.group))grouped.set(f.group,{building:f.building,source:f.source});grouped.get(f.group)[f.field]=f;}
- for(const [group,card] of grouped){const lv=card.lv?.value;
-  if(!Number.isInteger(lv)||lv<1||lv>6)continue;
-  const key=card.building+'_'+lv,previous=seen.get(key);
-  if(!previous){seen.set(key,{group,card});continue;}
-  if(previous.card.source===card.source)continue;
-  if(previous.card.count&&card.count){
-   const old=previous.card.count,other=card.count;
-   const options=[...new Set([...(old.candidates||[]),...(other.candidates||[]),old.value,other.value].filter(n=>n!==null&&n!==undefined))];
-   if(options.length>1){old.value=null;old.needsReview=true;old.candidates=options;}
-   else if(options.length===1){
-    if(old.value===null)old.preview=other.preview||old.preview;
-    old.value=options[0];old.needsReview=true;
-   }
-  }
-  if(previous.card.lv&&card.lv&&(previous.card.lv.needsReview||card.lv.needsReview)){
-   previous.card.lv.needsReview=true;previous.card.lv.candidates=[...new Set([...(previous.card.lv.candidates||[]),...(card.lv.candidates||[]),lv])];
-  }
+ const grouped=new Map(),firstByLevel=new Map(),removed=new Set();
+ for(const f of findings){
+  if(f.kind!=='building'||!f.group)continue;
+  if(!grouped.has(f.group))grouped.set(f.group,{building:f.building});
+  grouped.get(f.group)[f.field]=f;
+ }
+ for(const [group,card] of grouped){
+  const level=card.lv?.value;
+  if(!Number.isInteger(level)||card.lv.candidates?.some(value=>value!==level)||!card.count)continue;
+  // The game list aggregates copies of each building at the same level.
+  const key=card.building+'_'+level;
+  const previous=firstByLevel.get(key);
+  if(!previous){firstByLevel.set(key,card.count);continue;}
+  const count=card.count;
+  const options=[...new Set([previous.value,count.value,...(previous.candidates||[]),...(count.candidates||[])].filter(Number.isSafeInteger))];
+  if(!previous.candidates?.length&&previous.value===null&&count.value!==null)previous.preview=count.preview||previous.preview;
+  previous.value=options.length===1?options[0]:null;
+  previous.candidates=options.length>1?options:[];
   removed.add(group);
  }
  if(removed.size)findings=findings.filter(f=>!removed.has(f.group));
@@ -3165,14 +3162,41 @@ async function readStockCrops(w,canvas,positions,light,stockOrigin){
  }
  return rows;
 }
+function buildingCardRows(image){
+ // The name bars move by the scroll distance. Their right edges repeat
+ // every 132 reference pixels, even when the first card is clipped.
+ const pitch=132;
+ const edges=Array.from({length:image.height},(_,y)=>[217,349].reduce((score,x)=>{
+  const left=(y*image.width+x-1)*4;
+  const right=left+16;
+  let change=0;
+  for(let i=0;i<3;i++)change+=image.data[right+i]-image.data[left+i];
+  return score+Math.max(0,Math.min(135,change-55));
+ },0));
+ const average=(start,end)=>edges.slice(start,end).reduce((sum,n)=>sum+n,0)/(end-start);
+ let best={score:0,rows:[]};
+ for(let phase=0;phase<pitch;phase++){
+  const rows=[];
+  let score=0;
+  for(let y=phase;y<=546;y+=pitch){
+   if(y<57)continue; // A complete card must fit between the list edges.
+   rows.push(y);
+   score+=average(y+2,y+23)-(average(y-8,y-2)+average(y+27,y+33))/2;
+  }
+  if(score>best.score)best={score,rows};
+ }
+ return best.score>=90?best.rows:[98,230,362,494];
+}
 async function readBuildingCards(w,canvas,image){
  const rows=[];
- for(const y of [98,230,362,494])for(const x of [92,224]){
+ for(const y of buildingCardRows(image))for(const x of [92,224]){
   await w.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
   const nameBox=[x,y,127,25];
   const building=matchBuilding(await readCrop(w,canvas,nameBox,155))||
    matchBuilding(await readCrop(w,canvas,nameBox,180))||
-   matchBuilding(await readCrop(w,canvas,nameBox,null));
+   matchBuilding(await readCrop(w,canvas,nameBox,195))||
+   matchBuilding(await readCrop(w,canvas,nameBox,null))||
+   (clean(await readCrop(w,canvas,[x,y+2,39,24],180))==='상인'?BUILDINGS.find(b=>b.id==='금화'):null);
   if(!building)continue;
   await w.setParameters({tessedit_char_whitelist:'0123456789'});
   const levelBox=[x+34,y+29,19,22];
@@ -3222,11 +3246,6 @@ async function readGameLayout(w,canvas){
   colorRatio(header,950+offset,122,110,22,amber)>.75&&
   colorRatio(header,115+offset,116,45,30,dark)>.9&&
   colorRatio(header,1360+offset,116,45,30,dark)>.9;
- const marketStocks=findResourceIcons(header,offset,true);
- if(marketBanner||marketStocks.length>=5){
-  // Whitelist the ownership header. Never run full-image OCR on an identified market.
-  return readStockCrops(w,canvas,marketStocks,true,'market');
- }
  const paper=ctx.getImageData(742+offset,340,54,30);
  const parchment=colorRatio(paper,0,0,paper.width,paper.height,(r,g,b)=>r>215&&g>195&&r>g&&g>b+20)>.9;
  if(parchment){
@@ -3239,12 +3258,17 @@ async function readGameLayout(w,canvas){
    ],false);
   }
  }
+ const marketStocks=findResourceIcons(header,offset,true);
+ if(marketBanner||marketStocks.length>=5){
+  // Whitelist the ownership header. Never run full-image OCR on an identified market.
+  return readStockCrops(w,canvas,marketStocks,true,'market');
+ }
  await w.setParameters({tessedit_pageseg_mode:'7',tessedit_char_whitelist:''});
  const sceneTitle=await readCrop(w,canvas,[62,18,63,34],185);
  if(clean(sceneTitle)==='시장')return readStockCrops(w,canvas,marketStocks,true,'market');
  const footer=await readCrop(w,canvas,[109,646,79,29],155);
  if(clean(footer).includes('보관')){
-  const buildings=await readBuildingCards(w,canvas,ctx.getImageData(0,0,356,550));
+  const buildings=await readBuildingCards(w,canvas,ctx.getImageData(0,0,356,598));
   if(buildings.length)return buildings;
  }
  const resources=findResourceIcons(header,offset,false);
@@ -3348,11 +3372,12 @@ function readPhotoSelection(){
   }
   if(!byBuilding.has(g.building))byBuilding.set(g.building,[]);
   const rows=byBuilding.get(g.building);
-  if(rows.some(row=>row.lv===g.lv)){
+  const duplicate=rows.find(row=>row.lv===g.lv);
+  if(duplicate&&duplicate.count!==g.count){
    const name=BUILDINGS.find(b=>b.id===g.building).name;
-   return {error:name+' Lv.'+g.lv+'이(가) 중복 선택되었습니다. 같은 레벨은 한 묶음만 선택하세요.'};
+   return {error:name+' Lv.'+g.lv+'의 수량이 서로 다릅니다. 사진을 확인한 뒤 맞는 수량만 선택하세요.'};
   }
-  rows.push(g);
+  if(!duplicate)rows.push(g);
  }
  return {selected,byBuilding};
 }
