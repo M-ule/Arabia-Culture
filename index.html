@@ -374,13 +374,18 @@ h1{color:var(--blue)}
 #convert th:first-child{z-index:2}
 .detail-summary{color:#766246;font-size:13px;padding:5px 8px;border:1px solid #e8d7c0;border-radius:5px;background:#fffcf7}
 .detail-summary.applied{color:var(--blue);font-weight:700}
-.purchase-details{margin-top:14px}
-.purchase-details summary{padding:8px 0;cursor:pointer;font-weight:700;color:var(--blue)}
-.purchase-wrap{overflow:auto;overscroll-behavior-inline:contain;margin:6px 0 0}
-.purchase-wrap table{min-width:650px}
-.purchase-wrap th:first-child,.purchase-wrap td:first-child{position:sticky;left:0;z-index:1;width:110px}
-.purchase-wrap td,.purchase-wrap th{height:48px;min-width:0;font-size:14px}
+.purchase-details{margin-top:16px}
+.purchase-details h3{margin:0 0 8px;color:var(--blue);font-size:15px}
+.purchase-wrap{max-width:100%;overflow:auto;overscroll-behavior-inline:contain}
+.purchase-wrap table{width:100%;min-width:0;table-layout:fixed}
+.purchase-wrap td,.purchase-wrap th{height:40px;padding:7px 10px;font-size:14px}
+.purchase-wrap .purchase-quantity{background:#fff4df;font-weight:700;font-variant-numeric:tabular-nums}
 .purchase-wrap tfoot th,.purchase-wrap tfoot td{background:#faefe0;color:#6b4612;font-weight:700}
+#panel-wonder:not(.expanded) .purchase-wrap :is(.purchase-extra,.purchase-covered,tfoot){display:none}
+#panel-wonder.expanded .purchase-wrap .purchase-empty{display:none}
+#panel-wonder.expanded .purchase-wrap table{min-width:650px}
+#panel-wonder.expanded .purchase-wrap :is(thead,tbody) th:first-child{position:sticky;left:0;z-index:1;width:100px}
+#panel-wonder.expanded .purchase-wrap tbody th:first-child{background:#fffcf7}
 @media(max-width:720px){
  .settings-actions{width:100%}
  .settings-actions button{flex:1 1 40%}
@@ -415,8 +420,8 @@ h1{color:var(--blue)}
 #cityOverviewCard .city-territory{background:transparent;padding:0;border:0}
 #cityAreaUsage{width:100%;height:12px;accent-color:var(--blue);margin:0 0 8px}
 .territory-breakdown{color:#64543e;font-size:14px;line-height:1.7}
-.city-breakdown,.purchase-details{border-top:1px solid var(--line);padding-top:4px}
-.city-breakdown>summary,.purchase-details>summary{min-height:44px;padding:10px 4px}
+.city-breakdown{border-top:1px solid var(--line);padding-top:4px}
+.city-breakdown>summary{min-height:44px;padding:10px 4px}
 .currency-time-context{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .currency-time-context .section-guide{margin:0}
 .budget-breakdown{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
@@ -550,9 +555,9 @@ input[aria-invalid]{border-color:var(--red)}
  #panel-wonder:not(.expanded) #goalTable tbody tr{margin-bottom:8px}
  #panel-wonder:not(.expanded) #goalTable tbody td:not(:first-child){min-height:88px}
 
- .purchase-wrap table{min-width:540px}
- .purchase-wrap :is(th,td){padding:6px;font-size:13px;white-space:nowrap}
- .purchase-wrap tr>th:first-child{width:88px}
+ #panel-wonder.expanded .purchase-wrap table{min-width:580px}
+ .purchase-wrap :is(th,td){padding:6px 8px;font-size:13px}
+ #panel-wonder.expanded .purchase-wrap :is(thead,tbody) th:first-child{width:74px}
  #conversionCard #convert{max-width:100%;overflow:auto;overscroll-behavior-inline:contain}
  #conversionCard #tc{width:605px;min-width:605px}
  #conversionCard #tc tr>:nth-child(1){width:106px}
@@ -1076,7 +1081,7 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 <div class="card settings-card" id="wonderSettings">
 <div class="sectionbar">
 <h2 data-tip-key="불가사의 목표">불가사의 목표</h2>
-<div class="settings-actions"><button id="wonderView" aria-controls="tw ts ta">상세 보기 ▼</button></div>
+<div class="settings-actions"><button id="wonderView" aria-controls="tw ts ta sleepPurchaseTable targetPurchaseTable">상세 보기 ▼</button></div>
 </div>
 <div class="settings">
 <div class="control-field"><label for="curLv">현재 레벨</label><input id="curLv" type="number" min="0" max="50"></div>
@@ -1109,12 +1114,12 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 <div id="sleepTable" class="wrap">
 <table class="result-table" id="ts"><thead></thead><tbody></tbody></table>
 </div>
-<details class="purchase-details">
-<summary>수면 대비 원료 구매 내역</summary>
-<div class="purchase-wrap" role="region" aria-label="수면 대비 원료 구매 내역" tabindex="0">
+<section class="purchase-details">
+<h3 id="sleepPurchaseTitle">취침 전 구매 필요량</h3>
+<div class="purchase-wrap" role="region" aria-labelledby="sleepPurchaseTitle">
 <table id="sleepPurchaseTable"></table>
 </div>
-</details>
+</section>
 <p class="note">생산력 수치의 기준은 아래 <a href="#conversionCard" class="conversion-reference">생산력 환산표</a>를 참고하세요.</p>
 </div>
 <div class="card" id="powerCard">
@@ -1124,12 +1129,12 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 <div id="powerTable" class="wrap">
 <table class="result-table" id="ta"><thead></thead><tbody></tbody></table>
 </div>
-<details class="purchase-details">
-<summary>목표 레벨 원료 구매 내역</summary>
-<div class="purchase-wrap" role="region" aria-label="목표 레벨 원료 구매 내역" tabindex="0">
+<section class="purchase-details">
+<h3 id="targetPurchaseTitle">목표 달성 구매 필요량</h3>
+<div class="purchase-wrap" role="region" aria-labelledby="targetPurchaseTitle">
 <table id="targetPurchaseTable"></table>
 </div>
-</details>
+</section>
 <p class="note">생산력 수치의 기준은 아래 <a href="#conversionCard" class="conversion-reference">생산력 환산표</a>를 참고하세요.</p>
 </div>
 <div class="card" id="conversionCard">
@@ -2360,13 +2365,22 @@ function renderPurchaseBreakdown(id, purchases, sleepPlan = null) {
   const wholeQuantity = value => Math.ceil(value - 1e-9);
   const rows = purchases.rows.map(row => {
     const demand = sleepPlan ? [sleepPlan.before[row.raw], sleepPlan.reserved[row.raw]] : [row.consumed];
-    const quantities = [...demand, row.availableStock, row.need];
-    const cells = [...quantities.map(wholeQuantity), row.gold, row.camel];
-    return '<tr><th scope="row">'+row.raw+'</th>'+cells.map(value=>td(fmtQty(value),'calc')).join('')+'</tr>';
+    const extras = [...demand, row.availableStock].map(value=>td(fmtQty(wholeQuantity(value)),'calc purchase-extra'));
+    const need = wholeQuantity(row.need);
+    return '<tr'+(need>0?'':' class="purchase-covered"')+'><th scope="row">'+row.raw+'</th>'+extras.join('')
+      +td(fmtQty(need),'calc purchase-quantity')
+      +td(fmtQty(row.gold),'calc purchase-extra')+td(fmtQty(row.camel),'calc purchase-extra')+'</tr>';
   });
+  const empty = purchases.rows.some(row=>wholeQuantity(row.need)>0)
+    ?'' : '<tr class="purchase-empty"><td colspan="2">추가 구매 없음</td></tr>';
   const total = '<tr><th scope="row" colspan="'+(labels.length-2)+'">총 구매 비용</th>'
     +td(fmtQty(purchases.gold))+td(fmtQty(purchases.camel))+'</tr>';
-  $(id).innerHTML = head(labels)+'<tbody>'+rows.join('')+'</tbody><tfoot>'+total+'</tfoot>';
+  const table = $(id);
+  table.innerHTML = head(labels)+'<tbody>'+rows.join('')+empty+'</tbody><tfoot>'+total+'</tfoot>';
+  for(const th of table.tHead.rows[0].cells){
+    if(th.dataset.label==='구매 필요량')th.classList.add('purchase-quantity');
+    else if(th.cellIndex>0)th.classList.add('purchase-extra');
+  }
 }
 function updateNativeViews(){
  for(const id of ['prod','wonder'])$('panel-'+id).classList.toggle('expanded',app.views[id]);
@@ -2375,6 +2389,10 @@ function updateNativeViews(){
  if(!app.views.city)$('cityBuildingResetStatus').textContent='';
  for(const id of ['goalTable','sleepTable','powerTable']){
   $(id).querySelectorAll('th').forEach((th,index)=>th.classList.toggle('detailcol',id==='goalTable'?index>=2&&index<=5:index>1));
+ }
+ for(const wrapper of $('panel-wonder').querySelectorAll('.purchase-wrap')){
+  if(app.views.wonder)wrapper.tabIndex=0;
+  else wrapper.removeAttribute('tabindex');
  }
  syncUxDetailButtons();
 }
