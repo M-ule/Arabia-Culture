@@ -907,7 +907,11 @@ h1{margin:0 0 12px}
 #productionSections input[data-k="hourlyRate"]{width:100%;min-width:0;text-align:center}
 @media(min-width:721px){
  #panel-prod #productionSections #t1 th{width:auto}
- #panel-prod:not(.expanded) #productionSections #t1 th:nth-child(2){width:25%}
+ #panel-prod:not(.expanded) #productionSections #t1 th:first-child{width:12%}
+ #panel-prod:not(.expanded) #productionSections #t1 th:is([data-label="시간당 생산량"],[data-label="생산 설정"]){width:22%}
+ #panel-prod:not(.expanded) #productionSections #t1 th[data-label="현재 보유량"]{width:23%}
+ #panel-prod:not(.expanded) #productionSections #t1 th[data-label="잔여/부족"]{width:25%}
+ #panel-prod:not(.expanded) #productionSections #t1 th[data-label="소요 시간"]{width:18%}
 }
 #detailDialog .detail-done{min-width:80px}
 #photoImportDialog{padding:20px;border-radius:8px}
