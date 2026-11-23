@@ -906,8 +906,8 @@ h1{margin:0 0 12px}
 #detailDialog .detail-content{padding-inline:0}
 #productionSections input[data-k="hourlyRate"]{width:100%;min-width:0;text-align:center}
 @media(min-width:721px){
- #panel-prod #productionSections #t1[data-hourly] th{width:auto}
- #panel-prod:not(.expanded) #productionSections #t1[data-hourly] th[data-label="시간당 생산량"]{width:25%}
+ #panel-prod #productionSections #t1 th{width:auto}
+ #panel-prod:not(.expanded) #productionSections #t1 th:nth-child(2){width:25%}
 }
 #detailDialog .detail-done{min-width:80px}
 #photoImportDialog{padding:20px;border-radius:8px}
@@ -1256,7 +1256,6 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 <button type="button" data-close="detailDialog" aria-label="닫기">×</button></div>
 <div id="detailTabs" class="modal-tabs" role="group" aria-label="생산 항목"></div>
 <div class="detail-content">
-<div id="resourceBuildingSetting" class="detail-enable" hidden><input id="resourceBuildingEnabled" type="checkbox"><label for="resourceBuildingEnabled">건물 정보로 계산</label></div>
 <div id="detailBuildingSettings"><div class="detail-enable"><span class="detail-enable-title" aria-hidden="true">상세 설정</span><input id="detailEnabled" type="checkbox" autofocus><label for="detailEnabled">이 항목에 상세 설정 적용</label></div>
 <p class="section-guide">빈칸은 해당 항목의 운영 시간을 사용하고, 0은 생산하지 않습니다. 행복도는 생산량에만 반영됩니다.</p>
 </div>
@@ -1308,7 +1307,7 @@ const HAPPINESS_BUFF={
   '카펫':{1:{value:150,factor:1.334},2:{value:300,factor:1.334},3:{value:450,factor:1.334},4:{value:600,factor:1.5},5:{value:750,factor:1.8},6:{value:900,factor:2.222}}
 };
 const DEFAULTS={
-  settings:{wLv:0,baseH:0,sleepPrepH:'',sleepCycle:'2시간',sleepCount:3,questRewards:{},resourceBuildingEnabled:false},
+  settings:{wLv:0,baseH:0,sleepPrepH:'',sleepCycle:'2시간',sleepCount:3,questRewards:{}},
   resources:{
     '금화':{lv:1,mode:'연속',bldgs:1,irrigation:100,hours:'',stock:0,hourlyRate:''},
     '낙타':{lv:1,mode:'1분',bldgs:1,irrigation:100,hours:'',stock:0,hourlyRate:''}
@@ -1427,7 +1426,7 @@ function outputForInfo(p,h,bldgs,continuous=false){if(!p||bldgs<=0||h<=0)return 
 function useForInfo(p,h,bldgs,raw){if(!p||bldgs<=0||h<=0)return 0;const per=(p.mat1===raw?p.use1:0)+(p.mat2===raw?p.use2:0);return cyclesFor(h,p.min)*per*bldgs;}
 
 function useResourceHourlyRate(name){
-  return !app.settings.resourceBuildingEnabled && resourceOrder.includes(name);
+  return resourceOrder.includes(name) && !resourceDetailEnabled(name);
 }
 function normalizeHourlyRate(value){
   return value===''||value==null?'':Math.max(0,num(value));
@@ -1828,17 +1827,10 @@ function normalizeLoaded(obj){
     if(obj.resourceDetails)for(const n of resourceOrder)Object.assign(d.resourceDetails[n],obj.resourceDetails[n]||{});
   }
   delete d.settings.powerMode;
-  const legacyHourlyMode=d.settings.resourceHourlyEnabled;
+  const legacyHourly=d.settings.resourceHourlyEnabled;
+  const legacyBuilding=d.settings.resourceBuildingEnabled;
   delete d.settings.resourceHourlyEnabled;
-  const savedBuildingSetup=resourceOrder.some(name=>{
-    const saved=obj?.resources?.[name];
-    const defaults=DEFAULTS.resources[name];
-    return (obj?.resourceDetails?.[name]?.enabled===true)
-      || (saved && ['lv','mode','bldgs','irrigation','hours','hourlyRate'].some(key=>saved[key]!=null&&saved[key]!==defaults[key]));
-  });
-  d.settings.resourceBuildingEnabled=typeof obj?.settings?.resourceBuildingEnabled==='boolean'
-    ?obj.settings.resourceBuildingEnabled
-    :legacyHourlyMode!==true&&savedBuildingSetup;
+  delete d.settings.resourceBuildingEnabled;
   for(const name of resourceOrder)d.resources[name].hourlyRate=normalizeHourlyRate(d.resources[name].hourlyRate);
   const selections = d.settings.questRewards;
   d.settings.questRewards = Object.fromEntries(Object.keys(questRewards())
@@ -1846,6 +1838,18 @@ function normalizeLoaded(obj){
   d.settings.wLv=clamp(parseInt(d.settings.wLv)||0,0,50);d.settings.baseH=Math.max(0,num(d.settings.baseH,0));d.settings.sleepPrepH=d.settings.sleepPrepH===''||d.settings.sleepPrepH===null||d.settings.sleepPrepH===undefined?'':Math.max(0,num(d.settings.sleepPrepH,0));const sleepCycles=['long','30분','1시간','2시간'];if(!sleepCycles.includes(d.settings.sleepCycle))d.settings.sleepCycle='2시간';d.settings.sleepCount=Math.max(0,Math.floor(num(d.settings.sleepCount,3)));
   d.wonder.cur=clamp(parseInt(d.wonder.cur)||0,0,50);d.wonder.tgt=Math.max(d.wonder.cur,clamp(parseInt(d.wonder.tgt)||0,0,50));
   for(const n of resourceOrder){const s=d.resources[n];s.lv=clamp(parseInt(s.lv)||1,1,6);s.bldgs=Math.max(0,num(s.bldgs,0));s.irrigation=normalizedHappiness(s.irrigation,100);s.stock=Math.round(num(s.stock,0));s.hours=s.hours===''||s.hours===null||s.hours===undefined?'':Math.max(0,num(s.hours,0));if(n==='금화')s.mode='연속';else{const modes=modesFor(resourceBuilding[n],s.lv);if(!modes.includes(s.mode))s.mode=modes[0]||s.mode;}}
+  // Convert the old global mode to the per-resource detail switches.
+  if(typeof legacyBuilding==='boolean'||typeof legacyHourly==='boolean'){
+    const buildingMode=legacyBuilding??!legacyHourly;
+    for(const name of resourceOrder){
+      const detail=d.resourceDetails[name];
+      if(buildingMode&&!(detail.enabled&&detail.rows?.length)){
+        const {lv,bldgs,irrigation,hours,mode}=d.resources[name];
+        detail.rows=[{lv,count:bldgs,irrigation,hours,mode}];
+      }
+      detail.enabled=buildingMode;
+    }
+  }
   for(const n of productOrder){const s=d.products[n];s.lv=clamp(parseInt(s.lv)||1,1,6);s.bldgs=Math.max(0,num(s.bldgs,0));s.irrigation=normalizedHappiness(s.irrigation,100);s.stock=Math.round(num(s.stock,0));s.hours=s.hours===''||s.hours===null||s.hours===undefined?'':Math.max(0,num(s.hours,0));const modes=modesFor(productBuilding[n],s.lv);if(!modes.includes(s.mode))s.mode=modes[0]||s.mode;}
   for(const r of rawOrder)d.rawStocks[r]=Math.round(num(d.rawStocks[r],0));d.city=normalizeCity(obj?.city);d.views={prod:obj?.views?.prod===true,wonder:obj?.views?.wonder===true,city:false};return d;
 }
@@ -1855,8 +1859,8 @@ function wonderStorageKey(){
 }
 function saveState(){try{localStorage.setItem(wonderStorageKey(),JSON.stringify(app));}catch(e){}}
 function loadState(){try{const s=localStorage.getItem(wonderStorageKey());if(s)app=normalizeLoaded(JSON.parse(s));else app=normalizeLoaded(DEFAULTS);}catch(e){app=normalizeLoaded(DEFAULTS);}normalizeDetails();normalizeResourceDetails();syncSettingsInputs();saveState();}
-function productionSnapshot(){return {settings:{wLv:app.settings.wLv,baseH:app.settings.baseH,resourceBuildingEnabled:app.settings.resourceBuildingEnabled,questRewards:{...app.settings.questRewards}},views:{prod:app.views.prod},...Object.fromEntries(['resources','products','rawStocks','details','resourceDetails'].map(k=>[k,clone(app[k])]))};}
-function applyProductionInputs(source){app.views.prod=source.views?.prod===true;for(const k of ['wLv','baseH','resourceBuildingEnabled'])app.settings[k]=source.settings[k];app.settings.questRewards={...source.settings.questRewards};for(const k of ['resources','products','rawStocks','details','resourceDetails'])app[k]=clone(source[k]);normalizeDetails();normalizeResourceDetails();}
+function productionSnapshot(){return {settings:{wLv:app.settings.wLv,baseH:app.settings.baseH,questRewards:{...app.settings.questRewards}},views:{prod:app.views.prod},...Object.fromEntries(['resources','products','rawStocks','details','resourceDetails'].map(k=>[k,clone(app[k])]))};}
+function applyProductionInputs(source){app.views.prod=source.views?.prod===true;for(const k of ['wLv','baseH'])app.settings[k]=source.settings[k];app.settings.questRewards={...source.settings.questRewards};for(const k of ['resources','products','rawStocks','details','resourceDetails'])app[k]=clone(source[k]);normalizeDetails();normalizeResourceDetails();}
 function resetState(){applyProductionInputs(DEFAULTS);syncSettingsInputs();renderAll();saveState();const status=document.getElementById('resetStatus');if(status){status.textContent='생산 계산기 초기화 완료';if(resetStatusTimer)clearTimeout(resetStatusTimer);resetStatusTimer=setTimeout(()=>status.textContent='',1800);}}
 function renderAll(){syncSettingsInputs();renderBonus();renderTables();renderWonder();renderSleepReserve();renderAdjustment();renderConversion();renderDetailLauncher();renderResourceDetailLauncher();}
 
@@ -2149,7 +2153,10 @@ function labelInputs(target){
     const label=labels[index];
     if(!label||cell.colSpan>1)continue;
     cell.dataset.label=label;
-    for(const control of cell.querySelectorAll('input,select'))control.setAttribute('aria-label',name+' '+label);
+    for(const control of cell.querySelectorAll('input,select')){
+     const fieldLabel=control.dataset.k==='hourlyRate'?'시간당 생산량':label;
+     control.setAttribute('aria-label',name+' '+fieldLabel);
+    }
    }
   }
  }
@@ -2240,14 +2247,15 @@ function nativeRow(name){const group=detailGroup(name),s=app[group][name],enable
  const reward=group==='products'?selectedQuestBonus(name):0;
  const badge=questBonusBadge(reward);
  const hourly=useResourceHourlyRate(name);
- const config=hourly
-  ?td(rowInput('hourlyRate',s.hourlyRate,'min="0" inputmode="decimal" placeholder="0"'))
+ const config=group==='resources'
+  ?hourly?td(rowInput('hourlyRate',s.hourlyRate,'min="0" inputmode="decimal" placeholder="0"'))
+   :td('상세 설정 적용','calc')
   :td(rowInput('lv',s.lv,'min="1" max="6" '+dis))+td(rowMode(name,dis))
    +td(rowInput('bldgs',enabled?count:s.bldgs,'min="0" '+dis))
    +td(happinessInput('irrigation',s.irrigation,'data-k',enabled));
- const label=name+(enabled&&!hourly?'<span class="badge">상세</span>':'')+badge;
+ const label=name+(enabled&&group==='products'?'<span class="badge">상세</span>':'')+badge;
  return '<tr data-group="'+group+'" data-name="'+name+'">'+td(label)+config
-  +td(rowInput('hours',s.hours,'min="0" placeholder="기본" '+(hourly?'':dis)),'detailcol')
+  +td(rowInput('hours',s.hours,'min="0" placeholder="기본" '+dis),'detailcol')
   +td(stockInput(s.stock,'data-k="stock"'))
   +(group==='resources'?td(compact(remain),'calc '+(remain<0?'bad':'ok')):'')
   +td(compact(out),'calc detailcol')+td(use,'calc detailcol')
@@ -2256,16 +2264,15 @@ function nativeRow(name){const group=detailGroup(name),s=app[group][name],enable
 renderTables=function(){
  for(const [id,names] of [['t1',resourceOrder],['t2',productOrder]]){
   const isResource=id==='t1';
-  const hourly=isResource&&!app.settings.resourceBuildingEnabled;
-  const configuration=hourly
-   ?[{label:'시간당 생산량',tip:'게임에 표시된 시간당 생산량을 입력하세요.'}]
+  const resourceLabel=resourceOrder.some(resourceDetailEnabled)?'생산 설정':'시간당 생산량';
+  const configuration=isResource
+   ?[{label:resourceLabel,tip:'게임에 표시된 시간당 생산량을 입력하거나 상세 설정에서 건물 구성을 적용하세요.'}]
    :['레벨','생산 방식','건물 수','행복도(%)'];
   const labels=[{label:isResource?'자원':'상품',tip:''},...configuration,'운영 시간(h)','현재 보유량'];
   if(isResource)labels.push('잔여/부족');
   labels.push('예상 생산량',isResource?'필요량':'원료 사용량');
   if(isResource)labels.push('소요 시간');
   const table=$(id);
-  table.toggleAttribute('data-hourly',hourly);
   table.innerHTML=head(labels)+'<tbody>'+names.map(nativeRow).join('')+'</tbody>';
   for(const th of table.querySelectorAll('thead th')){
    th.classList.toggle('detailcol',['운영 시간(h)','예상 생산량','필요량','원료 사용량'].includes(th.dataset.label));
@@ -2304,7 +2311,7 @@ renderBonus=function(){
  const hasHours=names.some(name=>useResourceHourlyRate(name)
   ?resourceOutput(name)>0:nativeRows(name).some(row=>row.count>0&&detailHours(row)>0));
  const short=resourceOrder.filter(name=>app.resources[name].stock+resourceOutput(name)<resourceConsumption(name));
- const status=hasHours?short.join(' · ')||'없음':hasBuildings?'운영 시간을 입력하세요.':app.settings.resourceBuildingEnabled?'건물 수를 입력하세요.':'시간당 생산량 또는 건물 수를 입력하세요.';
+ const status=hasHours?short.join(' · ')||'없음':hasBuildings?'운영 시간을 입력하세요.':'시간당 생산량 또는 건물 수를 입력하세요.';
  $('bonusSummary').innerHTML='<div class="metric"><span>불가사의 보너스</span><strong>'+bonusText
   +'</strong><small>'+nextText+'</small></div>'+metricBox(
    {label:hasHours?'조정 필요 생산 항목':'생산 설정 확인',tip:''},status,hasHours&&short.length?'warning-metric':''
@@ -2372,7 +2379,7 @@ renderAll=function(){app.city??=cityDefault();app.views??={prod:false,wonder:fal
 function updateDetailResult(){
  const name=activeDetailName;
  if(useResourceHourlyRate(name)){
-  $('detailResult').textContent='예상 생산량 · '+resourceOrder.map(item=>item+' '+fmtQty(resourceOutput(item))).join(' · ');
+  $('detailResult').textContent=name+' · 시간당 생산량 적용 · 예상 생산량 '+fmtQty(resourceOutput(name));
   return;
  }
  const output=detailGroup(name)==='resources'?resourceOutput(name):productOutput(name);
@@ -2382,22 +2389,8 @@ function updateDetailResult(){
 function showNativeDetail(){
  const name=activeDetailName,group=detailGroup(name),d=detailConfig(name);
  const resource=group==='resources',names=resource?resourceOrder:productOrder;
- const hourly=useResourceHourlyRate(name);
- $('resourceBuildingSetting').hidden=!resource;
- $('resourceBuildingEnabled').checked=app.settings.resourceBuildingEnabled;
- $('detailBuildingSettings').hidden=hourly;
- $('detailHeadingGuide').hidden=hourly;
- $('detailTabs').hidden=hourly;
- $('detailRows').hidden=hourly;
- $('detailAdd').hidden=hourly;
- $('detailEnabled').autofocus=!resource;
- $('resourceBuildingEnabled').autofocus=resource;
  $('detailDialog').dataset.detailKind=group;
  $('detailTitle').textContent=resource?'기초 자원 상세 설정':'상품 상세 설정';
- if(hourly){
-  updateDetailResult();
-  return;
- }
  const building=(resource?resourceBuilding:productBuilding)[name];
  const defaultHours=fmtBldg(effectiveHours(group,name))+'시간';
  $('detailTabs').innerHTML=names.map(item=>{
@@ -2525,12 +2518,6 @@ function initializeNativeUI(){
  }
  const con=e.target.closest('[data-remove-con]');if(con){app.city.construction.splice(Number(con.dataset.removeCon),1);renderAll();saveState();}
  const tech=e.target.closest('[data-tech]');if(tech){activeTech=tech.dataset.tech;const t=CITY_DATA.research.find(t=>t.id===activeTech);$('researchTitle').textContent=t.name;$('currentResearch').textContent=app.city.current.includes(activeTech)?'완료 지정 해제':'완료로 지정';$('targetResearch').textContent=app.city.target.includes(activeTech)?'목표 지정 해제':'목표로 지정';$('researchInfo').textContent='연구 비용 '+money(t.costs);$('researchDialog').showModal();}});
- $('resourceBuildingEnabled').onchange=event=>{
-  app.settings.resourceBuildingEnabled=event.target.checked;
-  renderAll();
-  showNativeDetail();
-  saveState();
- };
  $('detailEnabled').onchange=e=>{const d=detailConfig(activeDetailName),s=app[detailGroup(activeDetailName)][activeDetailName];d.enabled=e.target.checked;if(d.enabled&&!d.rows.length)d.rows=[{lv:s.lv,count:s.bldgs,irrigation:s.irrigation,hours:s.hours,mode:s.mode}];normalizeNative(activeDetailName);renderAll();showNativeDetail();saveState();};
  $('detailAdd').onclick=()=>{
   const detail=detailConfig(activeDetailName);
@@ -2588,14 +2575,35 @@ function initializeNativeUI(){
 const previousRequiredPowerEquivalent=requiredPowerEquivalent;
 requiredPowerEquivalent=function(a){if(a.remain!==null&&a.remain>=-1e-8&&Number.isFinite(a.current)&&a.current===0)return 0;return previousRequiredPowerEquivalent(a);};
 const previousRenderAllQuality=renderAll;
-function showDetailedConfigValues(){for(const name of [...resourceOrder,...productOrder]){const group=detailGroup(name),enabled=group==='resources'?resourceDetailEnabled(name):detailEnabled(name);if(!enabled||useResourceHourlyRate(name))continue;const row=$('productionSections').querySelector('tr[data-name="'+name+'"]'),rows=nativeRows(name).filter(r=>r.count>0);if(!row||!rows.length)continue;const unique=k=>[...new Set(rows.map(k))];const levels=unique(r=>r.lv),modes=unique(r=>r.mode),happy=unique(r=>r.irrigation),hours=unique(r=>detailHours(r));for(const [index,text]of [[1,levels.length===1?'Lv.'+levels[0]:'혼합'],[2,modes.length===1?modes[0]:'혼합'],[4,happy.length===1?fmtPct(happy[0]):'혼합'],[5,hours.length===1?duration(hours[0]):'혼합']]){row.cells[index].innerHTML=text;row.cells[index].classList.add('calc');} }labelInputs('productionSections');}
+function showDetailedConfigValues(){
+ for(const name of [...resourceOrder,...productOrder]){
+  const resource=resourceOrder.includes(name);
+  if(!(resource?resourceDetailEnabled(name):detailEnabled(name)))continue;
+  const row=$('productionSections').querySelector('tr[data-name="'+name+'"]');
+  const rows=nativeRows(name).filter(r=>r.count>0);
+  if(!row||!rows.length)continue;
+  const display=(key,format)=>{const values=[...new Set(rows.map(key))];return values.length===1?format(values[0]):'혼합';};
+  const hours=display(detailHours,duration);
+  const columns=resource?[[2,hours]]:[
+   [1,display(r=>r.lv,value=>'Lv.'+value)],
+   [2,display(r=>r.mode,value=>value)],
+   [4,display(r=>r.irrigation,fmtPct)],
+   [5,hours]
+  ];
+  for(const [index,value] of columns){
+   row.cells[index].textContent=value;
+   row.cells[index].classList.add('calc');
+  }
+ }
+ labelInputs('productionSections');
+}
 function renderUserGuidance(){
  for (const [id, items, enabled] of [['stage0DetailSummary', resourceOrder, resourceDetailEnabled],
                                     ['stage2DetailSummary', productOrder, detailEnabled]]) {
   const active = items.filter(enabled);
   const summary = $(id);
-  const hourly=id==='stage0DetailSummary'&&!app.settings.resourceBuildingEnabled;
-  summary.textContent = hourly?'':active.length?'상세 설정 적용: '+active.join(' · '):id==='stage0DetailSummary'?'건물 정보로 계산':'기본 설정 사용';
+  const hourly=id==='stage0DetailSummary'&&!active.length;
+  summary.textContent = hourly?'':active.length?'상세 설정 적용: '+active.join(' · '):'기본 설정 사용';
   summary.hidden=hourly;
   summary.classList.toggle('applied', !hourly&&active.length>0);
  }
@@ -3527,7 +3535,8 @@ function apply(){
  for(const [name,rows] of byBuilding){
   const b=BUILDINGS.find(item=>item.id===name),base=next[b.group][name];
   const details=b.group==='resources'?next.resourceDetails:next.details;
-  const previous=details[name],updated=previous.enabled?previous.rows.map(row=>({...row})):[];
+  const resource=b.group==='resources';
+  const previous=details[name],updated=(previous.enabled||resource)?previous.rows.map(row=>({...row})):[];
   for(const {lv,count} of rows){
    const indices=updated.flatMap((row,index)=>row.lv===lv?[index]:[]);
    if(indices.length){
@@ -3547,8 +3556,8 @@ function apply(){
    }
   }
   if(updated.length>20){applyStatus(b.name+' 상세 구성은 최대 20개까지 적용할 수 있습니다.',true);return;}
-  const detailed=previous.enabled||updated.length>1;
-  details[name]={enabled:detailed,rows:detailed?updated:[]};
+  const detailed=previous.enabled||(!resource&&updated.length>1);
+  details[name]={enabled:detailed,rows:detailed||resource?updated:[]};
   base.lv=updated[0].lv;base.mode=updated[0].mode;
   base.bldgs=updated.reduce((sum,row)=>sum+row.count,0);
  }
