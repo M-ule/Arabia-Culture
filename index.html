@@ -374,18 +374,36 @@ h1{color:var(--blue)}
 #convert th:first-child{z-index:2}
 .detail-summary{color:#766246;font-size:13px;padding:5px 8px;border:1px solid #e8d7c0;border-radius:5px;background:#fffcf7}
 .detail-summary.applied{color:var(--blue);font-weight:700}
-.purchase-details{margin-top:16px}
+.purchase-details{margin-top:16px;container-type:inline-size}
 .purchase-details h3{margin:0 0 8px;color:var(--blue);font-size:15px}
-.purchase-wrap{max-width:100%;overflow:auto;overscroll-behavior-inline:contain}
-.purchase-wrap table{width:100%;min-width:0;table-layout:fixed}
-.purchase-wrap td,.purchase-wrap th{height:40px;padding:7px 10px;font-size:14px}
-.purchase-wrap .purchase-quantity{background:#fff4df;color:#49351d;font-weight:700;font-variant-numeric:tabular-nums}
-.purchase-wrap tfoot th,.purchase-wrap tfoot td{background:#faefe0;color:#6b4612;font-weight:700}
+.purchase-scroll-hint{display:none;margin:0 0 6px;color:#64543e;font-size:13px}
+.purchase-wrap{max-width:100%;overflow:auto;overscroll-behavior-inline:contain;border:1px solid var(--line);border-radius:6px}
+.purchase-wrap table{width:100%;min-width:0;table-layout:fixed;border-collapse:separate;border-spacing:0}
+.purchase-wrap :is(th,td){
+ height:40px;padding:7px 10px;font-size:14px;
+ border:0;border-block-end:1px solid #e8d7c0;border-inline-end:1px solid #e8d7c0;
+}
+.purchase-wrap tr>:last-child{border-inline-end:0}
+.purchase-wrap table>:last-child tr:last-child>*{border-block-end:0}
+.purchase-wrap thead th{background:#f7f1e8;color:#634418;word-break:keep-all}
+.purchase-wrap tbody th{background:#fffcf7;color:#49351d}
+.purchase-wrap :is(thead,tbody) th:first-child{width:40%}
+.purchase-wrap td.calc,.purchase-wrap tfoot td{white-space:nowrap;font-variant-numeric:tabular-nums}
+.purchase-wrap .purchase-quantity{background:#fff4df;color:#49351d;font-weight:700}
+.purchase-wrap thead .purchase-quantity{background:#f5dfb7}
+.purchase-wrap tfoot :is(th,td){background:#faefe0;color:#6b4612;font-weight:700}
+.purchase-wrap tfoot th{text-align:start}
+.purchase-wrap tfoot th span{position:sticky;inset-inline-start:10px}
+.purchase-wrap .purchase-empty td{background:#fffcf7;color:#64543e;font-weight:400}
 #panel-wonder:not(.expanded) .purchase-wrap :is(.purchase-extra,.purchase-covered,tfoot){display:none}
+#panel-wonder:not(.expanded) .purchase-wrap .purchase-quantity{border-inline-end:0}
+#panel-wonder:not(.expanded) .purchase-wrap tbody tr:nth-last-child(1 of :not(.purchase-covered))>*{border-block-end:0}
 #panel-wonder.expanded .purchase-wrap .purchase-empty{display:none}
 #panel-wonder.expanded .purchase-wrap table{min-width:650px}
-#panel-wonder.expanded .purchase-wrap :is(thead,tbody) th:first-child{position:sticky;left:0;z-index:1;width:100px}
-#panel-wonder.expanded .purchase-wrap tbody th:first-child{background:#fffcf7}
+#panel-wonder.expanded .purchase-wrap :is(thead,tbody) th:first-child{position:sticky;inset-inline-start:0;z-index:1;width:96px}
+@container (width < 650px){
+ #panel-wonder.expanded .purchase-scroll-hint{display:block}
+}
 @media(max-width:720px){
  .settings-actions{width:100%}
  .settings-actions button{flex:1 1 40%}
@@ -555,7 +573,6 @@ input[aria-invalid]{border-color:var(--red)}
  #panel-wonder:not(.expanded) #goalTable tbody tr{margin-bottom:8px}
  #panel-wonder:not(.expanded) #goalTable tbody td:not(:first-child){min-height:88px}
 
- #panel-wonder.expanded .purchase-wrap table{min-width:580px}
  .purchase-wrap :is(th,td){padding:6px 8px;font-size:13px}
  #panel-wonder.expanded .purchase-wrap :is(thead,tbody) th:first-child{width:74px}
  #conversionCard #convert{max-width:100%;overflow:auto;overscroll-behavior-inline:contain}
@@ -1116,6 +1133,7 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 </div>
 <section class="purchase-details">
 <h3 id="sleepPurchaseTitle">취침 전 구매 필요량</h3>
+<p class="purchase-scroll-hint">표를 좌우로 밀어 세부 수량과 비용을 확인하세요.</p>
 <div class="purchase-wrap" role="region" aria-labelledby="sleepPurchaseTitle">
 <table id="sleepPurchaseTable"></table>
 </div>
@@ -1131,6 +1149,7 @@ button:is(#manualRestore,#photoReset,#photoApply,#detailAdd):disabled{opacity:.4
 </div>
 <section class="purchase-details">
 <h3 id="targetPurchaseTitle">목표 달성 구매 필요량</h3>
+<p class="purchase-scroll-hint">표를 좌우로 밀어 세부 수량과 비용을 확인하세요.</p>
 <div class="purchase-wrap" role="region" aria-labelledby="targetPurchaseTitle">
 <table id="targetPurchaseTable"></table>
 </div>
@@ -2361,19 +2380,19 @@ renderAdjustment=function(){renderPurchaseBreakdown('targetPurchaseTable',purcha
 renderConversion=function(){$('tc').innerHTML=head([{label:'생산 항목',tip:''},{label:'생산 방식',tip:''},'Lv1','Lv2','Lv3','Lv4','Lv5','Lv6'])+'<tbody>'+[...resourceOrder,...productOrder].flatMap(name=>{const building=(resourceBuilding[name]||productBuilding[name]),modes=useResourceHourlyRate(name)?[name==='금화'?'연속':'30분']:[...new Set(nativeRows(name).map(r=>r.mode||app[detailGroup(name)][name].mode))];return modes.map(m=>'<tr>'+td(name)+td(m)+[1,2,3,4,5,6].map(lv=>{const p=info(building,lv,m);return td(p?fmtPower((name==='금화'?outputForInfoHappy(p,1,1,true,100):happyCycleOutput(p,100)*60/p.min)/benchmarkRate(name)*100):'—','calc');}).join('')+'</tr>');}).join('')+'</tbody>';labelInputs('convert');};
 function renderPurchaseBreakdown(id, purchases, sleepPlan = null) {
   const demandColumns = sleepPlan ? ['취침 전 소비량', '예약 필요량'] : [{label:'목표 필요량',tip:'원료 수량은 정수로 올려 표시합니다. 금화와 낙타는 올리기 전 수량에 구매 단가를 적용해 계산합니다.'}];
-  const labels = ['원료', ...demandColumns, {label:'현재 보유량',tip:'입력한 원료 보유량에 선택한 퀘스트 보상을 더한 값입니다.'}, '구매 필요량', '금화', '낙타'];
+  const labels = [{label:'원료',tip:''}, '구매 필요량', ...demandColumns, {label:'현재 보유량',tip:'입력한 원료 보유량에 선택한 퀘스트 보상을 더한 값입니다.'}, '금화', '낙타'];
   const wholeQuantity = value => Math.ceil(value - 1e-9);
   const rows = purchases.rows.map(row => {
     const demand = sleepPlan ? [sleepPlan.before[row.raw], sleepPlan.reserved[row.raw]] : [row.consumed];
     const extras = [...demand, row.availableStock].map(value=>td(fmtQty(wholeQuantity(value)),'calc purchase-extra'));
     const need = wholeQuantity(row.need);
-    return '<tr'+(need>0?'':' class="purchase-covered"')+'><th scope="row">'+row.raw+'</th>'+extras.join('')
-      +td(fmtQty(need),'calc purchase-quantity')
+    return '<tr'+(need>0?'':' class="purchase-covered"')+'><th scope="row">'+row.raw+'</th>'
+      +td(fmtQty(need),'calc purchase-quantity')+extras.join('')
       +td(fmtQty(row.gold),'calc purchase-extra')+td(fmtQty(row.camel),'calc purchase-extra')+'</tr>';
   });
   const empty = purchases.rows.some(row=>wholeQuantity(row.need)>0)
     ?'' : '<tr class="purchase-empty"><td colspan="2">추가 구매 없음</td></tr>';
-  const total = '<tr><th scope="row" colspan="'+(labels.length-2)+'">총 구매 비용</th>'
+  const total = '<tr><th scope="row" colspan="'+(labels.length-2)+'"><span>총 구매 비용</span></th>'
     +td(fmtQty(purchases.gold))+td(fmtQty(purchases.camel))+'</tr>';
   const table = $(id);
   table.innerHTML = head(labels)+'<tbody>'+rows.join('')+empty+'</tbody><tfoot>'+total+'</tfoot>';
